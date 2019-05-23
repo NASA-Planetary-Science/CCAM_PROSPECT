@@ -14,25 +14,14 @@ vis = []
 uv = []
 
 
-def read_spectra(filename):
-    """read_spectra
-    open the response file and read the appropriate lines into
-    each array of vnir, vis, and uv, as well as info from the header
-
-        field    line
-
-        ipbc:     8
-        ict:      9
-        nshots:   27
-        distance: 28
-        vnir:     79:2127
-        vis:      2227:4275
-        uv:       4375:6423
+def get_header_values(filename):
+    """get_header_values
+    open the response file and read the header values into a dictionary
     """
 
+    global ipbc, ict, nshots, distance
 
-    global ipbc, ict, nshots, distance, vnir, vis, uv
-
+    # the values we need for further calculation
     line = linecache.getline(filename, 8)
     ipbc = float(line.rsplit(":")[1].rstrip('"\n'))
     line = linecache.getline(filename, 9)
@@ -41,6 +30,34 @@ def read_spectra(filename):
     nshots = int(line.rsplit(":")[1].rstrip('"\n'))
     line = linecache.getline(filename, 28)
     distance = float(line.rsplit(":")[1].rstrip('"\n'))
+
+    headers = {}
+
+    with open(filename, "r") as infile:
+        for line in infile:
+            if ">>>>Begin" in line:
+                return headers
+            else:
+                toks = line.rsplit(':')
+                if len(toks) > 1:
+                    key = toks[0].lstrip('"')
+                    value = toks[1].rstrip('"\n')
+                    headers[key] = value
+
+
+def read_spectra(filename):
+    """read_spectra
+    open the response file and read the appropriate lines into
+    each array of vnir, vis, and uv, as well as info from the header
+
+        field    line
+
+        vnir:     79:2127
+        vis:      2227:4275
+        uv:       4375:6423
+    """
+
+    global vnir, vis, uv
 
     with open(filename, 'r') as f:
         vnir = np.array([float(line.rstrip('\n')) for line in f.readlines()[79:2127]])
@@ -78,13 +95,16 @@ def remove_offsets():
     uv = np.array([v - uv_mean for v in uv])
 
 
-def get_integration_time():
+def get_integration_time(filename):
     """get_integration_time
     Calculate the integration time based on values in the header
 
     :return: integration time
     """
-    global ipbc, ict
+    headers = get_header_values(filename)
+    print(headers.keys())
+    ipbc = float(headers['IPBCdivisor'])
+    ict = float(headers['ICTdivisor'])
     return ((ipbc * ict) / 33000000) + 0.00356
 
 
@@ -112,7 +132,7 @@ def get_area_on_target():
     return math.pi * math.pow(pkg.fov * distance / 2 / 10, 2)
 
 
-def get_radiance(photons, wavelengths):
+def get_radiance(photons, wavelengths, t_int, fov_tgt, sa_steradian):
     """get_radiance
     Calculate the radiance value of each of the spectra values in photons
     RAD = p/t/A/SA/w
@@ -165,16 +185,11 @@ def write_final(file_to_write, wavelengths, radiance_final):
             f.write('%3.3f %3.5f\n' % (wavelengths[ii], radiance_final[ii]))
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print('Please provide the full path to the CCAM TAB file')
-        exit(0)
-
-    ccamFile = sys.argv[1]
+def calibrate_to_radiance(ccamFile):
     read_spectra(ccamFile)
     remove_offsets()
-    print(vnir)
-    t_int = get_integration_time()
+    t_int = get_integration_time(ccamFile)
+    print(t_int)
     sa_steradian = get_solid_angle()
     fov_tgt = get_area_on_target()
 
@@ -184,7 +199,7 @@ if __name__ == "__main__":
     # TODO what to do with this gain_mars.edit file
     (wavelength, response) = get_wl_and_response('/Users/osheacm1/Documents/SAA/PDART/OldCode/gain_mars.edit')
     allSpectra_photons = np.multiply(allSpectra_DN, response)
-    radiance = get_radiance(allSpectra_photons, wavelength)
+    radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 
     # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
     radiance_final = convert_to_output_units(radiance, wavelength)
@@ -192,3 +207,12 @@ if __name__ == "__main__":
     outfilename = ccamFile.replace('psv', 'rad')
     print(outfilename)
     write_final(outfilename, wavelength, radiance_final)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print('Please provide the full path to the CCAM TAB file')
+        exit(0)
+
+    ccamFile = sys.argv[1]
+    calibrate_to_radiance(ccamFile)
