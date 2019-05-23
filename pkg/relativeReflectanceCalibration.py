@@ -6,7 +6,7 @@ import linecache
 import math as math
 import numpy as np
 import os
-from convertCCAM2Radiance import get_integration_time, calibrate_to_radiance
+from convertCCAM2Radiance import get_integration_time, calibrate_to_radiance, write_final
 
 
 def calibrate_relative_reflectance(radFile, values):
@@ -16,9 +16,46 @@ def calibrate_relative_reflectance(radFile, values):
     :param values:
     :return:
     '''
-    np.seterr(divide='ignore', invalid='ignore')
-    values_orig = np.array([float(x.split(' ')[1].strip()) for x in open(radFile).readlines()])
-    return np.divide(values_orig, values)
+    values_orig = [float(x.split(' ')[1].strip()) for x in open(radFile).readlines()]
+
+    # divide original values by the appropriate calibration values
+    # to get relative reflectance.  If divide by 0, just = 0
+    with np.errstate(divide='ignore', invalid='ignore'):
+        c = np.true_divide(values_orig, values)
+        c[c == np.inf] = 0
+        c = np.nan_to_num(c)
+
+    return c
+
+
+def get_rad_file(psv_file):
+    # get all of the values from the rad file and divide by the value_7
+    radFile = filename.replace('psv', 'rad')
+    exists = os.path.isfile(radFile)
+    if not exists:
+        # create rad file
+        calibrate_to_radiance(filename)
+    # calibrate with sol 76
+    return radFile
+
+
+def choose_values(psv_file):
+    # check t_int for file
+    t_int = get_integration_time(filename)
+    t_int = t_int * 1000;
+    values = []
+    if round(t_int) == 7:
+       values = value_7
+    elif round(t_int) == 34:
+        values = value_34
+    elif round(t_int) == 404:
+        values = value_404
+    elif round(t_int) == 5004:
+        values = value_5004
+    else:
+        print('error')
+        # throw an error
+    return values
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -55,29 +92,8 @@ if __name__ == "__main__":
     value_5004 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.61))
                for x in open(baseDir + 'cl9_404238538rad_f0050104ccam02076p3.tab').readlines()]
 
-
-    # check t_int for file
-    t_int = get_integration_time(filename)
-    t_int = t_int * 1000;
-    values = []
-    if round(t_int) == 7:
-       values = value_7
-    elif round(t_int) == 34:
-        values = value_34
-    elif round(t_int) == 404:
-        values = value_404
-    elif round(t_int) == 5004:
-        values = value_5004
-    else:
-        print('error')
-        # throw an error
-
-    # get all of the values from the rad file and divide by the value_7
-    radFile = filename.replace('psv', 'rad')
-    exists = os.path.isfile(radFile)
-    if not exists:
-        # create rad file
-        calibrate_to_radiance(filename)
-    # calibrate with sol 76
-    newvalues = calibrate_relative_reflectance(radFile, values)
-    print(newvalues)
+    values = choose_values(filename)
+    radFile = get_rad_file(filename)
+    newValues = calibrate_relative_reflectance(radFile, values)
+    outfilename = radFile.replace('rad', 'ref')
+    write_final(outfilename, wavelength, newValues)
