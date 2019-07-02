@@ -1,48 +1,14 @@
 import pkg
 import sys
-import linecache
 import math as math
 import numpy as np
+from Utilities import get_integration_time, write_final, get_header_values
 
 # variables parsed from spectra file
-ipbc = 1
-ict = 1
-nshots = 1
-distance = 0
 vnir = []
 vis = []
 uv = []
-
-
-def get_header_values(filename):
-    """get_header_values
-    open the response file and read the header values into a dictionary
-    """
-
-    global ipbc, ict, nshots, distance
-
-    # the values we need for further calculation
-    line = linecache.getline(filename, 8)
-    ipbc = float(line.rsplit(":")[1].rstrip('"\n'))
-    line = linecache.getline(filename, 9)
-    ict = float(line.rsplit(":")[1].rstrip('"\n'))
-    line = linecache.getline(filename, 27)
-    nshots = int(line.rsplit(":")[1].rstrip('"\n'))
-    line = linecache.getline(filename, 28)
-    distance = float(line.rsplit(":")[1].rstrip('"\n'))
-
-    headers = {}
-
-    with open(filename, "r") as infile:
-        for line in infile:
-            if ">>>>Begin" in line:
-                return headers
-            else:
-                toks = line.rsplit(':')
-                if len(toks) > 1:
-                    key = toks[0].lstrip('"')
-                    value = toks[1].rstrip('"\n')
-                    headers[key] = value
+headers = {}
 
 
 def read_spectra(filename):
@@ -95,19 +61,6 @@ def remove_offsets():
     uv = np.array([v - uv_mean for v in uv])
 
 
-def get_integration_time(filename):
-    """get_integration_time
-    Calculate the integration time based on values in the header
-
-    :return: integration time
-    """
-    headers = get_header_values(filename)
-    print(headers.keys())
-    ipbc = float(headers['IPBCdivisor'])
-    ict = float(headers['ICTdivisor'])
-    return ((ipbc * ict) / 33000000) + 0.00356
-
-
 def get_solid_angle():
     """get_solid_angle
     Calculate the solid angle subtended by the telescope aperature
@@ -115,7 +68,8 @@ def get_solid_angle():
 
     :return: the solid angle, in radians
     """
-    global distance
+    global headers
+    distance = float(headers['distToTarget'])
     return math.pi * math.pow(math.sin(math.atan(pkg.aperature / 2 / distance)), 2)
 
 
@@ -128,7 +82,8 @@ def get_area_on_target():
 
     :return: the area on the target
     """
-    global distance
+    global headers
+    distance = float(headers['distToTarget'])
     return math.pi * math.pow(pkg.fov * distance / 2 / 10, 2)
 
 
@@ -157,7 +112,7 @@ def get_radiance(photons, wavelengths, t_int, fov_tgt, sa_steradian):
     return np.divide(rad, w)
 
 
-def get_wl_and_response(gain_file):
+def get_wl_and_gain(gain_file):
     """get_wl_and_response
     read the gain file to get the wavelength and response function
     (photons/DN) for each response to use to convert to units of photons
@@ -179,13 +134,9 @@ def convert_to_output_units(radiance, wavelengths):
     return np.multiply(converted_rad, 1E7)
 
 
-def write_final(file_to_write, wavelengths, radiance_final):
-    with open(file_to_write, 'w') as f:
-        for ii in range(0, len(wavelengths)):
-            f.write('%3.3f %3.5f\n' % (wavelengths[ii], radiance_final[ii]))
-
-
 def calibrate_to_radiance(ccamFile):
+    global headers
+    headers = get_header_values(ccamFile)
     read_spectra(ccamFile)
     remove_offsets()
     t_int = get_integration_time(ccamFile)
@@ -197,8 +148,8 @@ def calibrate_to_radiance(ccamFile):
     allSpectra_DN = np.concatenate([uv, vis, vnir])
 
     # TODO what to do with this gain_mars.edit file
-    (wavelength, response) = get_wl_and_response('/Users/osheacm1/Documents/SAA/PDART/OldCode/gain_mars.edit')
-    allSpectra_photons = np.multiply(allSpectra_DN, response)
+    (wavelength, gain) = get_wl_and_gain('/Users/osheacm1/Documents/SAA/PDART/OldCode/gain_mars.edit')
+    allSpectra_photons = np.multiply(allSpectra_DN, gain)
     radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 
     # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm

@@ -1,12 +1,9 @@
-from typing import List
-
-import pkg
 import sys
-import linecache
 import math as math
 import numpy as np
 import os
-from convertCCAM2Radiance import get_integration_time, calibrate_to_radiance, write_final
+from Utilities import get_integration_time, write_final
+from convertCCAM2Radiance import calibrate_to_radiance
 
 
 def calibrate_relative_reflectance(radFile, values):
@@ -35,7 +32,6 @@ def get_rad_file(psv_file):
     if not exists:
         # create rad file
         calibrate_to_radiance(filename)
-    # calibrate with sol 76
     return radFile
 
 
@@ -53,9 +49,10 @@ def choose_values(psv_file):
     elif round(t_int) == 5004:
         values = value_5004
     else:
-        print('error')
+        print('error - integration time is not 7, 34, 404, or 5004')
         # throw an error
     return values
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -65,32 +62,38 @@ if __name__ == "__main__":
     baseDir = '/Users/osheacm1/Documents/SAA/PDART/oldCode/target11sol76/'
     filename = sys.argv[1]
 
-    '''
-    If the user wants to use the default, we use sol76 data.
-    Calculate the cosine correction for each of the four calibration files from sol76
-    '''
+    default = True
 
-    # for every line in cl0_404238481rad_f0050104ccam02076p3.tab
-    # divide by cos(24.84 deg)
-    wavelength = [float(x.split(' ')[0].strip())
-                  for x in open(baseDir + 'cl0_404238481rad_f0050104ccam02076p3.tab').readlines()]
-    value_7 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.84))
-               for x in open(baseDir + 'cl0_404238481rad_f0050104ccam02076p3.tab').readlines()]
+    if default:
+        '''
+        If the user wants to use the default, we use sol76 data.
+        Calculate the cosine correction for each of the four calibration files from sol76
+        '''
 
-    # for every line in cl0_404238492rad_f0050104ccam02076p3.tab
-    # divide by cos(24.79 deg)
-    value_34 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.79))
-               for x in open(baseDir + 'cl0_404238492rad_f0050104ccam02076p3.tab').readlines()]
+        # for every line in cl0_404238481rad_f0050104ccam02076p3.tab
+        # divide by cos(24.84 deg)
+        wavelength = [float(x.split(' ')[0].strip())
+                      for x in open(baseDir + 'cl0_404238481rad_f0050104ccam02076p3.tab').readlines()]
+        value_7 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.84))
+                   for x in open(baseDir + 'cl0_404238481rad_f0050104ccam02076p3.tab').readlines()]
 
-    # for every line in cl9_404238503rad_f0050104ccam02076p3.tab
-    # divide by cos(24.75 deg)
-    value_404 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.75))
-               for x in open(baseDir + 'cl9_404238503rad_f0050104ccam02076p3.tab').readlines()]
+        # for every line in cl0_404238492rad_f0050104ccam02076p3.tab
+        # divide by cos(24.79 deg)
+        value_34 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.79))
+                   for x in open(baseDir + 'cl0_404238492rad_f0050104ccam02076p3.tab').readlines()]
 
-    # for every line in cl9_404238538rad_f0050104ccam02076p3.tab
-    # divide by cos(24.61 deg)
-    value_5004 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.61))
-               for x in open(baseDir + 'cl9_404238538rad_f0050104ccam02076p3.tab').readlines()]
+        # for every line in cl9_404238503rad_f0050104ccam02076p3.tab
+        # divide by cos(24.75 deg)
+        value_404 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.75))
+                   for x in open(baseDir + 'cl9_404238503rad_f0050104ccam02076p3.tab').readlines()]
+
+        # for every line in cl9_404238538rad_f0050104ccam02076p3.tab
+        # divide by cos(24.61 deg)
+        value_5004 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.61))
+                   for x in open(baseDir + 'cl9_404238538rad_f0050104ccam02076p3.tab').readlines()]
+    else:
+        # get wavelengths and values for each of the integration times
+        x = 3 #TODO
 
     values = choose_values(filename)
     radFile = get_rad_file(filename)
