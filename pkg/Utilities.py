@@ -1,4 +1,3 @@
-import linecache
 
 def get_integration_time(filename):
     """get_integration_time
@@ -7,7 +6,7 @@ def get_integration_time(filename):
     :return: integration time
     """
     headers = get_header_values(filename)
-    print(headers.keys())
+
     ipbc = float(headers['IPBCdivisor'])
     ict = float(headers['ICTdivisor'])
     return ((ipbc * ict) / 33000000) + 0.00356

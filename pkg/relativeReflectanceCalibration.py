@@ -8,7 +8,7 @@ from convertCCAM2Radiance import calibrate_to_radiance
 
 def calibrate_relative_reflectance(radFile, values):
     '''
-
+    Divide each value in the file by the calibration values
     :param radFile:
     :param values:
     :return:
