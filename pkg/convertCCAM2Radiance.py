@@ -1,5 +1,4 @@
 import pkg
-import sys
 import argparse
 import os
 import math as math
@@ -150,7 +149,7 @@ def calibrate_to_radiance(ccamFile):
         # combine arrays into one ordered by wavelength
         allSpectra_DN = np.concatenate([uv, vis, vnir])
 
-        # TODO what to do with this gain_mars.edit file
+        # get the wavelengths and gains from gain_mars.edit
         (wavelength, gain) = get_wl_and_gain('pkg/gain_mars.edit')
         allSpectra_photons = np.multiply(allSpectra_DN, gain)
         radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
