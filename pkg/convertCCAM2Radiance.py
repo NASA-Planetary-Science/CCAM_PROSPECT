@@ -1,6 +1,6 @@
-import pkg
 import argparse
 import os
+import pkg
 import math as math
 import numpy as np
 from Utilities import get_integration_time, write_final, get_header_values
@@ -36,7 +36,7 @@ def read_spectra(filename):
 
 def remove_offsets():
     """remove_offsets
-    Find the offsets for each channel and subtract from each singal in DN
+    Find the offsets for each channel and subtract from each signal in DN
     This version uses the following lines to compute offsets
         VNIR: 1905-1920  ->   1816:1832
         VIS:  2237-2241  ->   0:5
