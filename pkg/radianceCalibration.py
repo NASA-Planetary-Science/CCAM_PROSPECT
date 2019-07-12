@@ -1,8 +1,8 @@
 import argparse
 import os
-import pkg
 import math as math
 import numpy as np
+import pkg.constants as cnst
 from Utilities import get_integration_time, write_final, get_header_values
 
 # variables parsed from spectra file
@@ -71,7 +71,7 @@ def get_solid_angle():
     """
     global headers
     distance = float(headers['distToTarget'])
-    return math.pi * math.pow(math.sin(math.atan(pkg.aperature / 2 / distance)), 2)
+    return math.pi * math.pow(math.sin(math.atan(cnst.aperature / 2 / distance)), 2)
 
 
 def get_area_on_target():
@@ -85,7 +85,7 @@ def get_area_on_target():
     """
     global headers
     distance = float(headers['distToTarget'])
-    return math.pi * math.pow(pkg.fov * distance / 2 / 10, 2)
+    return math.pi * math.pow(cnst.fov * distance / 2 / 10, 2)
 
 
 def get_radiance(photons, wavelengths, t_int, fov_tgt, sa_steradian):
@@ -130,7 +130,7 @@ def get_wl_and_gain(gain_file):
 
 
 def convert_to_output_units(radiance, wavelengths):
-    rad_hc = np.multiply(radiance, pkg.hc)
+    rad_hc = np.multiply(radiance, cnst.hc)
     converted_rad = np.divide(rad_hc, np.multiply(wavelengths, 1E-9))
     return np.multiply(converted_rad, 1E7)
 
@@ -150,7 +150,7 @@ def calibrate_to_radiance(ccamFile):
         allSpectra_DN = np.concatenate([uv, vis, vnir])
 
         # get the wavelengths and gains from gain_mars.edit
-        (wavelength, gain) = get_wl_and_gain('pkg/gain_mars.edit')
+        (wavelength, gain) = get_wl_and_gain('../gain_mars.edit')
         allSpectra_photons = np.multiply(allSpectra_DN, gain)
         radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 

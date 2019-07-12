@@ -3,13 +3,13 @@ import numpy as np
 import os
 import argparse
 from Utilities import get_integration_time, write_final
-from convertCCAM2Radiance import calibrate_to_radiance
+from radianceCalibration import calibrate_to_radiance
 
 psvfile = ''
 radfile = ''
 wavelength = []
 
-def do_division( values):
+def do_division(values):
     '''
     Divide each value in the file by the calibration values
     :param radFile:

@@ -12,10 +12,10 @@ def get_integration_time(filename):
     return ((ipbc * ict) / 33000000) + 0.00356
 
 
-def write_final(file_to_write, wavelengths, radiance_final):
+def write_final(file_to_write, wavelengths, values):
     with open(file_to_write, 'w') as f:
         for ii in range(0, len(wavelengths)):
-            f.write('%3.3f %3.5f\n' % (wavelengths[ii], radiance_final[ii]))
+            f.write('%3.3f %3.5f\n' % (wavelengths[ii], values[ii]))
 
 
 def get_header_values(filename):
