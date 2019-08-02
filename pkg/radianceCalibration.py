@@ -150,7 +150,7 @@ def calibrate_to_radiance(ccamFile):
         allSpectra_DN = np.concatenate([uv, vis, vnir])
 
         # get the wavelengths and gains from gain_mars.edit
-        (wavelength, gain) = get_wl_and_gain('../gain_mars.edit')
+        (wavelength, gain) = get_wl_and_gain('gain_mars.edit')
         allSpectra_photons = np.multiply(allSpectra_DN, gain)
         radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 
