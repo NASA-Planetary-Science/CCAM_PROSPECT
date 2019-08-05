@@ -29,6 +29,23 @@ def do_division(values):
     return c
 
 
+def do_multiplication(values):
+    '''
+    Multiply each value in the file by the lab bidirectional spectrum value
+    :param values:
+    :return:
+    '''
+    # TODO hardcode or nah
+    conv = '../sol76/Target11_60_95.txt.conv';
+    values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
+
+    # multiply original values by the appropriate calibration values
+    # to get relative reflectance.
+    c = np.multiply(values_conv, values)
+
+    return c
+
+
 def get_rad_file(psv_file):
     global radfile, psvfile
     # get all of the values from the rad file and divide by the value_7
@@ -46,10 +63,10 @@ def choose_values(custom_dir, complement):
         ms34 = '../sol76/cl0_404238492rad_f0050104ccam02076p3.tab'
         ms404 = '../sol76/cl9_404238503rad_f0050104ccam02076p3.tab'
         ms5004 = '../sol76/cl9_404238538rad_f0050104ccam02076p3.tab'
-        inc7 = 24.84
-        inc34 = 24.79
-        inc404 = 24.75
-        inc5004 = 24.61
+        inc7 = 38.18
+        inc34 = 38.13
+        inc404 = 38.09
+        inc5004 = 37.95
     else:
         dirc = custom_dir
 
@@ -124,8 +141,10 @@ def calibrate_file(filename, in_args):
     get_rad_file(filename)
     values = choose_values(in_args.customDir, m)
     new_values = do_division(values)
-    out_filename = radfile.replace('rad', 'ref')
-    write_final(out_filename, wavelength, new_values)
+    final_values = do_multiplication(new_values)
+    out_filename = radfile.replace('RAD', 'REF')
+    out_filename = out_filename.replace('rad', 'ref')
+    write_final(out_filename, wavelength, final_values)
 
 
 def calibrate_directory(directory, in_args):

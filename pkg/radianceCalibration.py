@@ -136,7 +136,7 @@ def convert_to_output_units(radiance, wavelengths):
 
 
 def calibrate_to_radiance(ccamFile):
-    if "psv" in ccamFile and ccamFile.endswith(".tab"):
+    if "psv" in ccamFile.lower() and ccamFile.lower().endswith(".tab"):
         global headers
         headers = get_header_values(ccamFile)
         read_spectra(ccamFile)
@@ -158,6 +158,7 @@ def calibrate_to_radiance(ccamFile):
         radiance_final = convert_to_output_units(radiance, wavelength)
 
         outfilename = ccamFile.replace('psv', 'rad')
+        outfilename = outfilename.replace('PSV', 'RAD')
         write_final(outfilename, wavelength, radiance_final)
     else:
         print(ccamFile + ": not a raw PSV file")
