@@ -1,7 +1,8 @@
-import pkg
-import sys
+import argparse
+import os
 import math as math
 import numpy as np
+import pkg.constants as cnst
 from Utilities import get_integration_time, write_final, get_header_values
 
 # variables parsed from spectra file
@@ -35,7 +36,7 @@ def read_spectra(filename):
 
 def remove_offsets():
     """remove_offsets
-    Find the offsets for each channel and subtract from each singal in DN
+    Find the offsets for each channel and subtract from each signal in DN
     This version uses the following lines to compute offsets
         VNIR: 1905-1920  ->   1816:1832
         VIS:  2237-2241  ->   0:5
@@ -70,7 +71,7 @@ def get_solid_angle():
     """
     global headers
     distance = float(headers['distToTarget'])
-    return math.pi * math.pow(math.sin(math.atan(pkg.aperature / 2 / distance)), 2)
+    return math.pi * math.pow(math.sin(math.atan(cnst.aperature / 2 / distance)), 2)
 
 
 def get_area_on_target():
@@ -84,7 +85,7 @@ def get_area_on_target():
     """
     global headers
     distance = float(headers['distToTarget'])
-    return math.pi * math.pow(pkg.fov * distance / 2 / 10, 2)
+    return math.pi * math.pow(cnst.fov * distance / 2 / 10, 2)
 
 
 def get_radiance(photons, wavelengths, t_int, fov_tgt, sa_steradian):
@@ -129,41 +130,66 @@ def get_wl_and_gain(gain_file):
 
 
 def convert_to_output_units(radiance, wavelengths):
-    rad_hc = np.multiply(radiance, pkg.hc)
+    rad_hc = np.multiply(radiance, cnst.hc)
     converted_rad = np.divide(rad_hc, np.multiply(wavelengths, 1E-9))
     return np.multiply(converted_rad, 1E7)
 
 
 def calibrate_to_radiance(ccamFile):
-    global headers
-    headers = get_header_values(ccamFile)
-    read_spectra(ccamFile)
-    remove_offsets()
-    t_int = get_integration_time(ccamFile)
-    print(t_int)
-    sa_steradian = get_solid_angle()
-    fov_tgt = get_area_on_target()
+    if "psv" in ccamFile.lower() and ccamFile.lower().endswith(".tab"):
+        global headers
+        headers = get_header_values(ccamFile)
+        read_spectra(ccamFile)
+        remove_offsets()
+        t_int = get_integration_time(ccamFile)
 
-    # combine arrays into one ordered by wavelength
-    allSpectra_DN = np.concatenate([uv, vis, vnir])
+        sa_steradian = get_solid_angle()
+        fov_tgt = get_area_on_target()
 
-    # TODO what to do with this gain_mars.edit file
-    (wavelength, gain) = get_wl_and_gain('/Users/osheacm1/Documents/SAA/PDART/OldCode/gain_mars.edit')
-    allSpectra_photons = np.multiply(allSpectra_DN, gain)
-    radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
+        # combine arrays into one ordered by wavelength
+        allSpectra_DN = np.concatenate([uv, vis, vnir])
 
-    # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
-    radiance_final = convert_to_output_units(radiance, wavelength)
+        # get the wavelengths and gains from gain_mars.edit
+        (wavelength, gain) = get_wl_and_gain('gain_mars.edit')
+        allSpectra_photons = np.multiply(allSpectra_DN, gain)
+        radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 
-    outfilename = ccamFile.replace('psv', 'rad')
-    print(outfilename)
-    write_final(outfilename, wavelength, radiance_final)
+        # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
+        radiance_final = convert_to_output_units(radiance, wavelength)
+
+        outfilename = ccamFile.replace('psv', 'rad')
+        outfilename = outfilename.replace('PSV', 'RAD')
+        write_final(outfilename, wavelength, radiance_final)
+    else:
+        print(ccamFile + ": not a raw PSV file")
+
+
+def calibrate_directory(directory):
+    for file in os.listdir(directory):
+        fullpath = directory + file
+        calibrate_to_radiance(fullpath)
+
+
+def calibrate_list(listfile):
+    files = open(listfile).read().splitlines()
+    for file in files:
+        calibrate_to_radiance(file)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print('Please provide the full path to the CCAM TAB file')
-        exit(0)
+    # create an argument parser
+    parser = argparse.ArgumentParser(description='Calibrate CCAM to Radiance')
+    parser.add_argument('-f', action="store", dest='ccamFile', help="CCAM psv *.tab file")
+    parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files")
+    parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files")
 
-    ccamFile = sys.argv[1]
-    calibrate_to_radiance(ccamFile)
+    args = parser.parse_args()
+    if args.ccamFile is not None:
+        calibrate_to_radiance(args.ccamFile)
+    if args.directory is not None:
+        calibrate_directory(args.directory)
+    if args.list is not None:
+        calibrate_list(args.list)
+
+
+

@@ -1,19 +1,23 @@
-import sys
 import math as math
 import numpy as np
 import os
+import argparse
 from Utilities import get_integration_time, write_final
-from convertCCAM2Radiance import calibrate_to_radiance
+from radianceCalibration import calibrate_to_radiance
+
+psvfile = ''
+radfile = ''
+wavelength = []
 
 
-def calibrate_relative_reflectance(radFile, values):
+def do_division(values):
     '''
-
-    :param radFile:
+    Divide each value in the file by the calibration values
     :param values:
     :return:
     '''
-    values_orig = [float(x.split(' ')[1].strip()) for x in open(radFile).readlines()]
+    global radfile
+    values_orig = [float(x.split(' ')[1].strip()) for x in open(radfile).readlines()]
 
     # divide original values by the appropriate calibration values
     # to get relative reflectance.  If divide by 0, just = 0
@@ -25,78 +29,158 @@ def calibrate_relative_reflectance(radFile, values):
     return c
 
 
+def do_multiplication(values):
+    '''
+    Multiply each value in the file by the lab bidirectional spectrum value
+    :param values:
+    :return:
+    '''
+    # TODO hardcode or nah
+    conv = '../sol76/Target11_60_95.txt.conv';
+    values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
+
+    # multiply original values by the appropriate calibration values
+    # to get relative reflectance.
+    c = np.multiply(values_conv, values)
+
+    return c
+
+
 def get_rad_file(psv_file):
+    global radfile, psvfile
     # get all of the values from the rad file and divide by the value_7
-    radFile = filename.replace('psv', 'rad')
-    exists = os.path.isfile(radFile)
+    radfile = psv_file.replace('psv', 'rad')
+    psvfile = psv_file.replace('rad', 'psv')
+    exists = os.path.isfile(radfile)
     if not exists:
         # create rad file
-        calibrate_to_radiance(filename)
-    return radFile
+        calibrate_to_radiance(psv_file)
 
 
-def choose_values(psv_file):
+def choose_values(custom_dir, complement):
+    if custom_dir is None:
+        ms7 = '../sol76/cl0_404238481rad_f0050104ccam02076p1.tab'
+        ms34 = '../sol76/cl0_404238492rad_f0050104ccam02076p3.tab'
+        ms404 = '../sol76/cl9_404238503rad_f0050104ccam02076p3.tab'
+        ms5004 = '../sol76/cl9_404238538rad_f0050104ccam02076p3.tab'
+        inc7 = 38.18
+        inc34 = 38.13
+        inc404 = 38.09
+        inc5004 = 37.95
+    else:
+        dirc = custom_dir
+
+        # figure out which file is which integration time and assign to each of ms7 through ms5004
+        ms7 = dirc + '/x.tab'
+        ms34 = dirc + '/x.tab'
+        ms404 = dirc + '/x.tab'
+        ms5004 = dirc + '/x.tab'
+
+        # get appropriate solar incidence values
+        lbl = ms7.replace('tab', 'lbl').replace('rad', 'psv')
+        if os.path.isfile(lbl):
+            inc7 = get_incidence(lbl, complement)
+            inc34 = get_incidence(ms34.replace('tab', 'lbl').replace('rad', 'psv'), complement)
+            inc404 = get_incidence(ms404.replace('tab', 'lbl').replace('rad', 'psv'), complement)
+            inc5004 = get_incidence(ms5004.replace('tab', 'lbl').replace('rad', 'psv'), complement)
+        else:
+            print("no label file found to calculate incidence values")
+
+    # now get the values and do the cosine correction
+    # get wavelengths
     # check t_int for file
-    t_int = get_integration_time(filename)
+    global psvfile
+    t_int = get_integration_time(psvfile)
     t_int = t_int * 1000;
     values = []
     if round(t_int) == 7:
-       values = value_7
+        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc7))
+                  for x in open(ms7).readlines()]
+        fn = ms7
     elif round(t_int) == 34:
-        values = value_34
+        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc34))
+                  for x in open(ms34).readlines()]
+        fn = ms34
     elif round(t_int) == 404:
-        values = value_404
+        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc404))
+                  for x in open(ms404).readlines()]
+        fn = ms404
     elif round(t_int) == 5004:
-        values = value_5004
+        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc5004))
+                  for x in open(ms5004).readlines()]
+        fn = ms5004
     else:
         print('error - integration time is not 7, 34, 404, or 5004')
         # throw an error
+    global wavelength
+    wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
+
     return values
 
 
+def get_incidence(label_file, complement):
+    flag = False
+    value = float('nan') # will throw an error if value not found
+    with open(label_file, 'r') as infile:
+        for line in infile:
+            if "SOLAR_ELEVATION" in line and flag is True:
+                toks = line.rsplit('=')
+                value = toks[1].rstrip('<deg>\n')
+                if complement:
+                    value = 90 - value
+                value = math.fabs(value - 37.9)
+            if "SITE FRAME" in line:
+                flag = True
+    return value
+
+
+def calibrate_file(filename, in_args):
+    m = in_args.m
+    global wavelength
+
+    get_rad_file(filename)
+    values = choose_values(in_args.customDir, m)
+    new_values = do_division(values)
+    final_values = do_multiplication(new_values)
+    out_filename = radfile.replace('RAD', 'REF')
+    out_filename = out_filename.replace('rad', 'ref')
+    write_final(out_filename, wavelength, final_values)
+
+
+def calibrate_directory(directory, in_args):
+    m = in_args.m
+    for file in os.listdir(directory):
+        if 'psv' in file.lower() and '.tab' in file.lower():
+            full_path = directory + file
+            calibrate_file(full_path, in_args)
+
+
+def calibrate_list(listfile, in_args):
+    files = open(listfile).read().splitlines()
+    for file in files:
+        calibrate_file(file, in_args)
+
+
+def calibrate_relative_reflectance(in_args):
+    # figure out if this is a file, dir, or list of files
+    if in_args.ccamFile is not None:
+        calibrate_file(args.ccamFile, in_args)
+    if in_args.directory is not None:
+        calibrate_directory(args.directory, in_args)
+    if in_args.list is not None:
+        calibrate_list(args.list, in_args)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print('Please provide the full path to the CCAM PSV file to be calibrated to relative reflectance')
-        exit(0)
 
-    baseDir = '/Users/osheacm1/Documents/SAA/PDART/oldCode/target11sol76/'
-    filename = sys.argv[1]
+    # create a command line parser
+    parser = argparse.ArgumentParser(description='Relative Reflectance Calibration')
+    parser.add_argument('-f', action="store", dest='ccamFile', help="CCAM psv or rad *.tab file")
+    parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files to calibrate")
+    parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
+    parser.add_argument('-c', action="store", dest='customDir', help="directory containing custom calibration files")
+    parser.add_argument('-m', action="store_true", help="the solar incidence angle must be subtracted from 90")
 
-    default = True
-
-    if default:
-        '''
-        If the user wants to use the default, we use sol76 data.
-        Calculate the cosine correction for each of the four calibration files from sol76
-        '''
-
-        # for every line in cl0_404238481rad_f0050104ccam02076p3.tab
-        # divide by cos(24.84 deg)
-        wavelength = [float(x.split(' ')[0].strip())
-                      for x in open(baseDir + 'cl0_404238481rad_f0050104ccam02076p3.tab').readlines()]
-        value_7 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.84))
-                   for x in open(baseDir + 'cl0_404238481rad_f0050104ccam02076p3.tab').readlines()]
-
-        # for every line in cl0_404238492rad_f0050104ccam02076p3.tab
-        # divide by cos(24.79 deg)
-        value_34 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.79))
-                   for x in open(baseDir + 'cl0_404238492rad_f0050104ccam02076p3.tab').readlines()]
-
-        # for every line in cl9_404238503rad_f0050104ccam02076p3.tab
-        # divide by cos(24.75 deg)
-        value_404 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.75))
-                   for x in open(baseDir + 'cl9_404238503rad_f0050104ccam02076p3.tab').readlines()]
-
-        # for every line in cl9_404238538rad_f0050104ccam02076p3.tab
-        # divide by cos(24.61 deg)
-        value_5004 = [float(x.split(' ')[1].strip())/math.cos(math.radians(24.61))
-                   for x in open(baseDir + 'cl9_404238538rad_f0050104ccam02076p3.tab').readlines()]
-    else:
-        # get wavelengths and values for each of the integration times
-        x = 3 #TODO
-
-    values = choose_values(filename)
-    radFile = get_rad_file(filename)
-    newValues = calibrate_relative_reflectance(radFile, values)
-    outfilename = radFile.replace('rad', 'ref')
-    write_final(outfilename, wavelength, newValues)
+    args = parser.parse_args()
+    print(os.listdir('.'))
+    calibrate_relative_reflectance(args)
