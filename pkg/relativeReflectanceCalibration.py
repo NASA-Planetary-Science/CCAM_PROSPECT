@@ -150,8 +150,9 @@ def calibrate_file(filename, in_args):
 def calibrate_directory(directory, in_args):
     m = in_args.m
     for file in os.listdir(directory):
-        full_path = directory + file
-        calibrate_file(full_path, in_args)
+        if 'psv' in file.lower() and '.tab' in file.lower():
+            full_path = directory + file
+            calibrate_file(full_path, in_args)
 
 
 def calibrate_list(listfile, in_args):
