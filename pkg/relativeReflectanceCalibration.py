@@ -35,7 +35,7 @@ def do_multiplication(values):
     :param values:
     :return:
     '''
-    # TODO hardcode or nah
+    # TODO hardcode or no
     conv = '../sol76/Target11_60_95.txt.conv';
     values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
 
