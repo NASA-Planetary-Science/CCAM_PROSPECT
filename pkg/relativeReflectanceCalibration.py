@@ -59,79 +59,56 @@ def get_rad_file(psv_file):
 
 def choose_values(custom_dir, complement):
     if custom_dir is None:
-        ms7 = '../sol76/cl0_404238481rad_f0050104ccam02076p1.tab'
-        ms34 = '../sol76/cl0_404238492rad_f0050104ccam02076p3.tab'
-        ms404 = '../sol76/cl9_404238503rad_f0050104ccam02076p3.tab'
-        ms5004 = '../sol76/cl9_404238538rad_f0050104ccam02076p3.tab'
-        inc7 = 38.18
-        inc34 = 38.13
-        inc404 = 38.09
-        inc5004 = 37.95
+        ms7 = '../sol76/cl0_404238481cor_f0050104ccam02076p1.tab'
+        ms34 = '../sol76/cl0_404238492cor_f0050104ccam02076p3.tab'
+        ms404 = '../sol76/cl9_404238503cor_f0050104ccam02076p3.tab'
+        ms5004 = '../sol76/cl9_404238538cor_f0050104ccam02076p3.tab'
     else:
         dirc = custom_dir
+        # TODO add functionality for custom files
 
-        # figure out which file is which integration time and assign to each of ms7 through ms5004
-        ms7 = dirc + '/x.tab'
-        ms34 = dirc + '/x.tab'
-        ms404 = dirc + '/x.tab'
-        ms5004 = dirc + '/x.tab'
-
-        # get appropriate solar incidence values
-        lbl = ms7.replace('tab', 'lbl').replace('rad', 'psv')
-        if os.path.isfile(lbl):
-            inc7 = get_incidence(lbl, complement)
-            inc34 = get_incidence(ms34.replace('tab', 'lbl').replace('rad', 'psv'), complement)
-            inc404 = get_incidence(ms404.replace('tab', 'lbl').replace('rad', 'psv'), complement)
-            inc5004 = get_incidence(ms5004.replace('tab', 'lbl').replace('rad', 'psv'), complement)
-        else:
-            print("no label file found to calculate incidence values")
-
-    # now get the values and do the cosine correction
-    # get wavelengths
+    # now get the cosine-corrected values from the correct file
     # check t_int for file
     global psvfile
     t_int = get_integration_time(psvfile)
     t_int = t_int * 1000;
     values = []
     if round(t_int) == 7:
-        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc7))
-                  for x in open(ms7).readlines()]
+        values = [float(x.split(' ')[1].strip()) for x in open(ms7).readlines()]
         fn = ms7
     elif round(t_int) == 34:
-        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc34))
-                  for x in open(ms34).readlines()]
+        values = [float(x.split(' ')[1].strip()) for x in open(ms34).readlines()]
         fn = ms34
     elif round(t_int) == 404:
-        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc404))
-                  for x in open(ms404).readlines()]
+        values = [float(x.split(' ')[1].strip()) for x in open(ms404).readlines()]
         fn = ms404
     elif round(t_int) == 5004:
-        values = [float(x.split(' ')[1].strip()) / math.cos(math.radians(inc5004))
-                  for x in open(ms5004).readlines()]
+        values = [float(x.split(' ')[1].strip()) for x in open(ms5004).readlines()]
         fn = ms5004
     else:
         print('error - integration time is not 7, 34, 404, or 5004')
         # throw an error
+    # get the wavelengths
     global wavelength
     wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
 
     return values
 
 
-def get_incidence(label_file, complement):
-    flag = False
-    value = float('nan') # will throw an error if value not found
-    with open(label_file, 'r') as infile:
-        for line in infile:
-            if "SOLAR_ELEVATION" in line and flag is True:
-                toks = line.rsplit('=')
-                value = toks[1].rstrip('<deg>\n')
-                if complement:
-                    value = 90 - value
-                value = math.fabs(value - 37.9)
-            if "SITE FRAME" in line:
-                flag = True
-    return value
+# def get_incidence(label_file, complement):
+#     flag = False
+#     value = float('nan') # will throw an error if value not found
+#     with open(label_file, 'r') as infile:
+#         for line in infile:
+#             if "SOLAR_ELEVATION" in line and flag is True:
+#                 toks = line.rsplit('=')
+#                 value = toks[1].rstrip('<deg>\n')
+#                 if complement:
+#                     value = 90 - value
+#                 value = math.fabs(value - 37.9)
+#             if "SITE FRAME" in line:
+#                 flag = True
+#     return value
 
 
 def calibrate_file(filename, in_args):
