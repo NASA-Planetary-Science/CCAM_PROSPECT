@@ -35,7 +35,6 @@ def do_multiplication(values):
     :param values:
     :return:
     '''
-    # TODO hardcode or no
     conv = '../sol76/Target11_60_95.txt.conv';
     values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
 
@@ -57,7 +56,7 @@ def get_rad_file(psv_file):
         calibrate_to_radiance(psv_file)
 
 
-def choose_values(custom_dir, complement):
+def choose_values(custom_dir):
     if custom_dir is None:
         ms7 = '../sol76/cl0_404238481cor_f0050104ccam02076p1.tab'
         ms34 = '../sol76/cl0_404238492cor_f0050104ccam02076p3.tab'
@@ -95,28 +94,11 @@ def choose_values(custom_dir, complement):
     return values
 
 
-# def get_incidence(label_file, complement):
-#     flag = False
-#     value = float('nan') # will throw an error if value not found
-#     with open(label_file, 'r') as infile:
-#         for line in infile:
-#             if "SOLAR_ELEVATION" in line and flag is True:
-#                 toks = line.rsplit('=')
-#                 value = toks[1].rstrip('<deg>\n')
-#                 if complement:
-#                     value = 90 - value
-#                 value = math.fabs(value - 37.9)
-#             if "SITE FRAME" in line:
-#                 flag = True
-#     return value
-
-
 def calibrate_file(filename, in_args):
-    m = in_args.m
     global wavelength
 
     get_rad_file(filename)
-    values = choose_values(in_args.customDir, m)
+    values = choose_values(in_args.customDir)
     new_values = do_division(values)
     final_values = do_multiplication(new_values)
     out_filename = radfile.replace('RAD', 'REF')
@@ -125,7 +107,6 @@ def calibrate_file(filename, in_args):
 
 
 def calibrate_directory(directory, in_args):
-    m = in_args.m
     for file in os.listdir(directory):
         if 'psv' in file.lower() and '.tab' in file.lower():
             full_path = directory + file
@@ -156,7 +137,6 @@ if __name__ == "__main__":
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files to calibrate")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
     parser.add_argument('-c', action="store", dest='customDir', help="directory containing custom calibration files")
-    parser.add_argument('-m', action="store_true", help="the solar incidence angle must be subtracted from 90")
 
     args = parser.parse_args()
     print(os.listdir('.'))
