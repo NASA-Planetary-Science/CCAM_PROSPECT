@@ -1,7 +1,6 @@
 import math as math
 import numpy as np
 import os
-from shutil import copyfile
 import argparse
 from Utilities import get_integration_time, write_final
 from radianceCalibration import calibrate_to_radiance
@@ -118,25 +117,25 @@ def calibrate_file(filename, custom_dir, out_dir):
 
 
 def calibrate_directory(directory, custom_dir, out_dir):
-    for file in os.listdir(directory):
-        if 'psv' in file.lower() and '.tab' in file.lower():
-            full_path = directory + file
+    for file_name in os.listdir(directory):
+        if 'psv' in file_name.lower() and '.tab' in file_name.lower():
+            full_path = directory + file_name
             calibrate_file(full_path, custom_dir, out_dir)
 
 
 def calibrate_list(list_file, custom_dir, out_dir):
     files = open(list_file).read().splitlines()
-    for file in files:
-        calibrate_file(file, custom_dir, out_dir)
+    for file_name in files:
+        calibrate_file(file_name, custom_dir, out_dir)
 
 
-def calibrate_relative_reflectance(file_type, file, custom_dir, out_dir):
+def calibrate_relative_reflectance(file_type, file_name, custom_dir, out_dir):
     if file_type == InputType.FILE:
-        calibrate_file(file, custom_dir, out_dir)
+        calibrate_file(file_name, custom_dir, out_dir)
     elif file_type == InputType.FILE_LIST:
-        calibrate_list(file, custom_dir, out_dir)
+        calibrate_list(file_name, custom_dir, out_dir)
     else:
-        calibrate_directory(file, custom_dir, out_dir)
+        calibrate_directory(file_name, custom_dir, out_dir)
 
 
 if __name__ == "__main__":
@@ -147,7 +146,6 @@ if __name__ == "__main__":
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
     parser.add_argument('-c', action="store", dest='customDir', help="directory containing custom calibration files")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
-
 
     args = parser.parse_args()
     if args.ccamFile is not None:
