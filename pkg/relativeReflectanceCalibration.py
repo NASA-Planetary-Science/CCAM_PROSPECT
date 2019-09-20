@@ -1,9 +1,11 @@
 import math as math
 import numpy as np
 import os
+from shutil import copyfile
 import argparse
 from Utilities import get_integration_time, write_final
 from radianceCalibration import calibrate_to_radiance
+from InputType import InputType
 
 psvfile = ''
 radfile = ''
@@ -45,19 +47,25 @@ def do_multiplication(values):
     return c
 
 
-def get_rad_file(psv_file):
+def get_rad_file(psv_file, out_dir):
     global radfile, psvfile
     # get all of the values from the rad file and divide by the value_7
     radfile = psv_file.replace('psv', 'rad')
     psvfile = psv_file.replace('rad', 'psv')
     exists = os.path.isfile(radfile)
     if not exists:
-        # create rad file
-        calibrate_to_radiance(psv_file)
+        # create rad file and change path to where it'll be in output dir
+        # move to the output dir
+        (path, filename) = os.path.split(radfile)
+        out_filename = out_dir + filename
+        radfile = out_filename
+        return calibrate_to_radiance(psv_file, out_dir)
+    else:
+        return True
 
 
 def choose_values(custom_dir):
-    if custom_dir is None:
+    if not custom_dir:
         ms7 = '../sol76/cl0_404238481cor_f0050104ccam02076p1.tab'
         ms34 = '../sol76/cl0_404238492cor_f0050104ccam02076p3.tab'
         ms404 = '../sol76/cl9_404238503cor_f0050104ccam02076p3.tab'
@@ -94,50 +102,62 @@ def choose_values(custom_dir):
     return values
 
 
-def calibrate_file(filename, in_args):
+def calibrate_file(filename, custom_dir, out_dir):
     global wavelength
 
-    get_rad_file(filename)
-    values = choose_values(in_args.customDir)
-    new_values = do_division(values)
-    final_values = do_multiplication(new_values)
-    out_filename = radfile.replace('RAD', 'REF')
-    out_filename = out_filename.replace('rad', 'ref')
-    write_final(out_filename, wavelength, final_values)
+    valid = get_rad_file(filename, out_dir)
+    if valid:
+        values = choose_values(custom_dir)
+        new_values = do_division(values)
+        final_values = do_multiplication(new_values)
+        out_filename = radfile.replace('RAD', 'REF')
+        out_filename = out_filename.replace('rad', 'ref')
+        (path, filename) = os.path.split(out_filename)
+        out_filename = out_dir + filename
+        write_final(out_filename, wavelength, final_values)
 
 
-def calibrate_directory(directory, in_args):
+def calibrate_directory(directory, custom_dir, out_dir):
     for file in os.listdir(directory):
         if 'psv' in file.lower() and '.tab' in file.lower():
             full_path = directory + file
-            calibrate_file(full_path, in_args)
+            calibrate_file(full_path, custom_dir, out_dir)
 
 
-def calibrate_list(listfile, in_args):
-    files = open(listfile).read().splitlines()
+def calibrate_list(list_file, custom_dir, out_dir):
+    files = open(list_file).read().splitlines()
     for file in files:
-        calibrate_file(file, in_args)
+        calibrate_file(file, custom_dir, out_dir)
 
 
-def calibrate_relative_reflectance(in_args):
-    # figure out if this is a file, dir, or list of files
-    if in_args.ccamFile is not None:
-        calibrate_file(args.ccamFile, in_args)
-    if in_args.directory is not None:
-        calibrate_directory(args.directory, in_args)
-    if in_args.list is not None:
-        calibrate_list(args.list, in_args)
+def calibrate_relative_reflectance(file_type, file, custom_dir, out_dir):
+    if file_type == InputType.FILE:
+        calibrate_file(file, custom_dir, out_dir)
+    elif file_type == InputType.FILE_LIST:
+        calibrate_list(file, custom_dir, out_dir)
+    else:
+        calibrate_directory(file, custom_dir, out_dir)
 
 
 if __name__ == "__main__":
-
     # create a command line parser
     parser = argparse.ArgumentParser(description='Relative Reflectance Calibration')
     parser.add_argument('-f', action="store", dest='ccamFile', help="CCAM psv or rad *.tab file")
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files to calibrate")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
     parser.add_argument('-c', action="store", dest='customDir', help="directory containing custom calibration files")
+    parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
+
 
     args = parser.parse_args()
-    print(os.listdir('.'))
-    calibrate_relative_reflectance(args)
+    if args.ccamFile is not None:
+        file_type = InputType.FILE
+        file = args.ccamFile
+    elif args.directory is not None:
+        file_type = InputType.DIRECTORY
+        file = args.directory
+    else:
+        file_type = InputType.FILE_LIST
+        file = args.list
+
+    calibrate_relative_reflectance(file_type, file, args.customDir, args.out_dir)

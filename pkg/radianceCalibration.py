@@ -135,7 +135,7 @@ def convert_to_output_units(radiance, wavelengths):
     return np.multiply(converted_rad, 1E7)
 
 
-def calibrate_to_radiance(ccamFile):
+def calibrate_to_radiance(ccamFile, out_dir):
     if "psv" in ccamFile.lower() and ccamFile.lower().endswith(".tab"):
         global headers
         headers = get_header_values(ccamFile)
@@ -150,30 +150,36 @@ def calibrate_to_radiance(ccamFile):
         allSpectra_DN = np.concatenate([uv, vis, vnir])
 
         # get the wavelengths and gains from gain_mars.edit
-        (wavelength, gain) = get_wl_and_gain('gain_mars.edit')
+        (wavelength, gain) = get_wl_and_gain('../constants/gain_mars.edit')
         allSpectra_photons = np.multiply(allSpectra_DN, gain)
         radiance = get_radiance(allSpectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 
         # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
         radiance_final = convert_to_output_units(radiance, wavelength)
 
-        outfilename = ccamFile.replace('psv', 'rad')
-        outfilename = outfilename.replace('PSV', 'RAD')
-        write_final(outfilename, wavelength, radiance_final)
+        out_filename = ccamFile.replace('psv', 'rad')
+        out_filename = out_filename.replace('PSV', 'RAD')
+        if out_dir is not None:
+            (path, filename) = os.path.split(out_filename)
+            out_filename = out_dir + filename
+        write_final(out_filename, wavelength, radiance_final)
+        return True
     else:
         print(ccamFile + ": not a raw PSV file")
+        return False
 
 
-def calibrate_directory(directory):
+def calibrate_directory(directory, out_dir):
     for file in os.listdir(directory):
+        print(file)
         fullpath = directory + file
-        calibrate_to_radiance(fullpath)
+        calibrate_to_radiance(fullpath, out_dir)
 
 
-def calibrate_list(listfile):
+def calibrate_list(listfile, out_dir):
     files = open(listfile).read().splitlines()
     for file in files:
-        calibrate_to_radiance(file)
+        calibrate_to_radiance(file, out_dir)
 
 
 if __name__ == "__main__":
@@ -182,14 +188,15 @@ if __name__ == "__main__":
     parser.add_argument('-f', action="store", dest='ccamFile', help="CCAM psv *.tab file")
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files")
+    parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
 
     args = parser.parse_args()
     if args.ccamFile is not None:
-        calibrate_to_radiance(args.ccamFile)
+        calibrate_to_radiance(args.ccamFile, args.out_dir)
     if args.directory is not None:
-        calibrate_directory(args.directory)
+        calibrate_directory(args.directory, args.out_dir)
     if args.list is not None:
-        calibrate_list(args.list)
+        calibrate_list(args.list, args.out_dir)
 
 
 
