@@ -1,4 +1,3 @@
-import math as math
 import numpy as np
 import os
 import argparse

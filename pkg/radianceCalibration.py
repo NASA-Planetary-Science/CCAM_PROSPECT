@@ -2,7 +2,7 @@ import argparse
 import os
 import math as math
 import numpy as np
-import pkg.constants as cnst
+import constants as cnst
 from Utilities import get_integration_time, write_final, get_header_values
 
 # variables parsed from spectra file
