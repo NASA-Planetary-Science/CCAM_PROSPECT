@@ -2,8 +2,8 @@ import argparse
 import os
 import math as math
 import numpy as np
-import constants as cnst
-from Utilities import get_integration_time, write_final, get_header_values
+import pkg.constant as cnst
+from pkg.Utilities import get_integration_time, write_final, get_header_values
 
 # variables parsed from spectra file
 vnir = []
@@ -149,7 +149,9 @@ def calibrate_to_radiance(ccam_file, out_dir):
         all_spectra_dn = np.concatenate([uv, vis, vnir])
 
         # get the wavelengths and gains from gain_mars.edit
-        (wavelength, gain) = get_wl_and_gain('../constants/gain_mars.edit')
+        my_path = os.path.abspath(os.path.dirname(__file__))
+        gain_file = os.path.join(my_path, "../constants/gain_mars.edit")
+        (wavelength, gain) = get_wl_and_gain(gain_file)
         all_spectra_photons = np.multiply(all_spectra_dn, gain)
         radiance = get_radiance(all_spectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
 

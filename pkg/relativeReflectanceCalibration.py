@@ -1,9 +1,9 @@
 import numpy as np
 import os
 import argparse
-from Utilities import get_integration_time, write_final
-from radianceCalibration import calibrate_to_radiance
-from InputType import InputType
+from pkg.Utilities import get_integration_time, write_final
+from pkg.radianceCalibration import calibrate_to_radiance
+from pkg.InputType import InputType
 
 psvfile = ''
 radfile = ''
@@ -35,7 +35,9 @@ def do_multiplication(values):
     :param values:
     :return:
     '''
-    conv = '../sol76/Target11_60_95.txt.conv';
+    my_path = os.path.abspath(os.path.dirname(__file__))
+    sol76dir = os.path.join(my_path, "../sol76")
+    conv = os.path.join(sol76dir, 'Target11_60_95.txt.conv');
     values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
 
     # multiply original values by the appropriate calibration values
@@ -64,10 +66,12 @@ def get_rad_file(psv_file, out_dir):
 
 def choose_values(custom_dir):
     if not custom_dir:
-        ms7 = '../sol76/cl0_404238481cor_f0050104ccam02076p1.tab'
-        ms34 = '../sol76/cl0_404238492cor_f0050104ccam02076p3.tab'
-        ms404 = '../sol76/cl9_404238503cor_f0050104ccam02076p3.tab'
-        ms5004 = '../sol76/cl9_404238538cor_f0050104ccam02076p3.tab'
+        my_path = os.path.abspath(os.path.dirname(__file__))
+        sol76dir = os.path.join(my_path, "../sol76")
+        ms7 = os.path.join(sol76dir, 'cl0_404238481cor_f0050104ccam02076p1.tab')
+        ms34 = os.path.join(sol76dir, 'cl0_404238492cor_f0050104ccam02076p1.tab')
+        ms404 = os.path.join(sol76dir, 'cl9_404238503cor_f0050104ccam02076p1.tab')
+        ms5004 = os.path.join(sol76dir, 'cl9_404238538cor_f0050104ccam02076p1.tab')
     else:
         dirc = custom_dir
         # TODO add functionality for custom files

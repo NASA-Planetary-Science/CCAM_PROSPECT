@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 import os
-from InputType import InputType
-from relativeReflectanceCalibration import calibrate_relative_reflectance
+from pkg.InputType import InputType
+from pkg.relativeReflectanceCalibration import calibrate_relative_reflectance
 
 
 class MainApplication(tk.Frame):
@@ -15,7 +15,6 @@ class MainApplication(tk.Frame):
 
     def __init__(self, window, *args, **kwargs):
         tk.Frame.__init__(self, window, *args, **kwargs)
-
         # CREATE COMPONENTS
 
         # input / output labels and separator
@@ -111,10 +110,12 @@ class MainApplication(tk.Frame):
         file = self.in_filename.get()
         custom_directory = self.custom_dir.get()
         out_dir = self.out_directory.get()
+        if not out_dir.endswith('/'):
+            out_dir = out_dir + '/'
         calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
 
 
-if __name__ == "__main__":
+def main():
     window = tk.Tk()
     window.title("ChemCham Calibration")
     window.geometry('410x318')
