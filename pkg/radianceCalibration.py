@@ -163,10 +163,11 @@ def calibrate_to_radiance(ccam_file, out_dir):
         out_filename = out_filename.replace('PSV', 'RAD')
         if out_dir is not None:
             # copy original file to new out directory
-            copyfile(ccam_file, out_dir)
+            (og_path, og_filename) = os.path.split(ccam_file)
+            copyfile(ccam_file, os.path.join(out_dir, og_filename))
             # then save this file to out directory
             (path, filename) = os.path.split(out_filename)
-            out_filename = out_dir + filename
+            out_filename = os.path.join(out_dir + filename)
         write_final(out_filename, wavelength, radiance_final)
         return True
     else:

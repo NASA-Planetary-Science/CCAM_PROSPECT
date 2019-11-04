@@ -57,9 +57,9 @@ def get_rad_file(psv_file, out_dir):
     if not exists:
         # create rad file and change path to where it'll be in output dir
         # move to the output dir
-        (path, filename) = os.path.split(radfile)
-        out_filename = out_dir + filename
-        radfile = out_filename
+        if out_dir is not None:
+            (path, filename) = os.path.split(radfile)
+            radfile = os.path.join(out_dir, filename)
         return calibrate_to_radiance(psv_file, out_dir)
     else:
         return True
@@ -122,9 +122,12 @@ def calibrate_file(filename, custom_dir, out_dir):
         out_filename = radfile.replace('RAD', 'REF')
         out_filename = out_filename.replace('rad', 'ref')
         if out_dir is not None:
-            copyfile(filename, out_dir)
+            # copy original file to new out directory
+            (og_path, og_filename) = os.path.split(filename)
+            copyfile(filename, os.path.join(out_dir, og_filename))
+            # then save calibrated file to out dir also
             (path, filename) = os.path.split(out_filename)
-            out_filename = out_dir + filename
+            out_filename = os.path.join(out_dir, filename)
         print("out_dir" + out_dir)
         write_final(out_filename, wavelength, final_values)
 
