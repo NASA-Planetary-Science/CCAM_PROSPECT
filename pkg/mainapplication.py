@@ -38,8 +38,8 @@ class MainApplication(tk.Frame):
         self.separator2 = ttk.Separator(window, orient="horizontal")
         self.relative_config = tk.IntVar()
         self.relative_label = tk.Label(window, text="Relative Reflectance Calibration:")
-        self.custom_dir = tk.Entry(window, text="custom directory", width=15, state="disabled")
-        self.custom_dir_browse = tk.Button(window, text="Browse", state="disabled")
+        self.custom_file = tk.Entry(window, text="custom file", width=15, state="disabled")
+        self.custom_file_browse = tk.Button(window, text="Browse", state="disabled", command=self.custom_browse_clicked)
         self.browseBtn = tk.Button(window, text='Browse', command=self.browse_clicked)
         self.use_default_btn = tk.Radiobutton(window, text="Use default\n (target 11 sol 76)", value=1,
                                               variable=self.relative_config, command=self.select_custom)
@@ -65,8 +65,8 @@ class MainApplication(tk.Frame):
         self.relative_label.grid(column=0, row=9, columnspan=4, sticky="w", padx=(10, 0))
         self.use_default_btn.grid(column=0, row=10, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_btn.grid(column=2, row=10, rowspan=2, sticky="w")
-        self.custom_dir.grid(column=2, row=12, columnspan=2)
-        self.custom_dir_browse.grid(column=4, row=12)
+        self.custom_file.grid(column=2, row=12, columnspan=2)
+        self.custom_file_browse.grid(column=4, row=12)
         self.calibrate_button.grid(column=0, row=13, columnspan=5, sticky="ew", pady=(20, 0), padx=(10, 10))
 
     def browse_clicked(self):
@@ -91,6 +91,11 @@ class MainApplication(tk.Frame):
         self.in_filename.delete(0, "end")
         self.in_filename.insert(0, file)
 
+    def custom_browse_clicked(self):
+        file = filedialog.askopenfilename()
+        self.custom_file.delete(0, "end")
+        self.custom_file.insert(0, file)
+
     def out_clicked(self):
         file = filedialog.askdirectory()
         self.out_directory.delete(0, "end")
@@ -99,16 +104,16 @@ class MainApplication(tk.Frame):
     def select_custom(self):
         btn = self.relative_config.get()
         if btn == 1:
-            self.custom_dir.config(state="disabled")
-            self.custom_dir_browse.config(state="disabled")
+            self.custom_file.config(state="disabled")
+            self.custom_file_browse.config(state="disabled")
         else:
-            self.custom_dir.config(state="normal")
-            self.custom_dir_browse.config(state="normal")
+            self.custom_file.config(state="normal")
+            self.custom_file_browse.config(state="normal")
 
     def start_calibration(self):
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename.get()
-        custom_directory = self.custom_dir.get()
+        custom_directory = self.custom_file.get()
         out_dir = self.out_directory.get()
         if not out_dir.endswith('/'):
             out_dir = out_dir + '/'
