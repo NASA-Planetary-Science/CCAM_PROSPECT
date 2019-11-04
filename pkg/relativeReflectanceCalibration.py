@@ -107,6 +107,7 @@ def choose_values(custom_dir):
 def calibrate_file(filename, custom_dir, out_dir):
     global wavelength
 
+    print("filename in calibrate_file: " + filename)
     valid = get_rad_file(filename, out_dir)
     if valid:
         values = choose_values(custom_dir)
@@ -114,16 +115,22 @@ def calibrate_file(filename, custom_dir, out_dir):
         final_values = do_multiplication(new_values)
         out_filename = radfile.replace('RAD', 'REF')
         out_filename = out_filename.replace('rad', 'ref')
-        (path, filename) = os.path.split(out_filename)
-        out_filename = out_dir + filename
+        if out_dir is not None:
+            (path, filename) = os.path.split(out_filename)
+            out_filename = out_dir + filename
+        else:
+            out_filename = out_filename
+        print("out_dir" + out_dir)
         write_final(out_filename, wavelength, final_values)
 
 
 def calibrate_directory(directory, custom_dir, out_dir):
     for file_name in os.listdir(directory):
-        if 'psv' in file_name.lower() and '.tab' in file_name.lower():
-            full_path = directory + file_name
+        if ('psv' in file_name.lower() or 'rad' in file_name.lower()) and '.tab' in file_name.lower():
+            full_path = os.path.join(directory, file_name)
             calibrate_file(full_path, custom_dir, out_dir)
+        elif os.path.isdir(os.path.join(directory, file_name)):
+            calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
 
 
 def calibrate_list(list_file, custom_dir, out_dir):

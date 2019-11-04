@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-import os
 from pkg.InputType import InputType
 from pkg.relativeReflectanceCalibration import calibrate_relative_reflectance
 
@@ -38,7 +37,7 @@ class MainApplication(tk.Frame):
         self.use_default_out_btn.select()
         self.use_custom_out_btn = tk.Radiobutton(window, text="Use custom", value=2, variable=self.out_directory_type,
                                                  command=self.select_output_directory)
-        self.out_directory = tk.Entry(window, width=15, state="disabled")
+        self.out_directory_entry = tk.Entry(window, width=15, state="disabled")
         self.outBrowseBtn = tk.Button(window, text='Browse', command=self.out_clicked, state="disabled")
 
         # config stuff for relative reflectance
@@ -68,7 +67,7 @@ class MainApplication(tk.Frame):
         self.out_label.grid(column=0, row=6, columnspan=4, sticky="w", padx=(10, 0))
         self.use_default_out_btn.grid(column=0, row=7, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_out_btn.grid(column=2, row=7, rowspan=2, sticky="w")
-        self.out_directory.grid(column=2, row=9, columnspan=2)
+        self.out_directory_entry.grid(column=2, row=9, columnspan=2)
         self.outBrowseBtn.grid(column=4, row=9)
         self.separator2.grid(column=0, row=10, columnspan=5, sticky="ew", pady=(10, 10))
         self.relative_label.grid(column=0, row=11, columnspan=4, sticky="w", padx=(10, 0))
@@ -82,28 +81,19 @@ class MainApplication(tk.Frame):
         file_type = self.inputType.get()
         if file_type == InputType.FILE.value:  # file
             file = filedialog.askopenfilename()
-            # get directory and set output directory
-            self.out_directory.delete(0, "end")
-            self.out_directory.insert(0, os.path.dirname(file)+"/")
         elif file_type == InputType.FILE_LIST.value:  # list of files
             file = filedialog.askopenfilename()
-            # get directory and set output directory
-            self.out_directory.delete(0, "end")
-            self.out_directory.insert(0, os.path.dirname(file)+"/")
         elif file_type == InputType.DIRECTORY.value:  # directory
             file = filedialog.askdirectory()
             if not file.endswith("/"):
                 file = file + "/"
-            # set output directory to this directory
-            self.out_directory.delete(0, "end")
-            self.out_directory.insert(0, file)
         self.in_filename_entry.delete(0, "end")
         self.in_filename_entry.insert(0, file)
 
     def out_clicked(self):
         file = filedialog.askdirectory()
-        self.out_directory.delete(0, "end")
-        self.out_directory.insert(0, file)
+        self.out_directory_entry.delete(0, "end")
+        self.out_directory_entry.insert(0, file)
 
     def select_custom(self):
         btn = self.relative_config.get()
@@ -118,18 +108,23 @@ class MainApplication(tk.Frame):
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
         custom_directory = self.custom_dir.get()
-        out_dir = self.out_directory.get()
-        if not out_dir.endswith('/'):
-            out_dir = out_dir + '/'
+        output_type = self.out_directory_type.get()
+        if output_type == 1:
+            # use default
+            out_dir = None
+        else:
+            out_dir = self.out_directory_entry.get()
+            if not out_dir.endswith('/'):
+                out_dir = out_dir + '/'
         calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
 
     def select_output_directory(self):
         btn = self.out_directory_type.get()
         if btn == 1:
-            self.out_directory.config(state="disabled")
+            self.out_directory_entry.config(state="disabled")
             self.outBrowseBtn.config(state="disabled")
         else:
-            self.out_directory.config(state="normal")
+            self.out_directory_entry.config(state="normal")
             self.outBrowseBtn.config(state="normal")
 
 
