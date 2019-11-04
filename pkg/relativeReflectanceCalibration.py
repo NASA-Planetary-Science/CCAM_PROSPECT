@@ -4,6 +4,7 @@ import argparse
 from pkg.Utilities import get_integration_time, write_final
 from pkg.radianceCalibration import calibrate_to_radiance
 from pkg.InputType import InputType
+from shutil import copyfile
 
 psvfile = ''
 radfile = ''
@@ -56,9 +57,9 @@ def get_rad_file(psv_file, out_dir):
     if not exists:
         # create rad file and change path to where it'll be in output dir
         # move to the output dir
-        (path, filename) = os.path.split(radfile)
-        out_filename = out_dir + filename
-        radfile = out_filename
+        if out_dir is not None:
+            (path, filename) = os.path.split(radfile)
+            radfile = os.path.join(out_dir, filename)
         return calibrate_to_radiance(psv_file, out_dir)
     else:
         return True
@@ -112,6 +113,7 @@ def choose_values(custom_target_file):
 def calibrate_file(filename, custom_dir, out_dir):
     global wavelength
 
+    print("filename in calibrate_file: " + filename)
     valid = get_rad_file(filename, out_dir)
     if valid:
         values = choose_values(custom_dir)
@@ -119,16 +121,24 @@ def calibrate_file(filename, custom_dir, out_dir):
         final_values = do_multiplication(new_values)
         out_filename = radfile.replace('RAD', 'REF')
         out_filename = out_filename.replace('rad', 'ref')
-        (path, filename) = os.path.split(out_filename)
-        out_filename = out_dir + filename
+        if out_dir is not None:
+            # copy original file to new out directory
+            (og_path, og_filename) = os.path.split(filename)
+            copyfile(filename, os.path.join(out_dir, og_filename))
+            # then save calibrated file to out dir also
+            (path, filename) = os.path.split(out_filename)
+            out_filename = os.path.join(out_dir, filename)
+        print("out_dir" + out_dir)
         write_final(out_filename, wavelength, final_values)
 
 
 def calibrate_directory(directory, custom_dir, out_dir):
     for file_name in os.listdir(directory):
-        if 'psv' in file_name.lower() and '.tab' in file_name.lower():
-            full_path = directory + file_name
+        if ('psv' in file_name.lower() or 'rad' in file_name.lower()) and '.tab' in file_name.lower():
+            full_path = os.path.join(directory, file_name)
             calibrate_file(full_path, custom_dir, out_dir)
+        elif os.path.isdir(os.path.join(directory, file_name)):
+            calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
 
 
 def calibrate_list(list_file, custom_dir, out_dir):

@@ -4,6 +4,7 @@ import math as math
 import numpy as np
 import pkg.constant as cnst
 from pkg.Utilities import get_integration_time, write_final, get_header_values
+from shutil import copyfile
 
 # variables parsed from spectra file
 vnir = []
@@ -161,8 +162,12 @@ def calibrate_to_radiance(ccam_file, out_dir):
         out_filename = ccam_file.replace('psv', 'rad')
         out_filename = out_filename.replace('PSV', 'RAD')
         if out_dir is not None:
+            # copy original file to new out directory
+            (og_path, og_filename) = os.path.split(ccam_file)
+            copyfile(ccam_file, os.path.join(out_dir, og_filename))
+            # then save this file to out directory
             (path, filename) = os.path.split(out_filename)
-            out_filename = out_dir + filename
+            out_filename = os.path.join(out_dir + filename)
         write_final(out_filename, wavelength, radiance_final)
         return True
     else:
@@ -171,10 +176,13 @@ def calibrate_to_radiance(ccam_file, out_dir):
 
 
 def calibrate_directory(directory, out_dir):
+    print(directory)
+    print('\n')
     for file in os.listdir(directory):
-        print(file)
-        full_path = directory + file
+        full_path = os.path.join(directory, file)
         calibrate_to_radiance(full_path, out_dir)
+        if os.path.isdir(os.path.join(directory, file)):
+            calibrate_directory(os.path.join(directory, file), out_dir)
 
 
 def calibrate_list(list_file, out_dir):
@@ -190,10 +198,6 @@ if __name__ == "__main__":
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
-
-    import sys;
-
-    print(sys.path)
 
     args = parser.parse_args()
     if args.ccamFile is not None:
