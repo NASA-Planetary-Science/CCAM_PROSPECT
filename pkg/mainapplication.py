@@ -74,8 +74,8 @@ class MainApplication(tk.Frame):
         self.relative_label.grid(column=0, row=11, columnspan=4, sticky="w", padx=(10, 0))
         self.use_default_btn.grid(column=0, row=12, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_btn.grid(column=2, row=12, rowspan=2, sticky="w")
-        self.custom_dir.grid(column=2, row=14, columnspan=2)
-        self.custom_dir_browse.grid(column=4, row=14)
+        self.custom_file.grid(column=2, row=14, columnspan=2)
+        self.custom_file_browse.grid(column=4, row=14)
         self.calibrate_button.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(20, 0), padx=(10, 10))
 
     def browse_clicked(self):
@@ -113,7 +113,7 @@ class MainApplication(tk.Frame):
     def start_calibration(self):
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
-        custom_directory = self.custom_dir.get()
+        custom_directory = self.custom_file.get()
         output_type = self.out_directory_type.get()
         if output_type == 1:
             # use default

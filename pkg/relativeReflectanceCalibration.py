@@ -4,6 +4,7 @@ import argparse
 from pkg.Utilities import get_integration_time, write_final
 from pkg.radianceCalibration import calibrate_to_radiance
 from pkg.InputType import InputType
+from shutil import copyfile
 
 psvfile = ''
 radfile = ''
@@ -121,6 +122,7 @@ def calibrate_file(filename, custom_dir, out_dir):
         out_filename = radfile.replace('RAD', 'REF')
         out_filename = out_filename.replace('rad', 'ref')
         if out_dir is not None:
+            copyfile(filename, out_dir)
             (path, filename) = os.path.split(out_filename)
             out_filename = out_dir + filename
         print("out_dir" + out_dir)

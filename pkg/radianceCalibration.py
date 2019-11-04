@@ -4,6 +4,7 @@ import math as math
 import numpy as np
 import pkg.constant as cnst
 from pkg.Utilities import get_integration_time, write_final, get_header_values
+from shutil import copyfile
 
 # variables parsed from spectra file
 vnir = []
@@ -161,6 +162,9 @@ def calibrate_to_radiance(ccam_file, out_dir):
         out_filename = ccam_file.replace('psv', 'rad')
         out_filename = out_filename.replace('PSV', 'RAD')
         if out_dir is not None:
+            # copy original file to new out directory
+            copyfile(ccam_file, out_dir)
+            # then save this file to out directory
             (path, filename) = os.path.split(out_filename)
             out_filename = out_dir + filename
         write_final(out_filename, wavelength, radiance_final)
