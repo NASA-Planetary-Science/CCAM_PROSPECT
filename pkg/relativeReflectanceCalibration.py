@@ -64,42 +64,47 @@ def get_rad_file(psv_file, out_dir):
         return True
 
 
-def choose_values(custom_dir):
-    if not custom_dir:
+def choose_values(custom_target_file):
+    if not custom_target_file:
         my_path = os.path.abspath(os.path.dirname(__file__))
         sol76dir = os.path.join(my_path, "../sol76")
         ms7 = os.path.join(sol76dir, 'cl0_404238481cor_f0050104ccam02076p1.tab')
         ms34 = os.path.join(sol76dir, 'cl0_404238492cor_f0050104ccam02076p1.tab')
         ms404 = os.path.join(sol76dir, 'cl9_404238503cor_f0050104ccam02076p1.tab')
         ms5004 = os.path.join(sol76dir, 'cl9_404238538cor_f0050104ccam02076p1.tab')
+        # ms7 = os.path.join(sol76dir, 'CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos')
+        # ms34 = os.path.join(sol76dir, 'CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos')
+        # ms404 = os.path.join(sol76dir, 'CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos')
+        # ms5004 = os.path.join(sol76dir, 'CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos')
     else:
-        dirc = custom_dir
-        # TODO add functionality for custom files
+        ms7 = custom_target_file
+        ms34 = custom_target_file
+        ms404 = custom_target_file
+        ms5004 = custom_target_file
 
     # now get the cosine-corrected values from the correct file
     # check t_int for file
     global psvfile
     t_int = get_integration_time(psvfile)
-    t_int = t_int * 1000;
-    values = []
-    if round(t_int) == 7:
-        values = [float(x.split(' ')[1].strip()) for x in open(ms7).readlines()]
+    t_int = round(t_int * 1000);
+    if t_int == 7:
         fn = ms7
-    elif round(t_int) == 34:
-        values = [float(x.split(' ')[1].strip()) for x in open(ms34).readlines()]
+    elif t_int == 34:
         fn = ms34
-    elif round(t_int) == 404:
-        values = [float(x.split(' ')[1].strip()) for x in open(ms404).readlines()]
+    elif t_int == 404:
         fn = ms404
-    elif round(t_int) == 5004:
-        values = [float(x.split(' ')[1].strip()) for x in open(ms5004).readlines()]
+    elif t_int == 5004:
         fn = ms5004
     else:
-        print('error - integration time is not 7, 34, 404, or 5004')
+        fn = None
+        print('error - integration time in input file is not 7, 34, 404, or 5004.')
         # throw an error
-    # get the wavelengths
-    global wavelength
-    wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
+
+    if fn is not None:
+        values = [float(x.split(' ')[1].strip()) for x in open(fn).readlines()]
+        # get the wavelengths
+        global wavelength
+        wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
 
     return values
 
@@ -118,8 +123,6 @@ def calibrate_file(filename, custom_dir, out_dir):
         if out_dir is not None:
             (path, filename) = os.path.split(out_filename)
             out_filename = out_dir + filename
-        else:
-            out_filename = out_filename
         print("out_dir" + out_dir)
         write_final(out_filename, wavelength, final_values)
 

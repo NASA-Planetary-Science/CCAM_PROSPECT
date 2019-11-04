@@ -163,8 +163,6 @@ def calibrate_to_radiance(ccam_file, out_dir):
         if out_dir is not None:
             (path, filename) = os.path.split(out_filename)
             out_filename = out_dir + filename
-        else:
-            out_filename = out_filename
         write_final(out_filename, wavelength, radiance_final)
         return True
     else:
@@ -176,17 +174,14 @@ def calibrate_directory(directory, out_dir):
     print(directory)
     print('\n')
     for file in os.listdir(directory):
-        print(file)
-        print('\n')
-        full_path = directory + file
+        full_path = os.path.join(directory, file)
         calibrate_to_radiance(full_path, out_dir)
+        if os.path.isdir(os.path.join(directory, file)):
+            calibrate_directory(os.path.join(directory, file), out_dir)
 
-    # for sub_directory in os.walk(directory):
-    #     calibrate_directory(sub_directory[0], out_dir)
 
-
-def calibrate_list(listfile, out_dir):
-    files = open(listfile).read().splitlines()
+def calibrate_list(list_file, out_dir):
+    files = open(list_file).read().splitlines()
     for file in files:
         calibrate_to_radiance(file, out_dir)
 
