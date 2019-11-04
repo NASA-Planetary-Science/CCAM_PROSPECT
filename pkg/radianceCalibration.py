@@ -173,12 +173,12 @@ def calibrate_to_radiance(ccam_file, out_dir):
 def calibrate_directory(directory, out_dir):
     for file in os.listdir(directory):
         print(file)
-        fullpath = directory + file
-        calibrate_to_radiance(fullpath, out_dir)
+        full_path = directory + file
+        calibrate_to_radiance(full_path, out_dir)
 
 
-def calibrate_list(listfile, out_dir):
-    files = open(listfile).read().splitlines()
+def calibrate_list(list_file, out_dir):
+    files = open(list_file).read().splitlines()
     for file in files:
         calibrate_to_radiance(file, out_dir)
 
@@ -190,6 +190,10 @@ if __name__ == "__main__":
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
+
+    import sys;
+
+    print(sys.path)
 
     args = parser.parse_args()
     if args.ccamFile is not None:
