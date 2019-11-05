@@ -3,6 +3,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from pkg.InputType import InputType
 from pkg.relativeReflectanceCalibration import calibrate_relative_reflectance
+from pkg.radianceCalibration import calibrate_to_radiance
 
 
 class MainApplication(tk.Frame):
@@ -53,8 +54,11 @@ class MainApplication(tk.Frame):
         self.use_custom_btn = tk.Radiobutton(window, text="Use custom", value=2, variable=self.relative_config,
                                              command=self.select_custom)
 
-        # 'GO' button
-        self.calibrate_button = tk.Button(window, text="Calibrate", command=self.start_calibration)
+        # 'GO' buttons
+        self.separator3 = ttk.Separator(window, orient="horizontal")
+        self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", command=self.start_rad)
+        # self.calibrate_ref_button = tk.Button(window, text="Calibrate to REF", command=self.start_ref)
+        self.calibrate_button = tk.Button(window, text="Calibrate to REF", command=self.start_calibration)
 
         # setup the GUI layout
         self.input_label.grid(column=0, row=0, columnspan=4, sticky="w", padx=(10, 0))
@@ -76,7 +80,10 @@ class MainApplication(tk.Frame):
         self.use_custom_btn.grid(column=2, row=12, rowspan=2, sticky="w")
         self.custom_file.grid(column=2, row=14, columnspan=2)
         self.custom_file_browse.grid(column=4, row=14)
-        self.calibrate_button.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(20, 0), padx=(10, 10))
+
+        self.separator3.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(10, 10))
+        self.calibrate_rad_button.grid(column=0, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
+        self.calibrate_button.grid(column=2, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
 
     def browse_clicked(self):
         file_type = self.inputType.get()
@@ -125,6 +132,20 @@ class MainApplication(tk.Frame):
 
         calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
 
+    def start_rad(self):
+        file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
+        file = self.in_filename_entry.get()
+        output_type = self.out_directory_type.get()
+        if output_type == 1:
+            # use default
+            out_dir = None
+        else:
+            out_dir = self.out_directory_entry.get()
+            if not out_dir.endswith('/'):
+                out_dir = out_dir + '/'
+
+        calibrate_to_radiance(file_type, file, out_dir)
+
     def select_output_directory(self):
         btn = self.out_directory_type.get()
         if btn == 1:
@@ -138,7 +159,7 @@ class MainApplication(tk.Frame):
 def main():
     window = tk.Tk()
     window.title("ChemCham Calibration")
-    window.geometry('410x318')
+    window.geometry('415x330')
     MainApplication(window)
     window.mainloop()
 

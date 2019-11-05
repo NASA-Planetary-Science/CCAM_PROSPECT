@@ -167,13 +167,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.ccamFile is not None:
-        file_type = InputType.FILE
+        in_file_type = InputType.FILE
         file = args.ccamFile
     elif args.directory is not None:
-        file_type = InputType.DIRECTORY
+        in_file_type = InputType.DIRECTORY
         file = args.directory
     else:
-        file_type = InputType.FILE_LIST
+        in_file_type = InputType.FILE_LIST
         file = args.list
 
-    calibrate_relative_reflectance(file_type, file, args.customDir, args.out_dir)
+    calibrate_relative_reflectance(in_file_type, file, args.customDir, args.out_dir)
