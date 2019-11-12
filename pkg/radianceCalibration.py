@@ -3,6 +3,8 @@ import os
 import math as math
 import numpy as np
 import pkg.constant as cnst
+import sys
+from pkg.InputType import InputType
 from pkg.Utilities import get_integration_time, write_final, get_header_values
 from shutil import copyfile
 
@@ -135,7 +137,7 @@ def convert_to_output_units(radiance, wavelengths):
     return np.multiply(converted_rad, 1E7)
 
 
-def calibrate_to_radiance(ccam_file, out_dir):
+def calibrate_file(ccam_file, out_dir):
     if "psv" in ccam_file.lower() and ccam_file.lower().endswith(".tab"):
         global headers
         headers = get_header_values(ccam_file)
@@ -176,11 +178,9 @@ def calibrate_to_radiance(ccam_file, out_dir):
 
 
 def calibrate_directory(directory, out_dir):
-    print(directory)
-    print('\n')
     for file in os.listdir(directory):
         full_path = os.path.join(directory, file)
-        calibrate_to_radiance(full_path, out_dir)
+        calibrate_file(full_path, out_dir)
         if os.path.isdir(os.path.join(directory, file)):
             calibrate_directory(os.path.join(directory, file), out_dir)
 
@@ -188,7 +188,16 @@ def calibrate_directory(directory, out_dir):
 def calibrate_list(list_file, out_dir):
     files = open(list_file).read().splitlines()
     for file in files:
-        calibrate_to_radiance(file, out_dir)
+        calibrate_file(file, out_dir)
+
+
+def calibrate_to_radiance(file_type, file_name, out_dir):
+    if file_type == InputType.FILE:
+        calibrate_file(file_name, out_dir)
+    elif file_type == InputType.FILE_LIST:
+        calibrate_list(file_name, out_dir)
+    else:
+        calibrate_directory(file_name, out_dir)
 
 
 if __name__ == "__main__":
@@ -200,12 +209,17 @@ if __name__ == "__main__":
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
 
     args = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
     if args.ccamFile is not None:
-        calibrate_to_radiance(args.ccamFile, args.out_dir)
-    if args.directory is not None:
-        calibrate_directory(args.directory, args.out_dir)
-    if args.list is not None:
-        calibrate_list(args.list, args.out_dir)
+        in_file_type = InputType.FILE
+        in_file = args.ccamFile
+    elif args.directory is not None:
+        in_file_type = InputType.DIRECTORY
+        in_file = args.directory
+    else:
+        in_file_type = InputType.FILE_LIST
+        in_file = args.list
 
-
-
+    calibrate_to_radiance(in_file_type, in_file, args.out_dir)

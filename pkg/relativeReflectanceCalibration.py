@@ -50,17 +50,19 @@ def do_multiplication(values):
 
 def get_rad_file(psv_file, out_dir):
     global radfile, psvfile
-    # get all of the values from the rad file and divide by the value_7
+    # name of the radfile
     radfile = psv_file.replace('psv', 'rad')
     psvfile = psv_file.replace('rad', 'psv')
     exists = os.path.isfile(radfile)
     if not exists:
-        # create rad file and change path to where it'll be in output dir
-        # move to the output dir
+        # create rad file and change path to where it will end up in out_dir
         if out_dir is not None:
             (path, filename) = os.path.split(radfile)
             radfile = os.path.join(out_dir, filename)
-        return calibrate_to_radiance(psv_file, out_dir)
+        else:
+            (out_dir, filename) = os.path.split(psv_file)
+        print(out_dir)
+        return calibrate_to_radiance(InputType.FILE, psv_file, out_dir)
     else:
         return True
 
@@ -69,14 +71,10 @@ def choose_values(custom_target_file):
     if not custom_target_file:
         my_path = os.path.abspath(os.path.dirname(__file__))
         sol76dir = os.path.join(my_path, "../sol76")
-        ms7 = os.path.join(sol76dir, 'cl0_404238481cor_f0050104ccam02076p1.tab')
-        ms34 = os.path.join(sol76dir, 'cl0_404238492cor_f0050104ccam02076p1.tab')
-        ms404 = os.path.join(sol76dir, 'cl9_404238503cor_f0050104ccam02076p1.tab')
-        ms5004 = os.path.join(sol76dir, 'cl9_404238538cor_f0050104ccam02076p1.tab')
-        # ms7 = os.path.join(sol76dir, 'CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos')
-        # ms34 = os.path.join(sol76dir, 'CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos')
-        # ms404 = os.path.join(sol76dir, 'CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos')
-        # ms5004 = os.path.join(sol76dir, 'CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos')
+        ms7 = os.path.join(sol76dir, 'CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos')
+        ms34 = os.path.join(sol76dir, 'CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos')
+        ms404 = os.path.join(sol76dir, 'CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos')
+        ms5004 = os.path.join(sol76dir, 'CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos')
     else:
         ms7 = custom_target_file
         ms34 = custom_target_file
@@ -113,7 +111,6 @@ def choose_values(custom_target_file):
 def calibrate_file(filename, custom_dir, out_dir):
     global wavelength
 
-    print("filename in calibrate_file: " + filename)
     valid = get_rad_file(filename, out_dir)
     if valid:
         values = choose_values(custom_dir)
@@ -128,7 +125,6 @@ def calibrate_file(filename, custom_dir, out_dir):
             # then save calibrated file to out dir also
             (path, filename) = os.path.split(out_filename)
             out_filename = os.path.join(out_dir, filename)
-        print("out_dir" + out_dir)
         write_final(out_filename, wavelength, final_values)
 
 
@@ -167,13 +163,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     if args.ccamFile is not None:
-        file_type = InputType.FILE
+        in_file_type = InputType.FILE
         file = args.ccamFile
     elif args.directory is not None:
-        file_type = InputType.DIRECTORY
+        in_file_type = InputType.DIRECTORY
         file = args.directory
     else:
-        file_type = InputType.FILE_LIST
+        in_file_type = InputType.FILE_LIST
         file = args.list
 
-    calibrate_relative_reflectance(file_type, file, args.customDir, args.out_dir)
+    calibrate_relative_reflectance(in_file_type, file, args.customDir, args.out_dir)
