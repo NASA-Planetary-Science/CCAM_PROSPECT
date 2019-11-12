@@ -60,6 +60,8 @@ class MainApplication(tk.Frame):
         # self.calibrate_ref_button = tk.Button(window, text="Calibrate to REF", command=self.start_ref)
         self.calibrate_button = tk.Button(window, text="Calibrate to REF", command=self.start_calibration)
 
+        # self.progress_label = tk.Label(window, text="PROGRESS")
+
         # setup the GUI layout
         self.input_label.grid(column=0, row=0, columnspan=4, sticky="w", padx=(10, 0))
         self.fileBtn.grid(column=0, row=1, sticky="w", padx=(10, 0))
@@ -84,6 +86,7 @@ class MainApplication(tk.Frame):
         self.separator3.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(10, 10))
         self.calibrate_rad_button.grid(column=0, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
         self.calibrate_button.grid(column=2, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
+        # self.progress_label.grid(column=0, row=17, columnspan=5, sticky="ew", pady=(10,10))
 
     def browse_clicked(self):
         file_type = self.inputType.get()
