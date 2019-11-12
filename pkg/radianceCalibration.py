@@ -3,6 +3,7 @@ import os
 import math as math
 import numpy as np
 import pkg.constant as cnst
+import sys
 from pkg.InputType import InputType
 from pkg.Utilities import get_integration_time, write_final, get_header_values
 from shutil import copyfile
@@ -208,6 +209,9 @@ if __name__ == "__main__":
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
 
     args = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
     if args.ccamFile is not None:
         in_file_type = InputType.FILE
         in_file = args.ccamFile

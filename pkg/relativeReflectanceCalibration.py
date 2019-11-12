@@ -113,7 +113,6 @@ def choose_values(custom_target_file):
 def calibrate_file(filename, custom_dir, out_dir):
     global wavelength
 
-    print("filename in calibrate_file: " + filename)
     valid = get_rad_file(filename, out_dir)
     if valid:
         values = choose_values(custom_dir)
@@ -128,7 +127,6 @@ def calibrate_file(filename, custom_dir, out_dir):
             # then save calibrated file to out dir also
             (path, filename) = os.path.split(out_filename)
             out_filename = os.path.join(out_dir, filename)
-        print("out_dir" + out_dir)
         write_final(out_filename, wavelength, final_values)
 
 
