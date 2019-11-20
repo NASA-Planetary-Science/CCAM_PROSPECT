@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from InputType import InputType
-from relativeReflectanceCalibration import RelativeReflectanceCalibration
-from radianceCalibration import RadianceCalibration
+from pkg.InputType import InputType
+from pkg.relativeReflectanceCalibration import RelativeReflectanceCalibration
+from pkg.radianceCalibration import RadianceCalibration
 
 
 class MainApplication(tk.Frame):
@@ -16,9 +16,10 @@ class MainApplication(tk.Frame):
     def __init__(self, window, *args, **kwargs):
         tk.Frame.__init__(self, window, *args, **kwargs)
 
-        self.radiance_cal = RadianceCalibration()
-        self.relative_cal = RelativeReflectanceCalibration()
+        self.radiance_cal = RadianceCalibration(self)
+        self.relative_cal = RelativeReflectanceCalibration(self)
         self.window = window
+        self.progress_var = tk.IntVar()
 
         # CREATE COMPONENTS
 
@@ -63,9 +64,11 @@ class MainApplication(tk.Frame):
         # 'GO' buttons
         self.separator3 = ttk.Separator(window, orient="horizontal")
         self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", command=self.start_rad)
-        # self.calibrate_ref_button = tk.Button(window, text="Calibrate to REF", command=self.start_ref)
         self.calibrate_button = tk.Button(window, text="Calibrate to REF", command=self.start_calibration)
-        # self.progress_label = tk.Label(window, text="PROGRESS")
+
+        # progress bar
+        self.progress = ttk.Progressbar(window, orient=tk.HORIZONTAL, length=100, mode='determinate',
+                                        var=self.progress_var, maximum=100)
 
         self.set_up_layout()
 
@@ -86,18 +89,18 @@ class MainApplication(tk.Frame):
         self.use_default_out_btn.grid(column=0, row=7, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_out_btn.grid(column=2, row=7, rowspan=2, sticky="w")
         self.out_directory_entry.grid(column=2, row=9, columnspan=2)
-        self.outBrowseBtn.grid(column=4, row=9)
+        self.outBrowseBtn.grid(column=4, row=9, padx=(1, 10))
         self.separator2.grid(column=0, row=10, columnspan=5, sticky="ew", pady=(10, 10))
         self.relative_label.grid(column=0, row=11, columnspan=4, sticky="w", padx=(10, 0))
         self.use_default_btn.grid(column=0, row=12, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_btn.grid(column=2, row=12, rowspan=2, sticky="w")
         self.custom_file.grid(column=2, row=14, columnspan=2)
-        self.custom_file_browse.grid(column=4, row=14)
+        self.custom_file_browse.grid(column=4, row=14, padx=(1, 10))
 
         self.separator3.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(10, 10))
         self.calibrate_rad_button.grid(column=0, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
         self.calibrate_button.grid(column=2, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
-        # self.progress_label.grid(column=0, row=17, columnspan=5, sticky="ew", pady=(10,10))
+        self.progress.grid(column=0, row=17, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
 
     def browse_clicked(self):
         file_type = self.inputType.get()
@@ -169,10 +172,14 @@ class MainApplication(tk.Frame):
             self.out_directory_entry.config(state="normal")
             self.outBrowseBtn.config(state="normal")
 
+    def update_progress(self, value):
+        self.progress_var.set(value)
+        self.progress.update()
+        self.window.update_idletasks()
+
 
 def main():
     window = tk.Tk()
     window.title("ChemCham Calibration")
-    window.geometry('415x330')
     MainApplication(window)
     window.mainloop()

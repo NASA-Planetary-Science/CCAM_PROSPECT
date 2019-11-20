@@ -6,17 +6,20 @@ import pkg.constant as cnst
 import sys
 from pkg.InputType import InputType
 from pkg.Utilities import get_integration_time, write_final, get_header_values
-from shutil import copyfile
+from shutil import copyfile, SameFileError
 
 
 class RadianceCalibration:
 
-    def __init__(self):
+    def __init__(self, main_app=None):
         # variables parsed from spectra file
         self.vnir = []
         self.vis = []
         self.uv = []
         self.headers = {}
+        self.main_app = main_app
+        self.total_files = 1
+        self.current_file = 1
 
     def read_spectra(self, filename):
         """read_spectra
@@ -71,7 +74,7 @@ class RadianceCalibration:
         :return: the solid angle, in radians
         """
         distance = float(self.headers['distToTarget'])
-        return math.pi * math.pow(math.sin(math.atan(cnst.aperature / 2 / distance)), 2)
+        return math.pi * math.pow(math.sin(math.atan(cnst.aperture / 2 / distance)), 2)
 
     def get_area_on_target(self):
         """get_area_on_target
@@ -84,14 +87,15 @@ class RadianceCalibration:
         distance = float(self.headers['distToTarget'])
         return math.pi * math.pow(cnst.fov * distance / 2 / 10, 2)
 
-    def get_radiance(self, photons, wavelengths, t_int, fov_tgt, sa_steradian):
+    @staticmethod
+    def get_radiance(photons, wavelengths, t_int, fov_tgt, sa_steradian):
         """get_radiance
         Calculate the radiance value of each of the spectra values in photons
         RAD = p/t/A/SA/w
         where p  = value of spectra in photons
               t  = integration time
               A  = area on the target
-              SA = the solid angle subtended by the telescope aperature
+              SA = the solid angle subtended by the telescope aperture
               w  = the spectral bin width
 
         :param photons: the values for the observation, in photons
@@ -111,7 +115,8 @@ class RadianceCalibration:
         w[-1] = w[-2]
         return np.divide(rad, w)
 
-    def get_wl_and_gain(self, gain_file):
+    @staticmethod
+    def get_wl_and_gain(gain_file):
         """get_wl_and_response
         read the gain file to get the wavelength and response function
         (photons/DN) for each response to use to convert to units of photons
@@ -127,7 +132,8 @@ class RadianceCalibration:
 
         return wl, gain
 
-    def convert_to_output_units(self, radiance, wavelengths):
+    @staticmethod
+    def convert_to_output_units(radiance, wavelengths):
         """convert_to_output_untis
         do the final conversion to output units
 
@@ -138,6 +144,13 @@ class RadianceCalibration:
         rad_hc = np.multiply(radiance, cnst.hc)
         converted_rad = np.divide(rad_hc, np.multiply(wavelengths, 1E-9))
         return np.multiply(converted_rad, 1E7)
+
+    def update_progress(self, value=None):
+        if self.main_app is not None:
+            if value is not None:
+                self.main_app.update_progress(value)
+            else:
+                self.main_app.update_progress((self.current_file / self.total_files) * 100)
 
     def calibrate_file(self, ccam_file, out_dir):
         """calibrate_file
@@ -150,11 +163,12 @@ class RadianceCalibration:
             self.headers = get_header_values(ccam_file)
             self.read_spectra(ccam_file)
             self.remove_offsets()
-            t_int = get_integration_time(ccam_file)
 
+            t_int = get_integration_time(ccam_file)
             sa_steradian = self.get_solid_angle()
             fov_tgt = self.get_area_on_target()
-
+            if self.total_files == 1:
+                self.update_progress(25)
             # combine arrays into one ordered by wavelength
             all_spectra_dn = np.concatenate([self.uv, self.vis, self.vnir])
 
@@ -164,6 +178,8 @@ class RadianceCalibration:
             (wavelength, gain) = self.get_wl_and_gain(gain_file)
             all_spectra_photons = np.multiply(all_spectra_dn, gain)
             radiance = self.get_radiance(all_spectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
+            if self.total_files == 1:
+                self.update_progress(50)
 
             # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
             radiance_final = self.convert_to_output_units(radiance, wavelength)
@@ -173,27 +189,45 @@ class RadianceCalibration:
             if out_dir is not None:
                 # copy original file to new out directory
                 (og_path, og_filename) = os.path.split(ccam_file)
-                copyfile(ccam_file, os.path.join(out_dir, og_filename))
+                move_to_loc = os.path.join(out_dir, og_filename)
+                try:
+                    copyfile(ccam_file, move_to_loc)
+                except SameFileError:
+                    pass
                 # then save this file to out directory
                 (path, filename) = os.path.split(out_filename)
                 out_filename = os.path.join(out_dir + filename)
             write_final(out_filename, wavelength, radiance_final)
+            print(ccam_file + ' calibrated and written to ' + out_filename)
+            if self.total_files == 1:
+                self.update_progress(100)
             return True
         else:
-            print(ccam_file + ": not a raw PSV file")
+            print(ccam_file + ": not a raw PSV file, skipping")
             return False
 
     def calibrate_directory(self, directory, out_dir):
+        # total number of files to potentially calibrate
+        self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
+        self.current_file = 1
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
             self.calibrate_file(full_path, out_dir)
+            self.current_file += 1
+            self.update_progress()
             if os.path.isdir(os.path.join(directory, file)):
                 self.calibrate_directory(os.path.join(directory, file), out_dir)
+        self.update_progress(100)
 
     def calibrate_list(self, list_file, out_dir):
         files = open(list_file).read().splitlines()
+        self.total_files = len(files)
+        self.current_file = 1
         for file in files:
             self.calibrate_file(file, out_dir)
+            self.current_file += 1
+            self.update_progress()
+        self.update_progress(100)
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir):
         if file_type.value is InputType.FILE.value:
