@@ -8,10 +8,13 @@ from pkg.InputType import InputType
 
 
 class RelativeReflectanceCalibration:
-    def __init__(self):
+    def __init__(self, main_app=None):
         self.psvfile = ''
         self.radfile = ''
         self.wavelength = []
+        self.main_app = main_app
+        self.total_files = 1
+        self.current_file = 1
 
     def do_division(self, values):
         """
@@ -71,6 +74,8 @@ class RelativeReflectanceCalibration:
                 self.radfile = os.path.join(out_dir, filename)
             else:
                 (out_dir, filename) = os.path.split(input_file)
+            if not out_dir.endswith('/'):
+                out_dir = out_dir + '/'
             radiance_cal = RadianceCalibration()
             return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir)
         else:
@@ -123,12 +128,23 @@ class RelativeReflectanceCalibration:
 
         return values
 
+    def update_progress(self, value=None):
+        if self.main_app is not None:
+            if value is not None:
+                self.main_app.update_progress(value)
+            else:
+                self.main_app.update_progress((self.current_file / self.total_files) * 100)
+
     def calibrate_file(self, filename, custom_dir, out_dir):
 
         valid = self.get_rad_file(filename, out_dir)
         if valid:
             values = self.choose_values(custom_dir)
+            if self.total_files == 1:
+                self.update_progress(25)
             new_values = self.do_division(values)
+            if self.total_files == 1:
+                self.update_progress(75)
             final_values = self.do_multiplication(new_values)
             out_filename = self.radfile.replace('RAD', 'REF')
             out_filename = out_filename.replace('rad', 'ref')
@@ -140,19 +156,32 @@ class RelativeReflectanceCalibration:
                 (path, filename) = os.path.split(out_filename)
                 out_filename = os.path.join(out_dir, filename)
             write_final(out_filename, wavelength, final_values)
+            if self.total_files == 1:
+                self.update_progress(100)
+            print(filename + ' calibrated and written to ' + out_filename)
 
     def calibrate_directory(self, directory, custom_dir, out_dir):
+        self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
+        self.current_file = 1
         for file_name in os.listdir(directory):
             if ('psv' in file_name.lower() or 'rad' in file_name.lower()) and '.tab' in file_name.lower():
                 full_path = os.path.join(directory, file_name)
                 self.calibrate_file(full_path, custom_dir, out_dir)
+                self.current_file += 1
+                self.update_progress()
             elif os.path.isdir(os.path.join(directory, file_name)):
                 self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
+        self.update_progress(100)
 
     def calibrate_list(self, list_file, custom_dir, out_dir):
         files = open(list_file).read().splitlines()
+        self.total_files = len(files)
+        self.current_file = 1
         for file_name in files:
             self.calibrate_file(file_name, custom_dir, out_dir)
+            self.current_file += 1
+            self.update_progress()
+        self.update_progress(100)
 
     def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
         if file_type.value is InputType.FILE.value:
