@@ -1,9 +1,9 @@
-from enum import Enum, unique
+from enum import Enum, unique, auto
 
 
 @unique
 class InputType(Enum):
-    FILE = 1
-    FILE_LIST = 2
-    DIRECTORY = 3
+    FILE = auto()
+    FILE_LIST = auto()
+    DIRECTORY = auto()
 

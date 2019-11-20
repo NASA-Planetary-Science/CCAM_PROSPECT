@@ -9,7 +9,7 @@ from pkg.Utilities import get_integration_time, write_final, get_header_values
 from shutil import copyfile
 
 
-class radianceCalibration():
+class RadianceCalibration:
 
     def __init__(self):
         # variables parsed from spectra file
@@ -196,9 +196,9 @@ class radianceCalibration():
             self.calibrate_file(file, out_dir)
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir):
-        if file_type == InputType.FILE:
+        if file_type.value is InputType.FILE.value:
             self.calibrate_file(file_name, out_dir)
-        elif file_type == InputType.FILE_LIST:
+        elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, out_dir)
         else:
             self.calibrate_directory(file_name, out_dir)
@@ -226,5 +226,5 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         in_file = args.list
 
-    radianceCal = radianceCalibration()
+    radianceCal = RadianceCalibration()
     radianceCal.calibrate_to_radiance(in_file_type, in_file, args.out_dir)

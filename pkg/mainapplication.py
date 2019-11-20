@@ -2,39 +2,45 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from InputType import InputType
-from relativeReflectanceCalibration import calibrate_relative_reflectance
-from radianceCalibration import calibrate_to_radiance
+from relativeReflectanceCalibration import RelativeReflectanceCalibration
+from radianceCalibration import RadianceCalibration
 
 
 class MainApplication(tk.Frame):
     input_type_switcher = {
-        1: InputType.FILE,
-        2: InputType.FILE_LIST,
-        3: InputType.DIRECTORY
+        InputType.FILE.value: InputType.FILE,
+        InputType.FILE_LIST.value: InputType.FILE_LIST,
+        InputType.DIRECTORY.value: InputType.DIRECTORY
     }
 
     def __init__(self, window, *args, **kwargs):
         tk.Frame.__init__(self, window, *args, **kwargs)
+
+        self.radiance_cal = RadianceCalibration()
+        self.relative_cal = RelativeReflectanceCalibration()
+        self.window = window
+
         # CREATE COMPONENTS
 
         # input label, entry, button
-        self.input_label = tk.Label(window, text="Input: ")
+        self.input_label = tk.Label(self.window, text="Input: ")
         # radio button group and entries for input and output dir
         self.inputType = tk.IntVar()
-        self.fileBtn = tk.Radiobutton(window, text='File', value=InputType.FILE.value, variable=self.inputType)
+        self.fileBtn = tk.Radiobutton(self.window, text='File', value=InputType.FILE.value, variable=self.inputType)
         self.fileBtn.select()  # select file by default
-        self.listBtn = tk.Radiobutton(window, text='List Of Files', value=InputType.FILE_LIST.value,
+        self.listBtn = tk.Radiobutton(self.window, text='List Of Files', value=InputType.FILE_LIST.value,
                                       variable=self.inputType)
-        self.directoryBtn = tk.Radiobutton(window, text='Directory', value=InputType.DIRECTORY.value,
+        self.directoryBtn = tk.Radiobutton(self.window, text='Directory', value=InputType.DIRECTORY.value,
                                            variable=self.inputType)
-        self.in_filename_entry = tk.Entry(window, width=30)
+        self.in_filename_entry = tk.Entry(self.window, width=30)
 
         # output stuff
         self.separator1 = ttk.Separator(window, orient="horizontal")
         self.out_label = tk.Label(window, text="Output Directory: ")
         self.out_directory_type = tk.IntVar()
         self.use_default_out_btn = tk.Radiobutton(window, text="Use default\n (same as input dir)", value=1,
-                                                  variable=self.out_directory_type, command=self.select_output_directory)
+                                                  variable=self.out_directory_type,
+                                                  command=self.select_output_directory)
         self.use_default_out_btn.select()
         self.use_custom_out_btn = tk.Radiobutton(window, text="Use custom", value=2, variable=self.out_directory_type,
                                                  command=self.select_output_directory)
@@ -59,10 +65,15 @@ class MainApplication(tk.Frame):
         self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", command=self.start_rad)
         # self.calibrate_ref_button = tk.Button(window, text="Calibrate to REF", command=self.start_ref)
         self.calibrate_button = tk.Button(window, text="Calibrate to REF", command=self.start_calibration)
-
         # self.progress_label = tk.Label(window, text="PROGRESS")
 
-        # setup the GUI layout
+        self.set_up_layout()
+
+    def set_up_layout(self):
+        """
+        set up the GUI layout
+        :return: None
+        """
         self.input_label.grid(column=0, row=0, columnspan=4, sticky="w", padx=(10, 0))
         self.fileBtn.grid(column=0, row=1, sticky="w", padx=(10, 0))
         self.listBtn.grid(column=1, row=1, sticky="w")
@@ -133,7 +144,7 @@ class MainApplication(tk.Frame):
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
 
-        calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
+        self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
 
     def start_rad(self):
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
@@ -147,7 +158,7 @@ class MainApplication(tk.Frame):
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
 
-        calibrate_to_radiance(file_type, file, out_dir)
+        self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir)
 
     def select_output_directory(self):
         btn = self.out_directory_type.get()

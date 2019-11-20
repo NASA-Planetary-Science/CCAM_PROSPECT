@@ -3,11 +3,11 @@ import os
 import argparse
 from shutil import copyfile
 from pkg.Utilities import get_integration_time, write_final
-from pkg.radianceCalibration import radianceCalibration
+from pkg.radianceCalibration import RadianceCalibration
 from pkg.InputType import InputType
 
 
-class relativeReflectanceCalibration():
+class RelativeReflectanceCalibration:
     def __init__(self):
         self.psvfile = ''
         self.radfile = ''
@@ -71,7 +71,7 @@ class relativeReflectanceCalibration():
                 self.radfile = os.path.join(out_dir, filename)
             else:
                 (out_dir, filename) = os.path.split(input_file)
-            radiance_cal = radianceCalibration()
+            radiance_cal = RadianceCalibration()
             return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir)
         else:
             return True
@@ -155,9 +155,9 @@ class relativeReflectanceCalibration():
             self.calibrate_file(file_name, custom_dir, out_dir)
 
     def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
-        if file_type == InputType.FILE:
+        if file_type.value is InputType.FILE.value:
             self.calibrate_file(file_name, custom_dir, out_dir)
-        elif file_type == InputType.FILE_LIST:
+        elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, custom_dir, out_dir)
         else:
             self.calibrate_directory(file_name, custom_dir, out_dir)
@@ -183,5 +183,5 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         file = args.list
 
-    calibrate_ref = relativeReflectanceCalibration()
+    calibrate_ref = RelativeReflectanceCalibration()
     calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customDir, args.out_dir)
