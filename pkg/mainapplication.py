@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from pkg.InputType import InputType
-from pkg.relativeReflectanceCalibration import calibrate_relative_reflectance
-from pkg.radianceCalibration import calibrate_to_radiance
+from InputType import InputType
+from relativeReflectanceCalibration import calibrate_relative_reflectance
+from radianceCalibration import calibrate_to_radiance
 
 
 class MainApplication(tk.Frame):
@@ -165,4 +165,3 @@ def main():
     window.geometry('415x330')
     MainApplication(window)
     window.mainloop()
-
