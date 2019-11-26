@@ -129,9 +129,10 @@ class RelativeReflectanceCalibration:
                 raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
 
         if fn is not None:
-            values = [float(x.split(' ')[1].strip()) for x in open(fn).readlines()]
+            # get the values, but skip the header
+            values = [float(x.split(' ')[1].strip()) for x in open(fn).readlines() if '"' not in x]
             # get the wavelengths
-            self.wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
+            self.wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines() if '"' not in x]
 
         return values
 

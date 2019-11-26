@@ -28,7 +28,6 @@ class RadianceCalibration:
         """
         with open(filename, 'r') as f:
             self.header_string = [next(f) for x in range(29)]
-        print(self.header_string)
 
     def read_spectra(self, filename):
         """read_spectra
@@ -168,7 +167,9 @@ class RadianceCalibration:
         :param ccam_file: file to calibrate
         :param out_dir: output directory
         """
-        if "psv" in ccam_file.lower() and ccam_file.lower().endswith(".tab"):
+        # check that file exists, is a file, and is a psv *.tab file
+        if os.path.exists(ccam_file) and os.path.isfile(ccam_file) and "psv" in ccam_file.lower() \
+                and ccam_file.lower().endswith(".tab"):
             self.headers = get_header_values(ccam_file)
             self.get_headers(ccam_file)
             self.read_spectra(ccam_file)
