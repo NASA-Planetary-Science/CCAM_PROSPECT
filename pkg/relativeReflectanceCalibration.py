@@ -1,7 +1,9 @@
 import numpy as np
 import os
 import argparse
+from datetime import datetime
 from shutil import copyfile
+from pkg.NonStandardExposureTimeException import NonStandardExposureTimeException
 from pkg.Utilities import get_integration_time, write_final
 from pkg.radianceCalibration import RadianceCalibration
 from pkg.InputType import InputType
@@ -15,6 +17,8 @@ class RelativeReflectanceCalibration:
         self.main_app = main_app
         self.total_files = 1
         self.current_file = 1
+        now = datetime.now()
+        self.bad_exposure_file = "nonstandard_exptime_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
     def do_division(self, values):
         """
@@ -23,7 +27,7 @@ class RelativeReflectanceCalibration:
         :param values:
         :return: the divided values
         """
-        values_orig = [float(x.split(' ')[1].strip()) for x in open(self.radfile).readlines()]
+        values_orig = [float(x.split(' ')[1].strip()) for x in open(self.radfile).readlines() if '"' not in x]
 
         # divide original values by the appropriate calibration values
         # to get relative reflectance.  If divide by 0, just = 0
@@ -85,7 +89,7 @@ class RelativeReflectanceCalibration:
         """
         Choose which values to use for calibration, based on integration time.  The integration
         time of the file chosen to calibrate must match that of the input file.  If the integration
-        times do not match, throw and error.
+        times do not match, log filename to nonstandard exptime file and keep going.
 
         :param custom_target_file: a custom file to use for calibration (default=None)
         :return: the values to use for calibration
@@ -105,8 +109,10 @@ class RelativeReflectanceCalibration:
 
         # now get the cosine-corrected values from the correct file
         # check t_int for file
-        t_int = get_integration_time(self.psvfile)
-        t_int = round(t_int * 1000);
+        t_int = get_integration_time(self.radfile)
+        if t_int is not None:
+            t_int = round(t_int * 1000)
+
         if t_int == 7:
             fn = ms7
         elif t_int == 34:
@@ -117,14 +123,15 @@ class RelativeReflectanceCalibration:
             fn = ms5004
         else:
             fn = None
-            print('error - integration time in input file is not 7, 34, 404, or 5004.')
-            # TODO throw an error
+            print('error - integration time in input file is not 7, 34, 404, or 5004. File tracked in log')
+            with open(self.bad_exposure_file, 'a') as log:
+                log.write(self.psvfile + '\n')
+                raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
 
         if fn is not None:
             values = [float(x.split(' ')[1].strip()) for x in open(fn).readlines()]
             # get the wavelengths
-            global wavelength
-            wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
+            self.wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines()]
 
         return values
 
@@ -137,28 +144,35 @@ class RelativeReflectanceCalibration:
 
     def calibrate_file(self, filename, custom_dir, out_dir):
 
+        # check for valid rad file
         valid = self.get_rad_file(filename, out_dir)
         if valid:
-            values = self.choose_values(custom_dir)
-            if self.total_files == 1:
-                self.update_progress(25)
-            new_values = self.do_division(values)
-            if self.total_files == 1:
-                self.update_progress(75)
-            final_values = self.do_multiplication(new_values)
-            out_filename = self.radfile.replace('RAD', 'REF')
-            out_filename = out_filename.replace('rad', 'ref')
-            if out_dir is not None:
-                # copy original file to new out directory
-                (og_path, og_filename) = os.path.split(filename)
-                copyfile(filename, os.path.join(out_dir, og_filename))
-                # then save calibrated file to out dir also
-                (path, filename) = os.path.split(out_filename)
-                out_filename = os.path.join(out_dir, filename)
-            write_final(out_filename, wavelength, final_values)
-            if self.total_files == 1:
-                self.update_progress(100)
-            print(filename + ' calibrated and written to ' + out_filename)
+            print('calibrating' + filename)
+            # valid rad file, now choose values based on exp time
+            try:
+                values = self.choose_values(custom_dir)
+                if self.total_files == 1:
+                    self.update_progress(25)
+                new_values = self.do_division(values)
+                if self.total_files == 1:
+                    self.update_progress(75)
+                final_values = self.do_multiplication(new_values)
+                out_filename = self.radfile.replace('RAD', 'REF')
+                out_filename = out_filename.replace('rad', 'ref')
+                if out_dir is not None:
+                    # copy original file to new out directory
+                    (og_path, og_filename) = os.path.split(filename)
+                    copyfile(filename, os.path.join(out_dir, og_filename))
+                    # then save calibrated file to out dir also
+                    (path, filename) = os.path.split(out_filename)
+                    out_filename = os.path.join(out_dir, filename)
+                write_final(out_filename, self.wavelength, final_values)
+                if self.total_files == 1:
+                    self.update_progress(100)
+                print(filename + ' calibrated and written to ' + out_filename)
+            except NonStandardExposureTimeException:
+                # this file has been logged, but keep going
+                pass
 
     def calibrate_directory(self, directory, custom_dir, out_dir):
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])

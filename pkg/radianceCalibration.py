@@ -2,7 +2,7 @@ import argparse
 import os
 import math as math
 import numpy as np
-import pkg.constant as cnst
+import pkg.constant as constants
 import sys
 from pkg.InputType import InputType
 from pkg.Utilities import get_integration_time, write_final, get_header_values
@@ -20,6 +20,15 @@ class RadianceCalibration:
         self.main_app = main_app
         self.total_files = 1
         self.current_file = 1
+        self.header_string = ""
+
+    def get_headers(self, filename):
+        """get_headers
+        Just grab the first 29 lines (the header) to be copied to the calibrated rad file
+        """
+        with open(filename, 'r') as f:
+            self.header_string = [next(f) for x in range(29)]
+        print(self.header_string)
 
     def read_spectra(self, filename):
         """read_spectra
@@ -74,7 +83,7 @@ class RadianceCalibration:
         :return: the solid angle, in radians
         """
         distance = float(self.headers['distToTarget'])
-        return math.pi * math.pow(math.sin(math.atan(cnst.aperture / 2 / distance)), 2)
+        return math.pi * math.pow(math.sin(math.atan(constants.aperture / 2 / distance)), 2)
 
     def get_area_on_target(self):
         """get_area_on_target
@@ -85,7 +94,7 @@ class RadianceCalibration:
         :return: the area on the target
         """
         distance = float(self.headers['distToTarget'])
-        return math.pi * math.pow(cnst.fov * distance / 2 / 10, 2)
+        return math.pi * math.pow(constants.fov * distance / 2 / 10, 2)
 
     @staticmethod
     def get_radiance(photons, wavelengths, t_int, fov_tgt, sa_steradian):
@@ -141,7 +150,7 @@ class RadianceCalibration:
         :param wavelengths: wavelengths of the radiance values
         :return: the final radiance in correct output units
         """
-        rad_hc = np.multiply(radiance, cnst.hc)
+        rad_hc = np.multiply(radiance, constants.hc)
         converted_rad = np.divide(rad_hc, np.multiply(wavelengths, 1E-9))
         return np.multiply(converted_rad, 1E7)
 
@@ -161,6 +170,7 @@ class RadianceCalibration:
         """
         if "psv" in ccam_file.lower() and ccam_file.lower().endswith(".tab"):
             self.headers = get_header_values(ccam_file)
+            self.get_headers(ccam_file)
             self.read_spectra(ccam_file)
             self.remove_offsets()
 
@@ -197,7 +207,7 @@ class RadianceCalibration:
                 # then save this file to out directory
                 (path, filename) = os.path.split(out_filename)
                 out_filename = os.path.join(out_dir + filename)
-            write_final(out_filename, wavelength, radiance_final)
+            write_final(out_filename, wavelength, radiance_final, header=self.header_string)
             print(ccam_file + ' calibrated and written to ' + out_filename)
             if self.total_files == 1:
                 self.update_progress(100)

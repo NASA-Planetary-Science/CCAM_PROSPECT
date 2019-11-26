@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ca39b9a2-c7ba-4072-88e3-6c55ba5da1ff" name="Default Changelist" comment="" />
+    <list default="true" id="ca39b9a2-c7ba-4072-88e3-6c55ba5da1ff" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pkg/NonStandardExposureTimeException.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/radianceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/radianceCalibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -11,10 +17,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/relativeReflectanceCalibration.py">
+        <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="80">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="604">
+              <caret line="130" column="26" lean-forward="true" selection-start-line="130" selection-start-column="26" selection-end-line="130" selection-end-column="26" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -23,34 +29,49 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/Utilities.py">
+        <entry file="file://$PROJECT_DIR$/pkg/NonStandardExposureTimeException.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="39" selection-start-line="39" selection-end-line="39" />
+            <state relative-caret-position="30">
+              <caret line="2" selection-start-line="2" selection-end-line="2" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/mainapplication.py">
+        <entry file="file://$PROJECT_DIR$/pkg/radianceCalibration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1771">
-              <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-              <folding>
-                <element signature="e#0#20#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/radianceCalibration.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2895">
-              <caret line="193" column="4" selection-start-line="193" selection-start-column="4" selection-end-line="193" selection-end-column="4" />
+            <state relative-caret-position="435">
+              <caret line="29" column="59" selection-start-line="29" selection-start-column="59" selection-end-line="29" selection-end-column="59" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pkg/mainapplication.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="401">
+              <caret line="149" selection-start-line="149" selection-end-line="149" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="309">
+              <caret line="1282" selection-start-line="1282" selection-end-line="1282" />
             </state>
           </provider>
         </entry>
@@ -111,7 +132,6 @@
         <option value="$PROJECT_DIR$/sol76/Target11_60_95.txt.conv" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
         <option value="$PROJECT_DIR$/pkg/Input_Type.py" />
-        <option value="$PROJECT_DIR$/pkg/Utilities.py" />
         <option value="$PROJECT_DIR$/pkg/gui.py" />
         <option value="$PROJECT_DIR$/pkg/setup.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
@@ -123,16 +143,19 @@
         <option value="$PROJECT_DIR$/sol76/CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos" />
         <option value="$PROJECT_DIR$/pkg/Parser.py" />
         <option value="$PROJECT_DIR$/pkg/MyParser.py" />
-        <option value="$PROJECT_DIR$/pkg/radianceCalibration.py" />
         <option value="$PROJECT_DIR$/pkg/mainapplication.py" />
+        <option value="$PROJECT_DIR$/pkg/radianceCalibration.py" />
+        <option value="$PROJECT_DIR$/pkg/NonStandardExposureTimeError.py" />
+        <option value="$PROJECT_DIR$/pkg/Utilities.py" />
         <option value="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="23" />
-    <option name="width" value="1680" />
-    <option name="height" value="961" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-2560" />
+    <option name="y" value="-191" />
+    <option name="width" value="2560" />
+    <option name="height" value="1417" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -140,23 +163,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdartcalibration" type="462c0819:PsiDirectoryNode" />
+              <item name="pdart-calibration" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdartcalibration" type="462c0819:PsiDirectoryNode" />
+              <item name="pdart-calibration" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdartcalibration" type="462c0819:PsiDirectoryNode" />
-              <item name="sol76" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
@@ -171,24 +188,25 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/sol76" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sol76" />
+      <recent name="$PROJECT_DIR$/pkg/sol76" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/constants" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/pkg/sol76" />
       <recent name="$PROJECT_DIR$/pkg" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/sol76" />
-      <recent name="$PROJECT_DIR$/pkg/sol76" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -348,19 +366,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="2" y="23" width="1680" height="960" extended-state="6" />
+    <frame x="-2560" y="-191" width="2560" height="1417" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.1615431" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.10634108" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" weight="0.32949308" />
+      <window_info anchor="bottom" id="Terminal" order="0" weight="0.3290566" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="2" visible="true" weight="0.32949308" />
+      <window_info anchor="bottom" id="Python Console" order="2" weight="0.21584906" />
       <window_info anchor="bottom" id="Message" order="3" />
-      <window_info anchor="bottom" id="Find" order="4" weight="0.32888466" />
+      <window_info anchor="bottom" id="Find" order="4" weight="0.32830188" />
       <window_info anchor="bottom" id="Version Control" order="5" weight="0.32972524" />
-      <window_info anchor="bottom" id="Run" order="6" weight="0.18663594" />
-      <window_info anchor="bottom" id="Debug" order="7" weight="0.26382488" />
+      <window_info anchor="bottom" id="Run" order="6" visible="true" weight="0.18641509" />
+      <window_info anchor="bottom" id="Debug" order="7" weight="0.26339623" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" weight="0.32972524" />
@@ -449,13 +468,7 @@
     <entry file="file://$PROJECT_DIR$/sol76/CL0_404238481PSV_F0050104CCAM02076P1.TAB" />
     <entry file="file://$PROJECT_DIR$/sol76/CL9_404238538PSV_F0050104CCAM02076P1.TAB" />
     <entry file="file://$PROJECT_DIR$/sol76/CL0_404238481RAD_F0050104CCAM02076P1.TAB" />
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/Target11_60_95.txt.conv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="793">
-          <caret line="6143" column="12" selection-start-line="6143" selection-start-column="12" selection-end-line="6143" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/Target11_60_95.txt.conv" />
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/_bootlocale.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
@@ -484,119 +497,80 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/setup.py" />
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="45">
-            <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/README.md" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/requirements.txt" />
     <entry file="file://$PROJECT_DIR$/pkg/cli.py" />
     <entry file="file://$PROJECT_DIR$/cli.py" />
     <entry file="file://$PROJECT_DIR$/pkg/test.spec" />
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/runApp.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sol76/cl0_404238481cor_f0050104ccam02076p1.tab">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sol76/cl9_404238538cor_f0050104ccam02076p1.tab">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="738">
-          <caret line="6143" selection-start-line="6143" selection-end-line="6143" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="6144" selection-start-line="6144" selection-end-line="6144" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="6144" selection-start-line="6144" selection-end-line="6144" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="6138" column="9" lean-forward="true" selection-start-line="6138" selection-start-column="9" selection-end-line="6138" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="6144" selection-start-line="6144" selection-end-line="6144" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/runApp.py" />
+    <entry file="file://$PROJECT_DIR$/sol76/cl0_404238481cor_f0050104ccam02076p1.tab" />
+    <entry file="file://$PROJECT_DIR$/sol76/cl9_404238538cor_f0050104ccam02076p1.tab" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/sol76/CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos" />
     <entry file="file://$PROJECT_DIR$/pkg/MyParser.py" />
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/constant.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="14" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/__init__.py">
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/constant.py" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/InputType.py" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/mainapplication.py" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/Utilities.py" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/radianceCalibration.py" />
+    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/relativeReflectanceCalibration.py" />
+    <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.110111.log">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12096">
+        <state relative-caret-position="309">
           <caret line="1282" selection-start-line="1282" selection-end-line="1282" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/InputType.py">
+    <entry file="file://$PROJECT_DIR$/pkg/mainapplication.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
+        <state relative-caret-position="401">
+          <caret line="149" selection-start-line="149" selection-end-line="149" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/mainapplication.py">
+    <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1771">
-          <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="15">
+          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/Utilities.py">
+    <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.115257.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/NonStandardExposureTimeException.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
+        <state relative-caret-position="30">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/radianceCalibration.py">
+    <entry file="file://$PROJECT_DIR$/pkg/radianceCalibration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2895">
-          <caret line="193" column="4" selection-start-line="193" selection-start-column="4" selection-end-line="193" selection-end-column="4" />
+        <state relative-caret-position="435">
+          <caret line="29" column="59" selection-start-line="29" selection-start-column="59" selection-end-line="29" selection-end-column="59" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../pdartcalibration/pkg/relativeReflectanceCalibration.py">
+    <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.115400.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.115440.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="604">
+          <caret line="130" column="26" lean-forward="true" selection-start-line="130" selection-start-column="26" selection-end-line="130" selection-end-column="26" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
