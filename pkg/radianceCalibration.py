@@ -168,59 +168,62 @@ class RadianceCalibration:
         :param out_dir: output directory
         """
         # check that file exists, is a file, and is a psv *.tab file
-        if os.path.exists(ccam_file) and os.path.isfile(ccam_file) and "psv" in ccam_file.lower() \
-                and ccam_file.lower().endswith(".tab"):
-            self.headers = get_header_values(ccam_file)
-            self.get_headers(ccam_file)
-            self.read_spectra(ccam_file)
-            self.remove_offsets()
+        if os.path.exists(ccam_file) and os.path.isfile(ccam_file):
+            if "psv" in ccam_file.lower() and ccam_file.lower().endswith(".tab"):
+                self.headers = get_header_values(ccam_file)
+                self.get_headers(ccam_file)
+                self.read_spectra(ccam_file)
+                self.remove_offsets()
 
-            t_int = get_integration_time(ccam_file)
-            sa_steradian = self.get_solid_angle()
-            fov_tgt = self.get_area_on_target()
-            if self.total_files == 1:
-                self.update_progress(25)
-            # combine arrays into one ordered by wavelength
-            all_spectra_dn = np.concatenate([self.uv, self.vis, self.vnir])
+                t_int = get_integration_time(ccam_file)
+                sa_steradian = self.get_solid_angle()
+                fov_tgt = self.get_area_on_target()
+                if self.total_files == 1:
+                    self.update_progress(25)
+                # combine arrays into one ordered by wavelength
+                all_spectra_dn = np.concatenate([self.uv, self.vis, self.vnir])
 
-            # get the wavelengths and gains from gain_mars.edit
-            my_path = os.path.abspath(os.path.dirname(__file__))
-            gain_file = os.path.join(my_path, "../constants/gain_mars.edit")
-            (wavelength, gain) = self.get_wl_and_gain(gain_file)
-            all_spectra_photons = np.multiply(all_spectra_dn, gain)
-            radiance = self.get_radiance(all_spectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
-            if self.total_files == 1:
-                self.update_progress(50)
+                # get the wavelengths and gains from gain_mars.edit
+                my_path = os.path.abspath(os.path.dirname(__file__))
+                gain_file = os.path.join(my_path, "../constants/gain_mars.edit")
+                (wavelength, gain) = self.get_wl_and_gain(gain_file)
+                all_spectra_photons = np.multiply(all_spectra_dn, gain)
+                radiance = self.get_radiance(all_spectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
+                if self.total_files == 1:
+                    self.update_progress(50)
 
-            # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
-            radiance_final = self.convert_to_output_units(radiance, wavelength)
+                # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
+                radiance_final = self.convert_to_output_units(radiance, wavelength)
 
-            out_filename = ccam_file.replace('psv', 'rad')
-            out_filename = out_filename.replace('PSV', 'RAD')
-            if out_dir is not None:
-                # copy original file to new out directory
-                (og_path, og_filename) = os.path.split(ccam_file)
-                move_to_loc = os.path.join(out_dir, og_filename)
-                try:
-                    copyfile(ccam_file, move_to_loc)
-                except SameFileError:
-                    pass
-                # then save this file to out directory
-                (path, filename) = os.path.split(out_filename)
-                out_filename = os.path.join(out_dir + filename)
-            write_final(out_filename, wavelength, radiance_final, header=self.header_string)
-            print(ccam_file + ' calibrated and written to ' + out_filename)
-            if self.total_files == 1:
-                self.update_progress(100)
-            return True
+                out_filename = ccam_file.replace('psv', 'rad')
+                out_filename = out_filename.replace('PSV', 'RAD')
+                if out_dir is not None:
+                    # copy original file to new out directory
+                    (og_path, og_filename) = os.path.split(ccam_file)
+                    move_to_loc = os.path.join(out_dir, og_filename)
+                    try:
+                        copyfile(ccam_file, move_to_loc)
+                    except SameFileError:
+                        pass
+                    # then save this file to out directory
+                    (path, filename) = os.path.split(out_filename)
+                    out_filename = os.path.join(out_dir + filename)
+                write_final(out_filename, wavelength, radiance_final, header=self.header_string)
+                print(ccam_file + ' calibrated and written to ' + out_filename)
+                if self.total_files == 1:
+                    self.update_progress(100)
+                return True
+            else:
+                print(ccam_file + ": not a raw PSV file, skipping")
+                return False
         else:
-            print(ccam_file + ": not a raw PSV file, skipping")
-            return False
+            raise FileNotFoundError
 
     def calibrate_directory(self, directory, out_dir):
         # total number of files to potentially calibrate
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
+
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
             self.calibrate_file(full_path, out_dir)

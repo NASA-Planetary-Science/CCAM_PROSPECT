@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter import messagebox
 from pkg.InputType import InputType
 from pkg.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from pkg.radianceCalibration import RadianceCalibration
@@ -147,7 +148,13 @@ class MainApplication(tk.Frame):
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
 
-        self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
+        try:
+            self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
+        except FileNotFoundError:
+            input_type = 'File'
+            if file_type.value is InputType.DIRECTORY.value:
+                input_type = 'Directory'
+            messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
 
     def start_rad(self):
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
@@ -160,8 +167,13 @@ class MainApplication(tk.Frame):
             out_dir = self.out_directory_entry.get()
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
-
-        self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir)
+        try:
+            self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir)
+        except FileNotFoundError:
+            input_type = 'File'
+            if file_type.value is InputType.DIRECTORY.value:
+                input_type = 'Directory'
+            messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
 
     def select_output_directory(self):
         btn = self.out_directory_type.get()
