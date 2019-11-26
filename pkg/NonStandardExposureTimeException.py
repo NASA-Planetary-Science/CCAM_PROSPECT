@@ -1,0 +1,2 @@
+class NonStandardExposureTimeException(Exception):
+    pass
