@@ -161,9 +161,6 @@ class RelativeReflectanceCalibration:
                 out_filename = self.radfile.replace('RAD', 'REF')
                 out_filename = out_filename.replace('rad', 'ref')
                 if out_dir is not None:
-                    # copy original file to new out directory
-                    (og_path, og_filename) = os.path.split(filename)
-                    copyfile(filename, os.path.join(out_dir, og_filename))
                     # then save calibrated file to out dir also
                     (path, filename) = os.path.split(out_filename)
                     out_filename = os.path.join(out_dir, filename)
