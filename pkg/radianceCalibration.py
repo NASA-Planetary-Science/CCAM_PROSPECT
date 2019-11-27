@@ -219,11 +219,12 @@ class RadianceCalibration:
 
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
-            self.calibrate_file(full_path, out_dir)
-            self.current_file += 1
-            self.update_progress()
-            if os.path.isdir(os.path.join(directory, file)):
+            if os.path.isdir(full_path) and full_path is not out_dir:
                 self.calibrate_directory(os.path.join(directory, file), out_dir)
+            else:
+                self.calibrate_file(full_path, out_dir)
+                self.current_file += 1
+                self.update_progress()
         self.update_progress(100)
 
     def calibrate_list(self, list_file, out_dir):

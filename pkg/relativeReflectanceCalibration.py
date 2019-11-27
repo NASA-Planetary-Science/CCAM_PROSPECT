@@ -182,7 +182,8 @@ class RelativeReflectanceCalibration:
                 self.current_file += 1
                 self.update_progress()
             elif os.path.isdir(os.path.join(directory, file_name)):
-                self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
+                if os.path.join(directory, file_name) is not out_dir:
+                    self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
         self.update_progress(100)
 
     def calibrate_list(self, list_file, custom_dir, out_dir):
