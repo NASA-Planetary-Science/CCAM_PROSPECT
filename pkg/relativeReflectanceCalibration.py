@@ -176,14 +176,13 @@ class RelativeReflectanceCalibration:
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
         for file_name in os.listdir(directory):
+            full_path = os.path.join(directory, file_name)
             if ('psv' in file_name.lower() or 'rad' in file_name.lower()) and '.tab' in file_name.lower():
-                full_path = os.path.join(directory, file_name)
                 self.calibrate_file(full_path, custom_dir, out_dir)
                 self.current_file += 1
                 self.update_progress()
-            elif os.path.isdir(os.path.join(directory, file_name)):
-                if os.path.join(directory, file_name) is not out_dir:
-                    self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
+            elif os.path.isdir(full_path) and full_path is not out_dir:
+                self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
         self.update_progress(100)
 
     def calibrate_list(self, list_file, custom_dir, out_dir):
