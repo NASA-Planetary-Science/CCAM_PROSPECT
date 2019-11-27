@@ -155,6 +155,7 @@ class MainApplication(tk.Frame):
             if file_type.value is InputType.DIRECTORY.value:
                 input_type = 'Directory'
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        print('******** finished calibration ********')
 
     def start_rad(self):
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
@@ -174,6 +175,7 @@ class MainApplication(tk.Frame):
             if file_type.value is InputType.DIRECTORY.value:
                 input_type = 'Directory'
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        print('******** finished calibration ********')
 
     def select_output_directory(self):
         btn = self.out_directory_type.get()
