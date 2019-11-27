@@ -198,13 +198,6 @@ class RadianceCalibration:
                 out_filename = ccam_file.replace('psv', 'rad')
                 out_filename = out_filename.replace('PSV', 'RAD')
                 if out_dir is not None:
-                    # copy original file to new out directory
-                    (og_path, og_filename) = os.path.split(ccam_file)
-                    move_to_loc = os.path.join(out_dir, og_filename)
-                    try:
-                        copyfile(ccam_file, move_to_loc)
-                    except SameFileError:
-                        pass
                     # then save this file to out directory
                     (path, filename) = os.path.split(out_filename)
                     out_filename = os.path.join(out_dir + filename)
@@ -226,11 +219,12 @@ class RadianceCalibration:
 
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
-            self.calibrate_file(full_path, out_dir)
-            self.current_file += 1
-            self.update_progress()
-            if os.path.isdir(os.path.join(directory, file)):
+            if os.path.isdir(full_path) and full_path is not out_dir:
                 self.calibrate_directory(os.path.join(directory, file), out_dir)
+            else:
+                self.calibrate_file(full_path, out_dir)
+                self.current_file += 1
+                self.update_progress()
         self.update_progress(100)
 
     def calibrate_list(self, list_file, out_dir):
@@ -245,7 +239,7 @@ class RadianceCalibration:
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir):
         if file_type.value is InputType.FILE.value:
-            self.calibrate_file(file_name, out_dir)
+            return self.calibrate_file(file_name, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, out_dir)
         else:
