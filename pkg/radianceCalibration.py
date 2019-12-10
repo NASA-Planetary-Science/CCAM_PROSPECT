@@ -169,7 +169,8 @@ class RadianceCalibration:
         """
         # check that file exists, is a file, and is a psv *.tab file
         if os.path.exists(ccam_file) and os.path.isfile(ccam_file):
-            if "psv" in ccam_file.lower() and ccam_file.lower().endswith(".tab"):
+            if "psv" in ccam_file.lower() and \
+                    (ccam_file.lower().endswith(".tab") or ccam_file.lower().endswith(".txt")):
                 self.headers = get_header_values(ccam_file)
                 self.get_headers(ccam_file)
                 self.read_spectra(ccam_file)

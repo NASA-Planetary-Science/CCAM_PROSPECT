@@ -70,8 +70,13 @@ class RelativeReflectanceCalibration:
         # name of the rad file
         self.radfile = input_file.replace('psv', 'rad')
         self.psvfile = input_file.replace('rad', 'psv')
-        exists = os.path.isfile(self.radfile)
-        if not exists:
+
+        if os.path.isfile(self.radfile) and os.path.isfile(self.radfile):
+            if "rad" in self.radfile.lower() and self.radfile.lower().endswith(".tab"):
+                return True
+            else:
+                return False
+        else:
             # create rad file and change path to where it will end up in out_dir
             if out_dir is not None:
                 (path, filename) = os.path.split(self.radfile)
@@ -82,8 +87,6 @@ class RelativeReflectanceCalibration:
                 out_dir = out_dir + '/'
             radiance_cal = RadianceCalibration()
             return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir)
-        else:
-            return True
 
     def choose_values(self, custom_target_file=None):
         """
@@ -171,6 +174,8 @@ class RelativeReflectanceCalibration:
             except NonStandardExposureTimeException:
                 # this file has been logged, but keep going
                 pass
+        else:
+            print(filename + ' not a valid raw (psv) or rad file.')
 
     def calibrate_directory(self, directory, custom_dir, out_dir):
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
