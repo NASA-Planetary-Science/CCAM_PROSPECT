@@ -2,11 +2,10 @@ import argparse
 import os
 import math as math
 import numpy as np
-import pkg.constant as constants
 import sys
-from pkg.InputType import InputType
-from pkg.Utilities import get_integration_time, write_final, get_header_values
-from shutil import copyfile, SameFileError
+import ccam_calibration.utils.constant as constants
+from ccam_calibration.utils.InputType import InputType
+from ccam_calibration.utils.Utilities import get_integration_time, write_final, get_header_values
 
 
 class RadianceCalibration:
@@ -186,7 +185,7 @@ class RadianceCalibration:
 
                 # get the wavelengths and gains from gain_mars.edit
                 my_path = os.path.abspath(os.path.dirname(__file__))
-                gain_file = os.path.join(my_path, "../constants/gain_mars.edit")
+                gain_file = os.path.join(my_path, "constants/gain_mars.edit")
                 (wavelength, gain) = self.get_wl_and_gain(gain_file)
                 all_spectra_photons = np.multiply(all_spectra_dn, gain)
                 radiance = self.get_radiance(all_spectra_photons, wavelength, t_int, fov_tgt, sa_steradian)

@@ -2,7 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca39b9a2-c7ba-4072-88e3-6c55ba5da1ff" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MANIFEST.in" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ccam_calibration/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup.cfg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants/gain_mars.edit" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/constants/gain_mars.edit" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/InputType.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/utils/InputType.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/NonStandardExposureTimeException.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/utils/NonStandardExposureTimeException.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/utils/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/utils/constant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/mainapplication.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/mainapplication.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/radianceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/radianceCalibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runApp.py" beforeDir="false" afterPath="$PROJECT_DIR$/runApp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sol76/CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/sol76/CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sol76/CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/sol76/CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sol76/CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/sol76/CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sol76/CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/sol76/CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sol76/Target11_60_95.txt.conv" beforeDir="false" afterPath="$PROJECT_DIR$/ccam_calibration/sol76/Target11_60_95.txt.conv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,10 +34,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
+        <entry file="file://$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="20" column="49" lean-forward="true" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="49" />
+            <state relative-caret-position="293">
+              <caret line="50" column="42" selection-start-line="50" selection-start-column="42" selection-end-line="50" selection-end-column="42" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -25,10 +46,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/radianceCalibration.py">
+        <entry file="file://$PROJECT_DIR$/ccam_calibration/radianceCalibration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="643">
-              <caret line="206" column="45" lean-forward="true" selection-start-line="206" selection-start-column="45" selection-end-line="206" selection-end-column="45" />
+            <state relative-caret-position="197">
+              <caret line="242" selection-start-line="242" selection-end-line="242" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -37,10 +58,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/mainapplication.py">
+        <entry file="file://$PROJECT_DIR$/ccam_calibration/mainapplication.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="138" selection-start-line="138" selection-end-line="138" />
+            <state relative-caret-position="383">
+              <caret line="151" column="40" lean-forward="true" selection-start-line="151" selection-start-column="40" selection-end-line="151" selection-end-column="40" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -49,10 +70,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
+        <entry file="file://$PROJECT_DIR$/runApp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" selection-start-line="19" selection-end-line="19" />
+            <state relative-caret-position="60">
+              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="507" selection-start-line="507" selection-end-line="507" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccam_calibration/utils/Utilities.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="22" selection-start-line="22" selection-end-line="22" />
             </state>
           </provider>
         </entry>
@@ -80,7 +119,6 @@
       <find>inputType</find>
       <find>None</find>
       <find>gain_mars</find>
-      <find>sol</find>
       <find>aperature</find>
       <find>../</find>
       <find>p3</find>
@@ -95,6 +133,8 @@
       <find>move</find>
       <find>not a valid</find>
       <find>bad_exp</find>
+      <find>sol</find>
+      <find>does not exi</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -109,7 +149,6 @@
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/convertCCAM2Radiance.py" />
-        <option value="$PROJECT_DIR$/__init__.py" />
         <option value="$PROJECT_DIR$/pkg/convertCCAM2Radiance.py" />
         <option value="$PROJECT_DIR$/pkg/constants.py" />
         <option value="$PROJECT_DIR$/pkg/__init__.py" />
@@ -133,14 +172,20 @@
         <option value="$PROJECT_DIR$/pkg/Utilities.py" />
         <option value="$PROJECT_DIR$/pkg/radianceCalibration.py" />
         <option value="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" />
+        <option value="$PROJECT_DIR$/__init__.py" />
+        <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/runApp.py" />
+        <option value="$PROJECT_DIR$/ccam_calibration/mainapplication.py" />
+        <option value="$PROJECT_DIR$/ccam_calibration/radianceCalibration.py" />
+        <option value="$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-2560" />
-    <option name="y" value="-191" />
-    <option name="width" value="2560" />
-    <option name="height" value="1417" />
+    <option name="x" value="100" />
+    <option name="y" value="23" />
+    <option name="width" value="1483" />
+    <option name="height" value="959" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -148,50 +193,43 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdart-calibration" type="462c0819:PsiDirectoryNode" />
+              <item name="ccam_calibration" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ccam_calibration" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdart-calibration" type="462c0819:PsiDirectoryNode" />
-              <item name="pkg" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
-            </path>
-            <path>
-              <item name="pdart-calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
-              <item name="Scratches" type="d62648e6:ScratchProjectViewPane$MyRootNode" />
+              <item name="ccam_calibration" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ccam_calibration" type="462c0819:PsiDirectoryNode" />
+              <item name="ccam_calibration" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/sol76" />
-      <recent name="$PROJECT_DIR$/pkg/sol76" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ccam_calibration/utils" />
+      <recent name="$PROJECT_DIR$/ccam_calibration" />
       <recent name="$PROJECT_DIR$/constants" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/pkg/sol76" />
-      <recent name="$PROJECT_DIR$/pkg" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/sol76" />
+      <recent name="$PROJECT_DIR$/pkg/sol76" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -229,14 +267,14 @@
       <method v="2" />
     </configuration>
     <configuration name="gui" type="PythonConfigurationType" factoryName="Python">
-      <module name="pdart-calibration" />
+      <module name="ccam_calibration" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pkg" />
+      <option name="SDK_HOME" value="/usr/local/bin/python3.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -351,20 +389,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1680" height="960" extended-state="6" />
+    <frame x="100" y="23" width="1483" height="959" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.07896323" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.22845417" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" weight="0.3290566" />
+      <window_info anchor="bottom" id="Terminal" order="0" weight="0.32871974" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="2" weight="0.21584906" />
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32718894" />
       <window_info anchor="bottom" id="Version Control" order="5" weight="0.32972524" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.18548387" />
-      <window_info anchor="bottom" id="Debug" order="7" weight="0.2626728" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.1845444" />
+      <window_info active="true" anchor="bottom" id="Debug" order="7" visible="true" weight="0.26182237" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" weight="0.32972524" />
@@ -377,27 +415,27 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pkg/mainapplication.py</url>
+          <url>file://$PROJECT_DIR$/ccam_calibration/mainapplication.py</url>
           <line>138</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py</url>
+          <url>file://$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py</url>
           <line>187</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py</url>
+          <url>file://$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py</url>
           <line>158</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pkg/Utilities.py</url>
+          <url>file://$PROJECT_DIR$/ccam_calibration/utils/Utilities.py</url>
           <line>19</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py</url>
+          <url>file://$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py</url>
           <line>29</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
@@ -439,25 +477,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="67" selection-start-line="21" selection-start-column="67" selection-end-line="21" selection-end-column="67" />
-          <folding>
-            <element signature="e#0#24#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sol76/cl0_404238481rad_f0050104ccam02076p3.tab" />
-    <entry file="file://$PROJECT_DIR$/sol76/cl0_404238481psv_f0050104ccam02076p3.lbl" />
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/genericpath.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -538,51 +557,75 @@
     <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.115400.log" />
     <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.115440.log" />
     <entry file="file://$PROJECT_DIR$/pkg/nonstandard_exptime_20191126.115640.log" />
-    <entry file="file://$PROJECT_DIR$/pkg/NonStandardExposureTimeException.py">
+    <entry file="file://$PROJECT_DIR$/ccam_calibration/utils/NonStandardExposureTimeException.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/nonstandard_exptime_20191210.152920.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="23" selection-start-column="23" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/runApp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="507" selection-start-line="507" selection-end-line="507" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccam_calibration/utils/Utilities.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccam_calibration/radianceCalibration.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="197">
-          <caret line="1282" selection-start-line="1282" selection-end-line="1282" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/radianceCalibration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="643">
-          <caret line="206" column="45" lean-forward="true" selection-start-line="206" selection-start-column="45" selection-end-line="206" selection-end-column="45" />
+          <caret line="242" selection-start-line="242" selection-end-line="242" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/mainapplication.py">
+    <entry file="file://$PROJECT_DIR$/ccam_calibration/mainapplication.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="138" selection-start-line="138" selection-end-line="138" />
+        <state relative-caret-position="383">
+          <caret line="151" column="40" lean-forward="true" selection-start-line="151" selection-start-column="40" selection-end-line="151" selection-end-column="40" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
+    <entry file="file://$PROJECT_DIR$/ccam_calibration/relativeReflectanceCalibration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="20" column="49" lean-forward="true" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="49" />
+        <state relative-caret-position="293">
+          <caret line="50" column="42" selection-start-line="50" selection-start-column="42" selection-end-line="50" selection-end-column="42" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

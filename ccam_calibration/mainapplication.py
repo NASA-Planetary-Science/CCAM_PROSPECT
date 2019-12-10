@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from tkinter import messagebox
-from pkg.InputType import InputType
-from pkg.relativeReflectanceCalibration import RelativeReflectanceCalibration
-from pkg.radianceCalibration import RadianceCalibration
+from ccam_calibration.utils.InputType import InputType
+from ccam_calibration.relativeReflectanceCalibration import RelativeReflectanceCalibration
+from ccam_calibration.radianceCalibration import RadianceCalibration
 
 
 class MainApplication(tk.Frame):

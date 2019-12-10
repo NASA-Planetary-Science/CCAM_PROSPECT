@@ -2,10 +2,10 @@ import numpy as np
 import os
 import argparse
 from datetime import datetime
-from pkg.NonStandardExposureTimeException import NonStandardExposureTimeException
-from pkg.Utilities import get_integration_time, write_final
-from pkg.radianceCalibration import RadianceCalibration
-from pkg.InputType import InputType
+from ccam_calibration.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
+from ccam_calibration.utils.Utilities import get_integration_time, write_final
+from ccam_calibration.radianceCalibration import RadianceCalibration
+from ccam_calibration.utils.InputType import InputType
 
 
 class RelativeReflectanceCalibration:
@@ -48,7 +48,7 @@ class RelativeReflectanceCalibration:
         """
 
         my_path = os.path.abspath(os.path.dirname(__file__))
-        sol76dir = os.path.join(my_path, "../sol76")
+        sol76dir = os.path.join(my_path, "sol76")
         conv = os.path.join(sol76dir, 'Target11_60_95.txt.conv');
         values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
 
@@ -69,14 +69,14 @@ class RelativeReflectanceCalibration:
         """
         # name of the rad file - replace psv with rad (or PSV with RAD)
         self.radfile = input_file.replace('psv', 'rad')
-        self.radfile = input_file.replace('PSV', 'RAD')
+        self.radfile = self.radfile.replace('PSV', 'RAD')
         # rename to .TAB from .TXT
         self.radfile = self.radfile.replace('.TXT', '.tab')
         self.radfile = self.radfile.replace('.txt', '.tab')
 
         # if this was a rad file input, find name of original psv file
         self.psvfile = input_file.replace('rad', 'psv')
-        self.psvfile = input_file.replace('RAD', 'PSV')
+        self.psvfile = self.psvfile.replace('RAD', 'PSV')
 
         exists = False
         if os.path.isfile(self.radfile) and os.path.isfile(self.radfile):
@@ -105,7 +105,7 @@ class RelativeReflectanceCalibration:
         """
         if not custom_target_file:
             my_path = os.path.abspath(os.path.dirname(__file__))
-            sol76dir = os.path.join(my_path, "../sol76")
+            sol76dir = os.path.join(my_path, "sol76")
             ms7 = os.path.join(sol76dir, 'CL0_404238481PSV_F0050104CCAM02076P1.TXT.RAD.cor.7ms.txt.cos')
             ms34 = os.path.join(sol76dir, 'CL0_404238492PSV_F0050104CCAM02076P1.TXT.RAD.cor.34ms.txt.cos')
             ms404 = os.path.join(sol76dir, 'CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos')
