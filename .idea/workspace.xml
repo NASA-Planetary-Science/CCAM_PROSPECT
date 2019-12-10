@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca39b9a2-c7ba-4072-88e3-6c55ba5da1ff" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/pkg/mainapplication.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/mainapplication.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/radianceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/radianceCalibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
-              <caret line="179" selection-start-line="179" selection-end-line="179" />
+            <state relative-caret-position="255">
+              <caret line="192" column="97" selection-start-line="192" selection-start-column="97" selection-end-line="192" selection-end-column="97" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -27,8 +29,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/radianceCalibration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="492">
-              <caret line="222" column="72" lean-forward="true" selection-start-line="222" selection-start-column="72" selection-end-line="222" selection-end-column="72" />
+            <state relative-caret-position="643">
+              <caret line="206" column="45" lean-forward="true" selection-start-line="206" selection-start-column="45" selection-end-line="206" selection-end-column="45" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -36,11 +38,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/mainapplication.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="150" column="12" lean-forward="true" selection-start-line="150" selection-start-column="12" selection-end-line="150" selection-end-column="12" />
+            <state relative-caret-position="197">
+              <caret line="138" selection-start-line="138" selection-end-line="138" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -51,17 +53,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="31" selection-start-line="31" selection-end-line="31" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19185">
-              <caret line="1282" selection-start-line="1282" selection-end-line="1282" />
+            <state relative-caret-position="285">
+              <caret line="19" selection-start-line="19" selection-end-line="19" />
             </state>
           </provider>
         </entry>
@@ -102,6 +95,7 @@
       <find>print</find>
       <find>error</find>
       <find>move</find>
+      <find>not a valid</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -136,10 +130,10 @@
         <option value="$PROJECT_DIR$/pkg/Parser.py" />
         <option value="$PROJECT_DIR$/pkg/MyParser.py" />
         <option value="$PROJECT_DIR$/pkg/NonStandardExposureTimeError.py" />
+        <option value="$PROJECT_DIR$/pkg/mainapplication.py" />
         <option value="$PROJECT_DIR$/pkg/Utilities.py" />
         <option value="$PROJECT_DIR$/pkg/radianceCalibration.py" />
         <option value="$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py" />
-        <option value="$PROJECT_DIR$/pkg/mainapplication.py" />
       </list>
     </option>
   </component>
@@ -358,20 +352,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-2560" y="-191" width="2560" height="1417" extended-state="0" />
+    <frame x="0" y="23" width="1680" height="960" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.10634108" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.07896323" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="0" weight="0.3290566" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="2" weight="0.21584906" />
       <window_info anchor="bottom" id="Message" order="3" />
-      <window_info anchor="bottom" id="Find" order="4" weight="0.32830188" />
+      <window_info anchor="bottom" id="Find" order="4" weight="0.32718894" />
       <window_info anchor="bottom" id="Version Control" order="5" weight="0.32972524" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.18641509" />
-      <window_info anchor="bottom" id="Debug" order="7" weight="0.26339623" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.18548387" />
+      <window_info anchor="bottom" id="Debug" order="7" weight="0.2626728" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" weight="0.32972524" />
@@ -390,8 +384,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py</url>
-          <line>175</line>
+          <line>187</line>
           <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py</url>
+          <line>158</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pkg/Utilities.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py</url>
+          <line>29</line>
+          <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -537,34 +546,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/tkinter/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19185">
+        <state relative-caret-position="197">
           <caret line="1282" selection-start-line="1282" selection-end-line="1282" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
+    <entry file="file://$PROJECT_DIR$/pkg/Utilities.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="179" selection-start-line="179" selection-end-line="179" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="285">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/radianceCalibration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="492">
-          <caret line="222" column="72" lean-forward="true" selection-start-line="222" selection-start-column="72" selection-end-line="222" selection-end-column="72" />
+        <state relative-caret-position="643">
+          <caret line="206" column="45" lean-forward="true" selection-start-line="206" selection-start-column="45" selection-end-line="206" selection-end-column="45" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -573,10 +572,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/mainapplication.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="150" column="12" lean-forward="true" selection-start-line="150" selection-start-column="12" selection-end-line="150" selection-end-column="12" />
+        <state relative-caret-position="197">
+          <caret line="138" selection-start-line="138" selection-end-line="138" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/relativeReflectanceCalibration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="192" column="97" selection-start-line="192" selection-start-column="97" selection-end-line="192" selection-end-column="97" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -67,10 +67,21 @@ class RelativeReflectanceCalibration:
         :param out_dir: the chosen output directory
         :return:
         """
-        # name of the rad file
+        # name of the rad file - replace psv with rad (or PSV with RAD)
         self.radfile = input_file.replace('psv', 'rad')
+        self.radfile = input_file.replace('PSV', 'RAD')
+        # rename to .TAB from .TXT
+        self.radfile = self.radfile.replace('.TXT', '.tab')
+        self.radfile = self.radfile.replace('.txt', '.tab')
+
+        # if this was a rad file input, find name of original psv file
         self.psvfile = input_file.replace('rad', 'psv')
-        exists = os.path.isfile(self.radfile)
+        self.psvfile = input_file.replace('RAD', 'PSV')
+
+        exists = False
+        if os.path.isfile(self.radfile) and os.path.isfile(self.radfile):
+            if "rad" in self.radfile.lower() and self.radfile.lower().endswith(".tab"):
+                return True
         if not exists:
             # create rad file and change path to where it will end up in out_dir
             if out_dir is not None:
@@ -82,8 +93,6 @@ class RelativeReflectanceCalibration:
                 out_dir = out_dir + '/'
             radiance_cal = RadianceCalibration()
             return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir)
-        else:
-            return True
 
     def choose_values(self, custom_target_file=None):
         """
@@ -141,7 +150,8 @@ class RelativeReflectanceCalibration:
             if value is not None:
                 self.main_app.update_progress(value)
             else:
-                self.main_app.update_progress((self.current_file / self.total_files) * 100)
+                if self.total_files is not 0:
+                    self.main_app.update_progress((self.current_file / self.total_files) * 100)
 
     def calibrate_file(self, filename, custom_dir, out_dir):
 
@@ -171,18 +181,21 @@ class RelativeReflectanceCalibration:
             except NonStandardExposureTimeException:
                 # this file has been logged, but keep going
                 pass
+        else:
+            print(filename + ' not a valid raw (psv) or rad file.')
 
     def calibrate_directory(self, directory, custom_dir, out_dir):
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
         for file_name in os.listdir(directory):
             full_path = os.path.join(directory, file_name)
-            if ('psv' in file_name.lower() or 'rad' in file_name.lower()) and '.tab' in file_name.lower():
+            if os.path.isdir(full_path) and full_path is not out_dir:
+                self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
+            else:
                 self.calibrate_file(full_path, custom_dir, out_dir)
                 self.current_file += 1
                 self.update_progress()
-            elif os.path.isdir(full_path) and full_path is not out_dir:
-                self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
+
         self.update_progress(100)
 
     def calibrate_list(self, list_file, custom_dir, out_dir):
