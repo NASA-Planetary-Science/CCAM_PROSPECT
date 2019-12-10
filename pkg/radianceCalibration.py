@@ -198,6 +198,7 @@ class RadianceCalibration:
 
                 out_filename = ccam_file.replace('psv', 'rad')
                 out_filename = out_filename.replace('PSV', 'RAD')
+                out_filename = out_filename.replace('.TXT', '.tab')
                 if out_dir is not None:
                     # then save this file to out directory
                     (path, filename) = os.path.split(out_filename)
