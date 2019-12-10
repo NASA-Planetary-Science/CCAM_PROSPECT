@@ -2,7 +2,6 @@ import numpy as np
 import os
 import argparse
 from datetime import datetime
-from shutil import copyfile
 from pkg.NonStandardExposureTimeException import NonStandardExposureTimeException
 from pkg.Utilities import get_integration_time, write_final
 from pkg.radianceCalibration import RadianceCalibration
@@ -19,6 +18,7 @@ class RelativeReflectanceCalibration:
         self.current_file = 1
         now = datetime.now()
         self.bad_exposure_file = "nonstandard_exptime_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
+        open(self.bad_exposure_file, 'a').close()
 
     def do_division(self, values):
         """
