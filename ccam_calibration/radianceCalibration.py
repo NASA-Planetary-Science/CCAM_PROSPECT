@@ -5,7 +5,7 @@ import numpy as np
 import sys
 import ccam_calibration.utils.constant as constants
 from ccam_calibration.utils.InputType import InputType
-from ccam_calibration.utils.Utilities import get_integration_time, write_final, get_header_values
+from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
 
 
 class RadianceCalibration:
@@ -20,6 +20,7 @@ class RadianceCalibration:
         self.total_files = 1
         self.current_file = 1
         self.header_string = ""
+        self.original_label = ""
 
     def get_headers(self, filename):
         """get_headers
@@ -203,6 +204,11 @@ class RadianceCalibration:
                     (path, filename) = os.path.split(out_filename)
                     out_filename = os.path.join(out_dir + filename)
                 write_final(out_filename, wavelength, radiance_final, header=self.header_string)
+                if os.path.exists(self.original_label):
+                    # write new label based on original
+                    new_label = self.original_label.replace('PSV', 'RAD')
+                    new_label = new_label.replace('psv', 'rad')
+                    write_label(self.original_label, new_label, True)
                 print(ccam_file + ' calibrated and written to ' + out_filename)
                 if self.total_files == 1:
                     self.update_progress(100)
@@ -240,6 +246,7 @@ class RadianceCalibration:
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir):
         if file_type.value is InputType.FILE.value:
+            self.original_label = file_name.replace('.tab', '.lbl')
             return self.calibrate_file(file_name, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, out_dir)
