@@ -83,7 +83,7 @@ def write_label(original_label, new_label, is_rad):
                 description = "Relative Reflectance"
             # write the last chunk about the columns
             final_string = "" \
-"  OBJECT                          = COLUMN 1\n\
+"  OBJECT                         = COLUMN 1\n\
     NAME                         = \"WAVELENGTH\"\n\
     DATA_TYPE                    = ASCII_REAL\n\
     START_BYTE                   = 1\n\
