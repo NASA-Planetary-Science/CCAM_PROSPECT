@@ -19,7 +19,7 @@ def get_integration_time(filename):
 def write_final(file_to_write, wavelengths, values, header=None):
     with open(file_to_write, 'w') as f:
         if header is not None:
-            [f.write('"' + header[ii].rstrip('\n') + '"\n') for ii in range(0, len(header))]
+            [f.write(header[ii]) for ii in range(0, len(header))]
         [f.write('%3.3f %3.5f\n' % (wavelengths[ii], values[ii])) for ii in range(0, len(wavelengths))]
 
 
@@ -40,8 +40,6 @@ def write_label(original_label, new_label, is_rad):
                         continue  # skip the 11th line which describes a header since there is no header for REF
                 elif i == 11 or i == 17:
                     new_line = line.replace("PSV", file_type)
-                    if i == 11:
-                        new_line = new_line.replace("30)", "1)")
                 elif i == 39:
                     parts = line.split("=")
                     original_id = parts[1].strip()
@@ -83,14 +81,14 @@ def write_label(original_label, new_label, is_rad):
                 description = "Relative Reflectance"
             # write the last chunk about the columns
             final_string = "" \
-"  OBJECT                         = COLUMN 1\n\
-    NAME                         = \"WAVELENGTH\"\n\
-    DATA_TYPE                    = ASCII_REAL\n\
-    START_BYTE                   = 1\n\
-    BYTES                        = 42\n\
-    UNIT                         = \"WAVELENGTH\" \n\
-    DESCRIPTION                  = \"Wavelengths from CCAM_DEFAULT_WAVE.TAB\" \n\
-  END_OBJECT                     = COLUMN \n\
+"  OBJECT                          = COLUMN 1\n\
+    NAME                          = \"WAVELENGTH\"\n\
+    DATA_TYPE                     = ASCII_REAL\n\
+    START_BYTE                    = 1\n\
+    BYTES                         = 42\n\
+    UNIT                          = \"WAVELENGTH\" \n\
+    DESCRIPTION                   = \"Wavelengths from CCAM_DEFAULT_WAVE.TAB\" \n\
+  END_OBJECT                      = COLUMN \n\
  \n\
   OBJECT                          = COLUMN 2 \n\
     NAME                          = \"CHANNEL_INTENSITY\" \n\

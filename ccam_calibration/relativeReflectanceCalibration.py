@@ -2,15 +2,15 @@ import numpy as np
 import os
 import argparse
 from datetime import datetime
+from ccam_calibration.utils.InputType import InputType
 from ccam_calibration.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
 from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label
 from ccam_calibration.radianceCalibration import RadianceCalibration
-from ccam_calibration.utils.InputType import InputType
 
 
 class RelativeReflectanceCalibration:
     def __init__(self, main_app=None):
-        self.psvfile = ''
+        self.psv_file = ''
         self.rad_file = ''
         self.wavelength = []
         self.main_app = main_app
@@ -76,8 +76,8 @@ class RelativeReflectanceCalibration:
         self.rad_file = self.rad_file.replace('.txt', '.tab')
 
         # if this was a rad file input, find name of original psv file
-        self.psvfile = input_file.replace('rad', 'psv')
-        self.psvfile = self.psvfile.replace('RAD', 'PSV')
+        self.psv_file = input_file.replace('rad', 'psv')
+        self.psv_file = self.psv_file.replace('RAD', 'PSV')
 
         exists = False
         if os.path.isfile(self.rad_file) and os.path.isfile(self.rad_file):
@@ -135,7 +135,7 @@ class RelativeReflectanceCalibration:
             fn = None
             print('error - integration time in input file is not 7, 34, 404, or 5004. File tracked in log')
             with open(self.bad_exposure_file, 'a') as log:
-                log.write(self.psvfile + '\n')
+                log.write(self.psv_file + '\n')
                 raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
 
         if fn is not None:

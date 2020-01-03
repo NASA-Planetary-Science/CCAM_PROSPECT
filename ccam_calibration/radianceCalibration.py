@@ -3,8 +3,8 @@ import os
 import math as math
 import numpy as np
 import sys
-import ccam_calibration.utils.constant as constants
 from ccam_calibration.utils.InputType import InputType
+import ccam_calibration.utils.constant as constants
 from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
 
 

@@ -1,4 +1,3 @@
 include *.rst
 include *.md
-recursive-include sol76 *
-recursive-include constants *
+recursive-include ccam_calibration *
