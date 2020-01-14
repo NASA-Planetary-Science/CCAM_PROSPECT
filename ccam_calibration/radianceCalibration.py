@@ -196,9 +196,13 @@ class RadianceCalibration:
                 # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
                 radiance_final = self.convert_to_output_units(radiance, wavelength)
 
-                out_filename = ccam_file.replace('psv', 'rad')
-                out_filename = out_filename.replace('PSV', 'RAD')
-                out_filename = out_filename.replace('.TXT', '.tab')
+                (path, filename) = os.path.split(ccam_file)
+                rad_filename = filename.replace('psv', 'rad')
+                rad_filename = rad_filename.replace('PSV', 'RAD')
+                rad_filename = rad_filename.replace('.TXT', '.tab')
+                rad_filename = rad_filename.replace('.txt', '.tab')
+                out_filename = os.path.join(path, rad_filename)
+
                 if out_dir is not None:
                     # then save this file to out directory
                     (path, filename) = os.path.split(out_filename)
@@ -206,8 +210,11 @@ class RadianceCalibration:
                 write_final(out_filename, wavelength, radiance_final, header=self.header_string)
                 if os.path.exists(self.original_label):
                     # write new label based on original
-                    new_label = self.original_label.replace('PSV', 'RAD')
-                    new_label = new_label.replace('psv', 'rad')
+                    (path, filename) = os.path.split(self.original_label)
+                    new_label_filename = filename.replace('PSV', 'RAD')
+                    new_label_filename = new_label_filename.replace('psv', 'rad')
+                    (out_path, filename) = os.path.split(out_filename)
+                    new_label = os.path.join(out_path, new_label_filename)
                     write_label(self.original_label, new_label, True)
                 print(ccam_file + ' calibrated and written to ' + out_filename)
                 if self.total_files == 1:
@@ -247,6 +254,9 @@ class RadianceCalibration:
     def calibrate_to_radiance(self, file_type, file_name, out_dir):
         if file_type.value is InputType.FILE.value:
             self.original_label = file_name.replace('.tab', '.lbl')
+            self.original_label = self.original_label.replace('.txt', '.lbl')
+            self.original_label = self.original_label.replace('.TAB', '.lbl')
+            self.original_label = self.original_label.replace('.TXT', '.lbl')
             return self.calibrate_file(file_name, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, out_dir)

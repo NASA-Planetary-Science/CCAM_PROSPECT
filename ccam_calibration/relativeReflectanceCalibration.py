@@ -10,7 +10,6 @@ from ccam_calibration.radianceCalibration import RadianceCalibration
 
 class RelativeReflectanceCalibration:
     def __init__(self, main_app=None):
-        self.psv_file = ''
         self.rad_file = ''
         self.wavelength = []
         self.main_app = main_app
@@ -28,7 +27,8 @@ class RelativeReflectanceCalibration:
         :param values:
         :return: the divided values
         """
-        values_orig = [float(x.split(' ')[1].strip()) for x in open(self.rad_file).readlines() if '"' not in x]
+        with open(self.rad_file) as f:
+            values_orig = [float(x.split(' ')[1].strip()) for index, x in enumerate(f) if index > 28]
 
         # divide original values by the appropriate calibration values
         # to get relative reflectance.  If divide by 0, just = 0
@@ -69,15 +69,14 @@ class RelativeReflectanceCalibration:
         :return:
         """
         # name of the rad file - replace psv with rad (or PSV with RAD)
-        self.rad_file = input_file.replace('psv', 'rad')
-        self.rad_file = self.rad_file.replace('PSV', 'RAD')
+        (path, filename) = os.path.split(input_file)
+        rad_filename = filename.replace('psv', 'rad')
+        rad_filename = rad_filename.replace('PSV', 'RAD')
+        self.rad_file = os.path.join(path, rad_filename)
+
         # rename to .TAB from .TXT
         self.rad_file = self.rad_file.replace('.TXT', '.tab')
         self.rad_file = self.rad_file.replace('.txt', '.tab')
-
-        # if this was a rad file input, find name of original psv file
-        self.psv_file = input_file.replace('rad', 'psv')
-        self.psv_file = self.psv_file.replace('RAD', 'PSV')
 
         exists = False
         if os.path.isfile(self.rad_file) and os.path.isfile(self.rad_file):
@@ -135,7 +134,7 @@ class RelativeReflectanceCalibration:
             fn = None
             print('error - integration time in input file is not 7, 34, 404, or 5004. File tracked in log')
             with open(self.bad_exposure_file, 'a') as log:
-                log.write(self.psv_file + '\n')
+                log.write(self.rad_file + '\n')
                 raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
 
         if fn is not None:
@@ -178,8 +177,11 @@ class RelativeReflectanceCalibration:
                 write_final(out_filename, self.wavelength, final_values)
                 if os.path.exists(self.original_label):
                     # write new label based on original
-                    new_label = self.original_label.replace('PSV', 'REF')
-                    new_label = new_label.replace('psv', 'ref')
+                    (path, filename) = os.path.split(self.original_label)
+                    new_label_filename = filename.replace('PSV', 'REF')
+                    new_label_filename = new_label_filename.replace('psv', 'ref')
+                    (out_path, filename) = os.path.split(out_filename)
+                    new_label = os.path.join(out_path, new_label_filename)
                     write_label(self.original_label, new_label, False)
                 if self.total_files == 1:
                     self.update_progress(100)
@@ -217,6 +219,9 @@ class RelativeReflectanceCalibration:
     def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
         if file_type.value is InputType.FILE.value:
             self.original_label = file_name.replace('.tab', '.lbl')
+            self.original_label = self.original_label.replace('.txt', '.lbl')
+            self.original_label = self.original_label.replace('.TAB', '.lbl')
+            self.original_label = self.original_label.replace('.TXT', '.lbl')
             self.original_label = self.original_label.replace('rad', 'psv')
             self.original_label = self.original_label.replace('RAD', 'PSV')
             self.calibrate_file(file_name, custom_dir, out_dir)
