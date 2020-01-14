@@ -32,7 +32,7 @@ class RadianceCalibration:
     def read_spectra(self, filename):
         """read_spectra
         open the response file and read the appropriate lines into
-        each array of vnir, vis, and uv, as well as info from the header
+        each array of vnir, vis, and uv
 
             field    line
 

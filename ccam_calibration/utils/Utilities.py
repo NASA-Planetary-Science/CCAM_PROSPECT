@@ -33,6 +33,11 @@ def write_label(original_label, new_label, is_rad):
     with open(original_label, 'r') as og:
         with open(new_label, 'w') as new_file:
             for i, line in enumerate(og):
+                if i == 6:
+                    if is_rad:
+                        new_line = line
+                    else:
+                        new_line = line.replace("6473", "6173") # ref loses 30 records b/c of the header
                 if i == 10:
                     if is_rad:
                         new_line = line.replace("PSV", file_type)
@@ -81,26 +86,26 @@ def write_label(original_label, new_label, is_rad):
                 description = "Relative Reflectance"
             # write the last chunk about the columns
             final_string = "" \
-"  OBJECT                          = COLUMN 1\n\
-    NAME                          = \"WAVELENGTH\"\n\
-    DATA_TYPE                     = ASCII_REAL\n\
-    START_BYTE                    = 1\n\
-    BYTES                         = 42\n\
-    UNIT                          = \"WAVELENGTH\" \n\
-    DESCRIPTION                   = \"Wavelengths from CCAM_DEFAULT_WAVE.TAB\" \n\
-  END_OBJECT                      = COLUMN \n\
+"  OBJECT                          = COLUMN 1\r\n\
+    NAME                          = \"WAVELENGTH\"\r\n\
+    DATA_TYPE                     = ASCII_REAL\r\n\
+    START_BYTE                    = 1\r\n\
+    BYTES                         = 42\r\n\
+    UNIT                          = \"WAVELENGTH\" \r\n\
+    DESCRIPTION                   = \"Wavelengths from CCAM_DEFAULT_WAVE.TAB\" \r\n\
+  END_OBJECT                      = COLUMN \r\n\
  \n\
-  OBJECT                          = COLUMN 2 \n\
-    NAME                          = \"CHANNEL_INTENSITY\" \n\
-    DATA_TYPE                     = ASCII_REAL \n\
-    START_BYTE                    = 1 \n\
-    BYTES                         = 42 \n\
-    UNIT                          = \"" + unit + "\"\n\
-    DESCRIPTION                   = \"" + description + "\" \n\
-  END_OBJECT                      = COLUMN \n\
- \n\
- END_OBJECT                        = TABLE \n\
- \n\
+  OBJECT                          = COLUMN 2 \r\n\
+    NAME                          = \"CHANNEL_INTENSITY\" \r\n\
+    DATA_TYPE                     = ASCII_REAL \r\n\
+    START_BYTE                    = 1 \r\n\
+    BYTES                         = 42 \r\n\
+    UNIT                          = \"" + unit + "\"\r\n\
+    DESCRIPTION                   = \"" + description + "\" \r\n\
+  END_OBJECT                      = COLUMN \r\n\
+ \r\n\
+ END_OBJECT                        = TABLE \r\n\
+ \r\n\
 END"
             new_file.write(final_string)
 
