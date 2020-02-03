@@ -28,7 +28,7 @@ class RelativeReflectanceCalibration:
         :return: the divided values
         """
         with open(self.rad_file) as f:
-            values_orig = [float(x.split(' ')[1].strip()) for index, x in enumerate(f) if index > 28]
+            values_orig = [float(x.split()[1].strip()) for index, x in enumerate(f) if index > 28]
 
         # divide original values by the appropriate calibration values
         # to get relative reflectance.  If divide by 0, just = 0
