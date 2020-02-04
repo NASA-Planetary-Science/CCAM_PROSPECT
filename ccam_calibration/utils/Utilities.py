@@ -21,7 +21,7 @@ def write_final(file_to_write, wavelengths, values, header=None):
     with open(file_to_write, 'w') as f:
         if header is not None:
             [f.write(header[ii]) for ii in range(0, len(header))]
-        [f.write("  {:3.3f}     {:>10f}                  \n".format(wavelengths[ii], values[ii])) for ii in range(0, len(wavelengths))]
+        [f.write("   {:3.3f}      {:>10f}                \r\n".format(wavelengths[ii], values[ii])) for ii in range(0, len(wavelengths))]
 
 
 def write_label(original_label, new_label, is_rad):
