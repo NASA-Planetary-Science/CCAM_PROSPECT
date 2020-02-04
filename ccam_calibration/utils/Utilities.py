@@ -1,4 +1,5 @@
 from jinja2 import Environment, FileSystemLoader
+import os
 
 def get_integration_time(filename):
     """get_integration_time
@@ -24,91 +25,29 @@ def write_final(file_to_write, wavelengths, values, header=None):
         [f.write("   {:3.3f}      {:>10f}                \r\n".format(wavelengths[ii], values[ii])) for ii in range(0, len(wavelengths))]
 
 
-def write_label(original_label, new_label, is_rad):
+def write_label(label_path, is_rad):
+    template_loader = FileSystemLoader(searchpath="/Users/osheacm1/Documents/SAA/PDART/")
+    template_env = Environment(loader=template_loader)
     if is_rad:
-        file_type = "RAD"
+        template_file = "rad_template.xml"
     else:
-        file_type = "REF"
+        template_file = "ref_template.xml"
+    template = template_env.get_template(template_file)
 
-    original_id = ""
-    with open(original_label, 'r') as og:
-        with open(new_label, 'w') as new_file:
-            for i, line in enumerate(og):
-                if i == 6:
-                    if is_rad:
-                        new_line = line
-                    else:
-                        new_line = line.replace("6473", "6173") # ref loses 30 records b/c of the header
-                if i == 10:
-                    if is_rad:
-                        new_line = line.replace("PSV", file_type)
-                    else:
-                        continue  # skip the 11th line which describes a header since there is no header for REF
-                elif i == 11 or i == 17:
-                    new_line = line.replace("PSV", file_type)
-                elif i == 39:
-                    parts = line.split("=")
-                    original_id = parts[1].strip()
-                    new_line = line.replace("PSV", file_type)
-                elif i == 43:
-                    parts = line.split("=")
-                    new_line = parts[0] + "= " + original_id + "\n"
-                # skip 310 through 320 for REF.  For RAD, replace PSV with RAD
-                elif 309 < i < 321:
-                    if is_rad:
-                        new_line = line.replace("PSV", file_type)
-                    else:
-                        continue
-                elif i == 326:
-                    new_line = line.replace("1", "2")
-                elif i == 327:
-                    new_line = line.replace("44", "88")  #TODO how many bytes now?
-                elif i == 329:
-                    new_line = line.replace("PSV", file_type)
-                elif i == 331:
-                    if is_rad:
-                        units_string = "calibrated to units of radiance (W/m^2/sr/um)\""
-                    else:
-                        units_string = "calibrated to units of relative reflectance\""
-                    new_line = line.replace("in DN units. Companion wavelength file is CCAM_DEFAULT_WAVE.TAB.\"",
-                                            units_string)
-                elif 332 < i < 346:
-                    continue
-                else:
-                    new_line = line
+    path, filename = os.path.split(label_path)
+    filename_no_ext = os.path.splitext(filename)[0]
 
-                new_file.write(new_line)
+    with open(label_path, 'w') as f:
+        context = {
+            "filename": filename_no_ext,
+            "filename_ext": filename,
+            "psv_filename": "psv_filename",
+            "creation_date": "2020.02.04", # TODO get todays date
+            "observation_start": "1900.02.04Z", # TODO get start and stop dates
+            "observation_stop": "1280918Z"
+        }
+        f.write(template.render(context))
 
-            if is_rad:
-                unit = "RADIANCE"
-                description = "Calibrated Radiance"
-            else:
-                unit = "RELATIVE REFLECTANCE"
-                description = "Relative Reflectance"
-            # write the last chunk about the columns
-            final_string = "" \
-"  OBJECT                          = COLUMN 1\r\n\
-    NAME                          = \"WAVELENGTH\"\r\n\
-    DATA_TYPE                     = ASCII_REAL\r\n\
-    START_BYTE                    = 1\r\n\
-    BYTES                         = 42\r\n\
-    UNIT                          = \"WAVELENGTH\" \r\n\
-    DESCRIPTION                   = \"Wavelengths from CCAM_DEFAULT_WAVE.TAB\" \r\n\
-  END_OBJECT                      = COLUMN \r\n\
- \n\
-  OBJECT                          = COLUMN 2 \r\n\
-    NAME                          = \"CHANNEL_INTENSITY\" \r\n\
-    DATA_TYPE                     = ASCII_REAL \r\n\
-    START_BYTE                    = 1 \r\n\
-    BYTES                         = 42 \r\n\
-    UNIT                          = \"" + unit + "\"\r\n\
-    DESCRIPTION                   = \"" + description + "\" \r\n\
-  END_OBJECT                      = COLUMN \r\n\
- \r\n\
- END_OBJECT                        = TABLE \r\n\
- \r\n\
-END"
-            new_file.write(final_string)
 
 
 def get_header_values(filename):

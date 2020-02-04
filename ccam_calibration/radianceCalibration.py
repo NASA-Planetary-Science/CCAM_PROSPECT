@@ -215,7 +215,7 @@ class RadianceCalibration:
                     new_label_filename = new_label_filename.replace('psv', 'rad')
                     (out_path, filename) = os.path.split(out_filename)
                     new_label = os.path.join(out_path, new_label_filename)
-                    write_label(self.original_label, new_label, True)
+                    write_label(new_label, True)
                 print(ccam_file + ' calibrated and written to ' + out_filename)
                 if self.total_files == 1:
                     self.update_progress(100)
