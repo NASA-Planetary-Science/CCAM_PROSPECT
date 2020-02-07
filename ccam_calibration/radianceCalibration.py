@@ -40,7 +40,6 @@ class RadianceCalibration:
             vis:      2227:4275
             uv:       4375:6423
         """
-
         with open(filename, 'r') as f:
             self.vnir = np.array([float(line.rstrip('\n')) for line in f.readlines()[79:2127]])
         with open(filename, 'r') as f:
@@ -58,7 +57,6 @@ class RadianceCalibration:
 
         :return: the new values, with offset subtracted
         """
-
         # get appropriate sets of values
         vnir_off = self.vnir[1816:1832]
         vis_off = self.vis[0:5]
@@ -153,7 +151,32 @@ class RadianceCalibration:
         converted_rad = np.divide(rad_hc, np.multiply(wavelengths, 1E-9))
         return np.multiply(converted_rad, 1E7)
 
+    @staticmethod
+    def psv_to_rad(psv_file, out_dir):
+        """psv_to_rad
+        replace each instance of PSV with RAD.
+        Also replace .txt with .tab in the case of a raw file
+
+        :param: the original file
+        """
+        (path, filename) = os.path.split(psv_file)
+        rad_filename = filename.replace('psv', 'rad')
+        rad_filename = rad_filename.replace('PSV', 'RAD')
+        rad_filename = rad_filename.replace('.TXT', '.tab')
+        rad_filename = rad_filename.replace('.txt', '.tab')
+        out_filename = os.path.join(path, rad_filename)
+
+        if out_dir is not None:
+            # the user specified an out_dir, so replace path with out_dir
+            (path, filename) = os.path.split(out_filename)
+            out_filename = os.path.join(out_dir + filename)
+
+        return out_filename
+
     def update_progress(self, value=None):
+        """update_progress
+        update the progress bar to this value
+        """
         if self.main_app is not None:
             if value is not None:
                 self.main_app.update_progress(value)
@@ -171,16 +194,25 @@ class RadianceCalibration:
         if os.path.exists(ccam_file) and os.path.isfile(ccam_file):
             if "psv" in ccam_file.lower() and \
                     (ccam_file.lower().endswith(".tab") or ccam_file.lower().endswith(".txt")):
+
+                # check for original label
+                self.original_label = ccam_file.replace('.tab', '.lbl')
+                self.original_label = self.original_label.replace('.txt', '.lbl')
+                self.original_label = self.original_label.replace('.TAB', '.lbl')
+                self.original_label = self.original_label.replace('.TXT', '.lbl')
+
                 self.headers = get_header_values(ccam_file)
                 self.get_headers(ccam_file)
                 self.read_spectra(ccam_file)
                 self.remove_offsets()
 
+                # calculate some needed values
                 t_int = get_integration_time(ccam_file)
                 sa_steradian = self.get_solid_angle()
                 fov_tgt = self.get_area_on_target()
                 if self.total_files == 1:
                     self.update_progress(25)
+
                 # combine arrays into one ordered by wavelength
                 all_spectra_dn = np.concatenate([self.uv, self.vis, self.vnir])
 
@@ -188,7 +220,11 @@ class RadianceCalibration:
                 my_path = os.path.abspath(os.path.dirname(__file__))
                 gain_file = os.path.join(my_path, "constants/gain_mars.edit")
                 (wavelength, gain) = self.get_wl_and_gain(gain_file)
+
+                # multiply by the gain to get in photos
                 all_spectra_photons = np.multiply(all_spectra_dn, gain)
+
+                # calculate the radiance values
                 radiance = self.get_radiance(all_spectra_photons, wavelength, t_int, fov_tgt, sa_steradian)
                 if self.total_files == 1:
                     self.update_progress(50)
@@ -196,26 +232,19 @@ class RadianceCalibration:
                 # convert to units of W/m^2/sr/um from phot/sec/cm^2/sr/nm
                 radiance_final = self.convert_to_output_units(radiance, wavelength)
 
-                (path, filename) = os.path.split(ccam_file)
-                rad_filename = filename.replace('psv', 'rad')
-                rad_filename = rad_filename.replace('PSV', 'RAD')
-                rad_filename = rad_filename.replace('.TXT', '.tab')
-                rad_filename = rad_filename.replace('.txt', '.tab')
-                out_filename = os.path.join(path, rad_filename)
-
-                if out_dir is not None:
-                    # then save this file to out directory
-                    (path, filename) = os.path.split(out_filename)
-                    out_filename = os.path.join(out_dir + filename)
+                # rename the PSV file to RAD
+                out_filename = self.psv_to_rad(ccam_file, out_dir)
                 write_final(out_filename, wavelength, radiance_final, header=self.header_string)
+
                 if os.path.exists(self.original_label):
-                    # write new label based on original
+                    # write new label based on original, if it exists
                     (path, filename) = os.path.split(self.original_label)
                     new_label_filename = filename.replace('PSV', 'RAD')
                     new_label_filename = new_label_filename.replace('psv', 'rad')
+                    new_label_filename = new_label_filename.replace('lbl', 'xml')
                     (out_path, filename) = os.path.split(out_filename)
                     new_label = os.path.join(out_path, new_label_filename)
-                    write_label(new_label, True)
+                    write_label(new_label, self.original_label, True)
                 print(ccam_file + ' calibrated and written to ' + out_filename)
                 if self.total_files == 1:
                     self.update_progress(100)
@@ -227,6 +256,12 @@ class RadianceCalibration:
             raise FileNotFoundError
 
     def calibrate_directory(self, directory, out_dir):
+        """calibrate_directory
+        calibrate everything in this directory, recursively.
+
+        :param: directory the directory in which to look for PSV files
+        :param: out_dir the destination directory for output
+        """
         # total number of files to potentially calibrate
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
@@ -242,6 +277,12 @@ class RadianceCalibration:
         self.update_progress(100)
 
     def calibrate_list(self, list_file, out_dir):
+        """calibrate_list
+        calibrate everything in this list
+
+        :param: list the list of psv files to calibrate
+        :param: out_dir the destination directory for output
+        """
         files = open(list_file).read().splitlines()
         self.total_files = len(files)
         self.current_file = 1
@@ -252,11 +293,14 @@ class RadianceCalibration:
         self.update_progress(100)
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir):
+        """calibrate_to_radiance
+        entry point to calibrate a file, list of files, or directory
+
+        :param: file_type either file, list of files, or directory
+        :param: file_name the name of the file / directory
+        :param: out_dir the destination directory for output
+        """
         if file_type.value is InputType.FILE.value:
-            self.original_label = file_name.replace('.tab', '.lbl')
-            self.original_label = self.original_label.replace('.txt', '.lbl')
-            self.original_label = self.original_label.replace('.TAB', '.lbl')
-            self.original_label = self.original_label.replace('.TXT', '.lbl')
             return self.calibrate_file(file_name, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, out_dir)

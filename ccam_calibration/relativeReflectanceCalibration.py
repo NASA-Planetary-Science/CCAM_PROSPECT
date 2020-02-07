@@ -74,7 +74,7 @@ class RelativeReflectanceCalibration:
         rad_filename = rad_filename.replace('PSV', 'RAD')
         self.rad_file = os.path.join(path, rad_filename)
 
-        # rename to .TAB from .TXT
+        # rename to .TAB from .TXT in case of raw input
         self.rad_file = self.rad_file.replace('.TXT', '.tab')
         self.rad_file = self.rad_file.replace('.txt', '.tab')
 
@@ -95,7 +95,7 @@ class RelativeReflectanceCalibration:
             return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir)
 
     def choose_values(self, custom_target_file=None):
-        """
+        """ choose_values
         Choose which values to use for calibration, based on integration time.  The integration
         time of the file chosen to calibrate must match that of the input file.  If the integration
         times do not match, log filename to nonstandard exptime file and keep going.
@@ -146,6 +146,9 @@ class RelativeReflectanceCalibration:
         return values
 
     def update_progress(self, value=None):
+        """update_progress
+        update progress on the main app
+        """
         if self.main_app is not None:
             if value is not None:
                 self.main_app.update_progress(value)
@@ -153,38 +156,68 @@ class RelativeReflectanceCalibration:
                 if self.total_files is not 0:
                     self.main_app.update_progress((self.current_file / self.total_files) * 100)
 
-    def calibrate_file(self, filename, custom_dir, out_dir):
+    def rad_to_ref(self, out_dir):
+        """rad_to_ref
+        rename rad file to ref.
+        """
+        out_filename = self.rad_file.replace('RAD', 'REF')
+        out_filename = out_filename.replace('rad', 'ref')
+        if out_dir is not None:
+            # then save calibrated file to out dir also
+            (path, filename) = os.path.split(out_filename)
+            out_filename = os.path.join(out_dir, filename)
 
+        return out_filename
+
+    def calibrate_file(self, filename, custom_dir, out_dir):
+        """calibrate_file
+        calibrate the file to relative reflectance
+
+        :param: filename the file to be calibrated
+        :param: custom_dir the directory containing files to use for calibration if not default
+        :param: out_dir the output directory for calibrated files
+        """
         # check for valid rad file
         valid = self.get_rad_file(filename, out_dir)
         if valid:
             print('calibrating' + filename)
-            # valid rad file, now choose values based on exp time
+            # valid rad file
+            # check for original label
+            self.original_label = filename.replace('.tab', '.lbl')
+            self.original_label = self.original_label.replace('.txt', '.lbl')
+            self.original_label = self.original_label.replace('.TAB', '.lbl')
+            self.original_label = self.original_label.replace('.TXT', '.lbl')
+            self.original_label = self.original_label.replace('rad', 'psv')
+            self.original_label = self.original_label.replace('RAD', 'PSV')
             try:
+                # now choose values based on exp time
                 values = self.choose_values(custom_dir)
                 if self.total_files == 1:
                     self.update_progress(25)
+                # then calibrate by dividing by values
                 new_values = self.do_division(values)
                 if self.total_files == 1:
                     self.update_progress(75)
+                # convolve
                 final_values = self.do_multiplication(new_values)
-                out_filename = self.rad_file.replace('RAD', 'REF')
-                out_filename = out_filename.replace('rad', 'ref')
-                if out_dir is not None:
-                    # then save calibrated file to out dir also
-                    (path, filename) = os.path.split(out_filename)
-                    out_filename = os.path.join(out_dir, filename)
+
+                # rename rad to ref to get outfile name and then write to file
+                out_filename = self.rad_to_ref(out_dir)
                 write_final(out_filename, self.wavelength, final_values)
+
                 if os.path.exists(self.original_label):
                     # write new label based on original
                     (path, filename) = os.path.split(self.original_label)
                     new_label_filename = filename.replace('PSV', 'REF')
                     new_label_filename = new_label_filename.replace('psv', 'ref')
+                    new_label_filename = new_label_filename.replace('lbl', 'xml')
                     (out_path, filename) = os.path.split(out_filename)
                     new_label = os.path.join(out_path, new_label_filename)
-                    write_label(new_label, False)
+                    write_label(new_label, self.original_label, False)
+
                 if self.total_files == 1:
                     self.update_progress(100)
+
                 print(filename + ' calibrated and written to ' + out_filename)
             except NonStandardExposureTimeException:
                 # this file has been logged, but keep going
@@ -193,6 +226,12 @@ class RelativeReflectanceCalibration:
             print(filename + ' not a valid raw (psv) or rad file.')
 
     def calibrate_directory(self, directory, custom_dir, out_dir):
+        """calibrate_directory
+        calibrate everything in this directory, recursively.
+
+        :param: directory the directory in which to look for PSV or RAD files
+        :param: out_dir the destination directory for output
+        """
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
         for file_name in os.listdir(directory):
@@ -207,6 +246,12 @@ class RelativeReflectanceCalibration:
         self.update_progress(100)
 
     def calibrate_list(self, list_file, custom_dir, out_dir):
+        """calibrate_list
+        calibrate everything in this list
+
+        :param: list the list of psv or rad files to calibrate
+        :param: out_dir the destination directory for output
+        """
         files = open(list_file).read().splitlines()
         self.total_files = len(files)
         self.current_file = 1
@@ -218,12 +263,6 @@ class RelativeReflectanceCalibration:
 
     def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
         if file_type.value is InputType.FILE.value:
-            self.original_label = file_name.replace('.tab', '.lbl')
-            self.original_label = self.original_label.replace('.txt', '.lbl')
-            self.original_label = self.original_label.replace('.TAB', '.lbl')
-            self.original_label = self.original_label.replace('.TXT', '.lbl')
-            self.original_label = self.original_label.replace('rad', 'psv')
-            self.original_label = self.original_label.replace('RAD', 'PSV')
             self.calibrate_file(file_name, custom_dir, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
             self.calibrate_list(file_name, custom_dir, out_dir)
