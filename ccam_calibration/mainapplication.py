@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from tkinter import messagebox
+from datetime import datetime
 from ccam_calibration.utils.InputType import InputType
 from ccam_calibration.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from ccam_calibration.radianceCalibration import RadianceCalibration
@@ -17,8 +18,12 @@ class MainApplication(tk.Frame):
     def __init__(self, window, *args, **kwargs):
         tk.Frame.__init__(self, window, *args, **kwargs)
 
-        self.radiance_cal = RadianceCalibration(self)
-        self.relative_cal = RelativeReflectanceCalibration(self)
+        now = datetime.now()
+        self.logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
+        open(self.logfile, 'a').close()  # open file so it exists
+
+        self.radiance_cal = RadianceCalibration(self.logfile, self)
+        self.relative_cal = RelativeReflectanceCalibration(self.logfile, self)
         self.window = window
         self.progress_var = tk.IntVar()
 
