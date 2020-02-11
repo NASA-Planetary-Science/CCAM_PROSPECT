@@ -3,14 +3,16 @@ import os
 import math as math
 import numpy as np
 import sys
+from datetime import datetime
 from ccam_calibration.utils.InputType import InputType
 import ccam_calibration.utils.constant as constants
 from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
+from ccam_calibration.utils.NonStandardHeaderException import NonStandardHeaderException
 
 
 class RadianceCalibration:
 
-    def __init__(self, main_app=None):
+    def __init__(self, log_file, main_app=None):
         # variables parsed from spectra file
         self.vnir = []
         self.vis = []
@@ -21,6 +23,7 @@ class RadianceCalibration:
         self.current_file = 1
         self.header_string = ""
         self.original_label = ""
+        self.logfile = log_file
 
     def get_headers(self, filename):
         """get_headers
@@ -79,7 +82,11 @@ class RadianceCalibration:
 
         :return: the solid angle, in radians
         """
-        distance = float(self.headers['distToTarget'])
+        try:
+            distance = float(self.headers['distToTarget'])
+        except KeyError:
+            raise NonStandardHeaderException
+
         return math.pi * math.pow(math.sin(math.atan(constants.aperture / 2 / distance)), 2)
 
     def get_area_on_target(self):
@@ -90,7 +97,10 @@ class RadianceCalibration:
 
         :return: the area on the target
         """
-        distance = float(self.headers['distToTarget'])
+        try:
+            distance = float(self.headers['distToTarget'])
+        except KeyError:
+            raise NonStandardHeaderException
         return math.pi * math.pow(constants.fov * distance / 2 / 10, 2)
 
     @staticmethod
@@ -203,13 +213,26 @@ class RadianceCalibration:
 
                 self.headers = get_header_values(ccam_file)
                 self.get_headers(ccam_file)
-                self.read_spectra(ccam_file)
+
+                try:
+                    self.read_spectra(ccam_file)
+                except ValueError:
+                    with open(self.logfile, 'a') as log:
+                        log.write(ccam_file + ': radiance calibration - file not formatted correctly \n')
+                    return False
+
                 self.remove_offsets()
 
                 # calculate some needed values
-                t_int = get_integration_time(ccam_file)
-                sa_steradian = self.get_solid_angle()
-                fov_tgt = self.get_area_on_target()
+                try:
+                    t_int = get_integration_time(ccam_file)
+                    sa_steradian = self.get_solid_angle()
+                    fov_tgt = self.get_area_on_target()
+                except NonStandardHeaderException:
+                    with open(self.logfile, 'a') as log:
+                        log.write(ccam_file + ': radiance calibration - not a valid PSV file header \n')
+                    return False
+
                 if self.total_files == 1:
                     self.update_progress(25)
 
@@ -250,7 +273,11 @@ class RadianceCalibration:
                     self.update_progress(100)
                 return True
             else:
-                print(ccam_file + ": not a raw PSV file, skipping")
+                ext = os.path.splitext(ccam_file)[1]
+                if ext != '.lbl' and ext != '.LBL' and ext != '.xml':
+                    # log file as long as its not a label to a psv file
+                    with open(self.logfile, 'a') as log:
+                        log.write(ccam_file + ': radiance input - not a valid PSV file \n')
                 return False
         else:
             raise FileNotFoundError
@@ -330,5 +357,9 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         in_file = args.list
 
-    radianceCal = RadianceCalibration()
+    now = datetime.now()
+    logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
+    open(logfile, 'a').close()  # open file so it exists
+
+    radianceCal = RadianceCalibration(logfile)
     radianceCal.calibrate_to_radiance(in_file_type, in_file, args.out_dir)

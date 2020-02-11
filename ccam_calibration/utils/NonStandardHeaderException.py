@@ -1,0 +1,2 @@
+class NonStandardHeaderException(Exception):
+    pass

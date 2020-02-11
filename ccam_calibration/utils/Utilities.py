@@ -1,6 +1,7 @@
 from jinja2 import Environment, FileSystemLoader
 import os
 from datetime import date
+from ccam_calibration.utils.NonStandardHeaderException import NonStandardHeaderException
 
 
 def get_integration_time(filename):
@@ -17,7 +18,7 @@ def get_integration_time(filename):
         ict = float(headers['ICTdivisor'])
         return ((ipbc * ict) / 33000000) + 0.00356
     except KeyError:
-        print('Header not formatted correctly in file {}. Unable to calculate exposure time.'.format(filename))
+        raise NonStandardHeaderException
         return None
 
 

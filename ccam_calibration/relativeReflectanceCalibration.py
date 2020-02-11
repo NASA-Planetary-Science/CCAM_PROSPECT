@@ -4,21 +4,20 @@ import argparse
 from datetime import datetime
 from ccam_calibration.utils.InputType import InputType
 from ccam_calibration.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
+from ccam_calibration.utils.NonStandardHeaderException import NonStandardHeaderException
 from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label
 from ccam_calibration.radianceCalibration import RadianceCalibration
 
 
 class RelativeReflectanceCalibration:
-    def __init__(self, main_app=None):
+    def __init__(self, log_file, main_app=None):
         self.rad_file = ''
         self.wavelength = []
         self.main_app = main_app
         self.total_files = 1
         self.current_file = 1
         self.original_label = ""
-        now = datetime.now()
-        self.bad_exposure_file = "nonstandard_exptime_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
-        open(self.bad_exposure_file, 'a').close()
+        self.logfile = log_file
 
     def do_division(self, values):
         """
@@ -91,7 +90,7 @@ class RelativeReflectanceCalibration:
                 (out_dir, filename) = os.path.split(input_file)
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
-            radiance_cal = RadianceCalibration()
+            radiance_cal = RadianceCalibration(self.logfile)
             return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir)
 
     def choose_values(self, custom_target_file=None):
@@ -118,7 +117,13 @@ class RelativeReflectanceCalibration:
 
         # now get the cosine-corrected values from the correct file
         # check t_int for file
-        t_int = get_integration_time(self.rad_file)
+        try:
+            t_int = get_integration_time(self.rad_file)
+        except NonStandardHeaderException:
+            with open(self.logfile, 'a') as log:
+                log.write(self.rad_file + ': relative reflectance calibration - not a valid RAD file header \n')
+                raise NonStandardHeaderException
+
         if t_int is not None:
             t_int = round(t_int * 1000)
 
@@ -133,8 +138,8 @@ class RelativeReflectanceCalibration:
         else:
             fn = None
             print('error - integration time in input file is not 7, 34, 404, or 5004. File tracked in log')
-            with open(self.bad_exposure_file, 'a') as log:
-                log.write(self.rad_file + '\n')
+            with open(self.logfile, 'a') as log:
+                log.write(self.rad_file + ':  non standard exposure time \n')
                 raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
 
         if fn is not None:
@@ -179,6 +184,7 @@ class RelativeReflectanceCalibration:
         """
         # check for valid rad file
         valid = self.get_rad_file(filename, out_dir)
+
         if valid:
             print('calibrating' + filename)
             # valid rad file
@@ -222,8 +228,14 @@ class RelativeReflectanceCalibration:
             except NonStandardExposureTimeException:
                 # this file has been logged, but keep going
                 pass
+            except NonStandardHeaderException:
+                pass
         else:
-            print(filename + ' not a valid raw (psv) or rad file.')
+            ext = os.path.splitext(filename)[1]
+            if ext != '.lbl' and ext != '.LBL' and ext != '.xml':
+                # log file as long as its not a label to a psv file
+                with open(self.logfile, 'a') as log:
+                    log.write(filename + ': relative reflectance input - not a valid PSV or RAD file \n')
 
     def calibrate_directory(self, directory, custom_dir, out_dir):
         """calibrate_directory
@@ -262,6 +274,15 @@ class RelativeReflectanceCalibration:
         self.update_progress(100)
 
     def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
+        """calibrate_relative_reflectance
+        start the calibration for file, list of files, or directory.
+
+        :param file_type: the type of input: list, file, or directory.
+        :param file_name: the input file
+        :param custom_dir: if there is a custom set of files for relative reflectance
+        :param out_dir: the output directory
+        :return:
+        """
         if file_type.value is InputType.FILE.value:
             self.calibrate_file(file_name, custom_dir, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
@@ -290,5 +311,9 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         file = args.list
 
-    calibrate_ref = RelativeReflectanceCalibration()
+    now = datetime.now()
+    logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
+    open(logfile, 'a').close()  # open file so it exists
+
+    calibrate_ref = RelativeReflectanceCalibration(logfile)
     calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customDir, args.out_dir)
