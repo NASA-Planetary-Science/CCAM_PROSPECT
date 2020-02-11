@@ -16,12 +16,17 @@ class MainApplication(tk.Frame):
     }
 
     def __init__(self, window, *args, **kwargs):
+        """
+        Initialize the GUI and its components
+        """
         tk.Frame.__init__(self, window, *args, **kwargs)
 
+        # create a log file to keep track of bad input
         now = datetime.now()
         self.logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
         open(self.logfile, 'a').close()  # open file so it exists
 
+        # set up the calibration environments and the progress monitor
         self.radiance_cal = RadianceCalibration(self.logfile, self)
         self.relative_cal = RelativeReflectanceCalibration(self.logfile, self)
         self.window = window
@@ -109,6 +114,9 @@ class MainApplication(tk.Frame):
         self.progress.grid(column=0, row=17, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
 
     def browse_clicked(self):
+        """browse_clicked
+        the action handler for the browse button to choose an input file
+        """
         file_type = self.inputType.get()
         if file_type == InputType.FILE.value:  # file
             file = filedialog.askopenfilename()
@@ -122,16 +130,29 @@ class MainApplication(tk.Frame):
         self.in_filename_entry.insert(0, file)
 
     def custom_browse_clicked(self):
+        """custom_browse_clicked
+        the action handler for the browse button to choose a custom set of
+         files for the relative reflectance calculation
+        """
         file = filedialog.askopenfilename()
         self.custom_file.delete(0, "end")
         self.custom_file.insert(0, file)
 
     def out_clicked(self):
+        """out_clicked
+        the action handler for the browse button to choose a
+        custom output directory
+        """
         file = filedialog.askdirectory()
         self.out_directory_entry.delete(0, "end")
         self.out_directory_entry.insert(0, file)
 
     def select_custom(self):
+        """ select_custom
+        the action handler for when a user selects to use a
+        custom set of files for relative reflectance.  If default
+        is selected, disable the custom options.
+        """
         btn = self.relative_config.get()
         if btn == 1:
             self.custom_file.config(state="disabled")
@@ -140,7 +161,33 @@ class MainApplication(tk.Frame):
             self.custom_file.config(state="normal")
             self.custom_file_browse.config(state="normal")
 
+    def select_output_directory(self):
+        """ select_output_directory
+        the action handler for when a user selects to use a
+        custom output directory.  If default is selected, disable
+        the custom options.
+        """
+        btn = self.out_directory_type.get()
+        if btn == 1:
+            self.out_directory_entry.config(state="disabled")
+            self.outBrowseBtn.config(state="disabled")
+        else:
+            self.out_directory_entry.config(state="normal")
+            self.outBrowseBtn.config(state="normal")
+
+    def update_progress(self, value):
+        """update_progress
+        update the progress bar to this given value
+        :param: value the value to set the progress bar
+        """
+        self.progress_var.set(value)
+        self.progress.update()
+        self.window.update_idletasks()
+
     def start_calibration(self):
+        """start_calibration
+        gather variables and start the relative reflectance calibration
+        """
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
         custom_directory = self.custom_file.get()
@@ -163,6 +210,9 @@ class MainApplication(tk.Frame):
         print('******** finished calibration ********')
 
     def start_rad(self):
+        """start_rad
+        gather variables and start the radiance calibration
+        """
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
         output_type = self.out_directory_type.get()
@@ -181,20 +231,6 @@ class MainApplication(tk.Frame):
                 input_type = 'Directory'
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
         print('******** finished calibration ********')
-
-    def select_output_directory(self):
-        btn = self.out_directory_type.get()
-        if btn == 1:
-            self.out_directory_entry.config(state="disabled")
-            self.outBrowseBtn.config(state="disabled")
-        else:
-            self.out_directory_entry.config(state="normal")
-            self.outBrowseBtn.config(state="normal")
-
-    def update_progress(self, value):
-        self.progress_var.set(value)
-        self.progress.update()
-        self.window.update_idletasks()
 
 
 def main():

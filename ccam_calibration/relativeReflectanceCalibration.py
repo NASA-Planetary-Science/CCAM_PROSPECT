@@ -184,6 +184,7 @@ class RelativeReflectanceCalibration:
         """
         # check for valid rad file
         valid = self.get_rad_file(filename, out_dir)
+
         if valid:
             print('calibrating' + filename)
             # valid rad file
@@ -273,6 +274,15 @@ class RelativeReflectanceCalibration:
         self.update_progress(100)
 
     def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
+        """calibrate_relative_reflectance
+        start the calibration for file, list of files, or directory.
+
+        :param file_type: the type of input: list, file, or directory.
+        :param file_name: the input file
+        :param custom_dir: if there is a custom set of files for relative reflectance
+        :param out_dir: the output directory
+        :return:
+        """
         if file_type.value is InputType.FILE.value:
             self.calibrate_file(file_name, custom_dir, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
