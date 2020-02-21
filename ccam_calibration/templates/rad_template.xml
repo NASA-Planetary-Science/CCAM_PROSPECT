@@ -26,7 +26,7 @@
 		<Primary_Result_Summary>
 			<purpose>Science</purpose>
 			<processing_level>Calibrated</processing_level>
-			<description>Data from the MSL ChemCham calibrated to units of radiance.</description>
+			<description>Data from the MSL ChemCham calibrated to units of radiance (W/m^2/sr/micron).</description>
 		</Primary_Result_Summary>
 		<Investigation_Area>
 			<name>MARS SCIENCE LABORATORY</name>

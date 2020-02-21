@@ -31,6 +31,10 @@ class MainApplication(tk.Frame):
         self.relative_cal = RelativeReflectanceCalibration(self.logfile, self)
         self.window = window
         self.progress_var = tk.IntVar()
+        self.overwrite_rad = tk.IntVar()
+        self.overwrite_ref = tk.IntVar()
+        self.overwrite_rad.set(1)
+        self.overwrite_ref.set(1)
 
         # CREATE COMPONENTS
 
@@ -72,6 +76,10 @@ class MainApplication(tk.Frame):
         self.use_custom_btn = tk.Radiobutton(window, text="Use custom", value=2, variable=self.relative_config,
                                              command=self.select_custom)
 
+        # overwite file option buttons
+        self.overwrite_rad_button = tk.Checkbutton(window, text="Overwrite existing RAD", variable=self.overwrite_rad)
+        self.overwrite_ref_button = tk.Checkbutton(window, text="Overwrite existing REF", variable=self.overwrite_ref)
+
         # 'GO' buttons
         self.separator3 = ttk.Separator(window, orient="horizontal")
         self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", command=self.start_rad)
@@ -109,9 +117,11 @@ class MainApplication(tk.Frame):
         self.custom_file_browse.grid(column=4, row=14, padx=(1, 10))
 
         self.separator3.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(10, 10))
-        self.calibrate_rad_button.grid(column=0, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
-        self.calibrate_button.grid(column=2, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
-        self.progress.grid(column=0, row=17, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
+        self.overwrite_rad_button.grid(column=0, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
+        self.overwrite_ref_button.grid(column=2, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
+        self.calibrate_rad_button.grid(column=0, row=17, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
+        self.calibrate_button.grid(column=2, row=17, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
+        self.progress.grid(column=0, row=18, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
 
     def browse_clicked(self):
         """browse_clicked
@@ -201,7 +211,8 @@ class MainApplication(tk.Frame):
                 out_dir = out_dir + '/'
 
         try:
-            self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir)
+            self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
+                                                             self.overwrite_rad.get(), self.overwrite_ref.get())
         except FileNotFoundError:
             input_type = 'File'
             if file_type.value is InputType.DIRECTORY.value:
@@ -224,7 +235,7 @@ class MainApplication(tk.Frame):
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
         try:
-            self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir)
+            self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir, self.overwrite_rad.get())
         except FileNotFoundError:
             input_type = 'File'
             if file_type.value is InputType.DIRECTORY.value:
