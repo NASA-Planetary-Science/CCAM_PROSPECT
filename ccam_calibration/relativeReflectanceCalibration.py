@@ -174,12 +174,12 @@ class RelativeReflectanceCalibration:
 
         return out_filename
 
-    def calibrate_file(self, filename, custom_dir, out_dir):
+    def calibrate_file(self, filename, custom_file, out_dir):
         """calibrate_file
         calibrate the file to relative reflectance
 
         :param: filename the file to be calibrated
-        :param: custom_dir the directory containing files to use for calibration if not default
+        :param: custom_file the file to use for calibration if not default
         :param: out_dir the output directory for calibrated files
         """
         # check for valid rad file
@@ -197,7 +197,7 @@ class RelativeReflectanceCalibration:
             self.original_label = self.original_label.replace('RAD', 'PSV')
             try:
                 # now choose values based on exp time
-                values = self.choose_values(custom_dir)
+                values = self.choose_values(custom_file)
                 if self.total_files == 1:
                     self.update_progress(25)
                 # then calibrate by dividing by values
@@ -237,7 +237,7 @@ class RelativeReflectanceCalibration:
                 with open(self.logfile, 'a') as log:
                     log.write(filename + ': relative reflectance input - not a valid PSV or RAD file \n')
 
-    def calibrate_directory(self, directory, custom_dir, out_dir):
+    def calibrate_directory(self, directory, custom_file, out_dir):
         """calibrate_directory
         calibrate everything in this directory, recursively.
 
@@ -249,15 +249,15 @@ class RelativeReflectanceCalibration:
         for file_name in os.listdir(directory):
             full_path = os.path.join(directory, file_name)
             if os.path.isdir(full_path) and full_path is not out_dir:
-                self.calibrate_directory(os.path.join(directory, file_name), custom_dir, out_dir)
+                self.calibrate_directory(os.path.join(directory, file_name), custom_file, out_dir)
             else:
-                self.calibrate_file(full_path, custom_dir, out_dir)
+                self.calibrate_file(full_path, custom_file, out_dir)
                 self.current_file += 1
                 self.update_progress()
 
         self.update_progress(100)
 
-    def calibrate_list(self, list_file, custom_dir, out_dir):
+    def calibrate_list(self, list_file, custom_file, out_dir):
         """calibrate_list
         calibrate everything in this list
 
@@ -268,27 +268,27 @@ class RelativeReflectanceCalibration:
         self.total_files = len(files)
         self.current_file = 1
         for file_name in files:
-            self.calibrate_file(file_name, custom_dir, out_dir)
+            self.calibrate_file(file_name, custom_file, out_dir)
             self.current_file += 1
             self.update_progress()
         self.update_progress(100)
 
-    def calibrate_relative_reflectance(self, file_type, file_name, custom_dir, out_dir):
+    def calibrate_relative_reflectance(self, file_type, file_name, custom_file, out_dir):
         """calibrate_relative_reflectance
         start the calibration for file, list of files, or directory.
 
         :param file_type: the type of input: list, file, or directory.
         :param file_name: the input file
-        :param custom_dir: if there is a custom set of files for relative reflectance
+        :param custom_file: if there is a custom file relative reflectance
         :param out_dir: the output directory
         :return:
         """
         if file_type.value is InputType.FILE.value:
-            self.calibrate_file(file_name, custom_dir, out_dir)
+            self.calibrate_file(file_name, custom_file, out_dir)
         elif file_type.value is InputType.FILE_LIST.value:
-            self.calibrate_list(file_name, custom_dir, out_dir)
+            self.calibrate_list(file_name, custom_file, out_dir)
         else:
-            self.calibrate_directory(file_name, custom_dir, out_dir)
+            self.calibrate_directory(file_name, custom_file, out_dir)
 
 
 if __name__ == "__main__":
@@ -297,7 +297,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', action="store", dest='ccamFile', help="CCAM psv or rad *.tab file")
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files to calibrate")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
-    parser.add_argument('-c', action="store", dest='customDir', help="directory containing custom calibration files")
+    parser.add_argument('-c', action="store", dest='customFile', help="custom calibration file")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
 
     args = parser.parse_args()
@@ -316,4 +316,4 @@ if __name__ == "__main__":
     open(logfile, 'a').close()  # open file so it exists
 
     calibrate_ref = RelativeReflectanceCalibration(logfile)
-    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customDir, args.out_dir)
+    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, args.out_dir)
