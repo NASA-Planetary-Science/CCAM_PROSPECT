@@ -193,17 +193,25 @@ class RadianceCalibration:
             else:
                 self.main_app.update_progress((self.current_file / self.total_files) * 100)
 
-    def calibrate_file(self, ccam_file, out_dir):
+    def calibrate_file(self, ccam_file, out_dir, overwrite):
         """calibrate_file
         step through each necessary step to calibrate the file
 
         :param ccam_file: file to calibrate
         :param out_dir: output directory
+        :param: overwrite a boolean representing if files should be overwritten or not
         """
         # check that file exists, is a file, and is a psv *.tab file
         if os.path.exists(ccam_file) and os.path.isfile(ccam_file):
             if "psv" in ccam_file.lower() and \
                     (ccam_file.lower().endswith(".tab") or ccam_file.lower().endswith(".txt")):
+
+                out_filename = self.psv_to_rad(ccam_file, out_dir)
+                if not overwrite:
+                    # if we don't want to overwrite existing files, we can skip this file if it already exists
+                    if os.path.exists(out_filename) and os.path.isfile(out_filename):
+                        print(out_filename + "already exists, skipping")
+                        return True
 
                 # check for original label
                 self.original_label = ccam_file.replace('.tab', '.lbl')
@@ -256,7 +264,6 @@ class RadianceCalibration:
                 radiance_final = self.convert_to_output_units(radiance, wavelength)
 
                 # rename the PSV file to RAD
-                out_filename = self.psv_to_rad(ccam_file, out_dir)
                 write_final(out_filename, wavelength, radiance_final, header=self.header_string)
 
                 if os.path.exists(self.original_label):
@@ -282,13 +289,14 @@ class RadianceCalibration:
         else:
             raise FileNotFoundError
 
-    def calibrate_directory(self, directory, out_dir):
+    def calibrate_directory(self, directory, out_dir, overwrite):
         """calibrate_directory
         calibrate everything in this directory, recursively.
 
         :param: directory the directory in which to look for PSV files
         :param: out_dir the destination directory for output
-        """
+        :param: overwrite a boolean representing if files should be overwritten or not
+       """
         # total number of files to potentially calibrate
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
@@ -296,43 +304,45 @@ class RadianceCalibration:
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
             if os.path.isdir(full_path) and full_path is not out_dir:
-                self.calibrate_directory(os.path.join(directory, file), out_dir)
+                self.calibrate_directory(os.path.join(directory, file), out_dir, overwrite)
             else:
-                self.calibrate_file(full_path, out_dir)
+                self.calibrate_file(full_path, out_dir, overwrite)
                 self.current_file += 1
                 self.update_progress()
         self.update_progress(100)
 
-    def calibrate_list(self, list_file, out_dir):
+    def calibrate_list(self, list_file, out_dir, overwrite):
         """calibrate_list
         calibrate everything in this list
 
         :param: list the list of psv files to calibrate
         :param: out_dir the destination directory for output
+        :param: overwrite a boolean representing if files should be overwritten or not
         """
         files = open(list_file).read().splitlines()
         self.total_files = len(files)
         self.current_file = 1
         for file in files:
-            self.calibrate_file(file, out_dir)
+            self.calibrate_file(file, out_dir, overwrite)
             self.current_file += 1
             self.update_progress()
         self.update_progress(100)
 
-    def calibrate_to_radiance(self, file_type, file_name, out_dir):
+    def calibrate_to_radiance(self, file_type, file_name, out_dir, overwrite):
         """calibrate_to_radiance
         entry point to calibrate a file, list of files, or directory
 
         :param: file_type either file, list of files, or directory
         :param: file_name the name of the file / directory
         :param: out_dir the destination directory for output
+        :param: overwrite a boolean representing if files should be overwritten or not
         """
         if file_type.value is InputType.FILE.value:
-            return self.calibrate_file(file_name, out_dir)
+            return self.calibrate_file(file_name, out_dir, overwrite)
         elif file_type.value is InputType.FILE_LIST.value:
-            self.calibrate_list(file_name, out_dir)
+            self.calibrate_list(file_name, out_dir, overwrite)
         else:
-            self.calibrate_directory(file_name, out_dir)
+            self.calibrate_directory(file_name, out_dir, overwrite)
 
 
 if __name__ == "__main__":
