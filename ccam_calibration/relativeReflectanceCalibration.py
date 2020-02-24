@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import argparse
+import sys
 from datetime import datetime
 from ccam_calibration.utils.InputType import InputType
 from ccam_calibration.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
@@ -49,7 +50,7 @@ class RelativeReflectanceCalibration:
 
         my_path = os.path.abspath(os.path.dirname(__file__))
         sol76dir = os.path.join(my_path, "sol76")
-        conv = os.path.join(sol76dir, 'Target11_60_95.txt.conv');
+        conv = os.path.join(sol76dir, 'Target11_60_95.txt.conv')
         values_conv = [float(x.split()[1].strip()) for x in open(conv).readlines()]
 
         # multiply original values by the appropriate calibration values
@@ -318,8 +319,13 @@ if __name__ == "__main__":
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
     parser.add_argument('-c', action="store", dest='customFile', help="custom calibration file")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
+    parser.add_argument('--no-overwrite', action="store_false", dest='overwrite', help="do not overwrite existing files")
+    parser.set_defaults(overwrite=True)
 
     args = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
     if args.ccamFile is not None:
         in_file_type = InputType.FILE
         file = args.ccamFile
@@ -330,9 +336,11 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         file = args.list
 
+    overwrite = args.overwrite
+
     now = datetime.now()
     logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
     open(logfile, 'a').close()  # open file so it exists
 
     calibrate_ref = RelativeReflectanceCalibration(logfile)
-    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, args.out_dir)
+    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, args.out_dir, overwrite, overwrite)
