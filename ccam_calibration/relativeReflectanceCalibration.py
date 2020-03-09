@@ -67,7 +67,7 @@ class RelativeReflectanceCalibration:
         :param input_file: the file to calibrate
         :param out_dir: the chosen output directory
         :param overwrite_rad: boolean to overwrite existing rad file
-        :return:
+        :return boolean: there is a valid RAD file and/or we created one. We can proceed with calibration.
         """
         # name of the rad file - replace psv with rad (or PSV with RAD)
         (path, filename) = os.path.split(input_file)
@@ -112,13 +112,14 @@ class RelativeReflectanceCalibration:
             ms404 = os.path.join(sol76dir, 'CL9_404238503PSV_F0050104CCAM02076P1.TXT.RAD.cor.404ms.txt.cos')
             ms5004 = os.path.join(sol76dir, 'CL9_404238538PSV_F0050104CCAM02076P1.TXT.RAD.cor.5004ms.txt.cos')
         else:
+            # using a custom file
             ms7 = custom_target_file
             ms34 = custom_target_file
             ms404 = custom_target_file
             ms5004 = custom_target_file
 
         # now get the cosine-corrected values from the correct file
-        # check t_int for file
+        # calculate integration time for the file that is being calibrated
         try:
             t_int = get_integration_time(self.rad_file)
         except NonStandardHeaderException:
@@ -145,10 +146,20 @@ class RelativeReflectanceCalibration:
                 raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
 
         if fn is not None:
+            # if using a custom file, check that the custom exposure time and input exposure times match.
+            # If they don't - throw an error or just log as a warning?
+            if custom_target_file is not None:
+                t_int_custom = get_integration_time(custom_target_file)
+                t_int_custom = round(t_int_custom * 1000)
+                if t_int_custom != t_int:  # TODO throw error or just print warning?
+                    print('****************************/n '
+                          'WARNING: integration times between input file ' + self.rad_file + ' (' + t_int + ')'
+                          ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ' )'
+                          + ' do not match. \n ****************************/n ')
             # get the values, but skip the header
-            values = [float(x.split(' ')[1].strip()) for x in open(fn).readlines() if '"' not in x]
+            values = [float(x.split()[1].strip()) for x in open(fn).readlines() if '"' not in x]
             # get the wavelengths
-            self.wavelength = [float(x.split(' ')[0].strip()) for x in open(fn).readlines() if '"' not in x]
+            self.wavelength = [float(x.split()[0].strip()) for x in open(fn).readlines() if '"' not in x]
 
         return values
 

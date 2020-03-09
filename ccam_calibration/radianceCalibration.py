@@ -201,7 +201,7 @@ class RadianceCalibration:
         :param out_dir: output directory
         :param: overwrite a boolean representing if files should be overwritten or not
         """
-        # check that file exists, is a file, and is a psv *.tab file
+        # check that file exists, is a file, and is a psv *.tab or .txt file
         if os.path.exists(ccam_file) and os.path.isfile(ccam_file):
             if "psv" in ccam_file.lower() and \
                     (ccam_file.lower().endswith(".tab") or ccam_file.lower().endswith(".txt")):
