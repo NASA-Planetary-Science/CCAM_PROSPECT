@@ -1,7 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import filedialog, ttk, messagebox, Grid, N, S, E, W
 from datetime import datetime
 from ccam_calibration.utils.InputType import InputType
 from ccam_calibration.relativeReflectanceCalibration import RelativeReflectanceCalibration
@@ -20,6 +18,8 @@ class MainApplication(tk.Frame):
         Initialize the GUI and its components
         """
         tk.Frame.__init__(self, window, *args, **kwargs)
+
+        Grid.columnconfigure(window, 2, weight=3)
 
         # create a log file to keep track of bad input
         now = datetime.now()
@@ -82,8 +82,8 @@ class MainApplication(tk.Frame):
 
         # 'GO' buttons
         self.separator3 = ttk.Separator(window, orient="horizontal")
-        self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", command=self.start_rad)
-        self.calibrate_button = tk.Button(window, text="Calibrate to REF", command=self.start_calibration)
+        self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", width=20, command=self.start_rad)
+        self.calibrate_button = tk.Button(window, text="Calibrate to REF", width=20, command=self.start_calibration)
 
         # progress bar
         self.progress = ttk.Progressbar(window, orient=tk.HORIZONTAL, length=100, mode='determinate',
@@ -100,27 +100,27 @@ class MainApplication(tk.Frame):
         self.fileBtn.grid(column=0, row=1, sticky="w", padx=(10, 0))
         self.listBtn.grid(column=1, row=1, sticky="w")
         self.directoryBtn.grid(column=2, row=1, sticky="w")
-        self.in_filename_entry.grid(column=0, row=2, columnspan=3, sticky="w", padx=(10, 0))
+        self.in_filename_entry.grid(column=0, row=2, columnspan=3, sticky="ew", padx=(10, 0))
         self.browseBtn.grid(column=3, row=2, sticky="w")
         self.separator1.grid(column=0, row=4, columnspan=5, sticky="ew", pady=(10, 10))
         self.out_label.grid(column=0, row=6, columnspan=4, sticky="w", padx=(10, 0))
 
         self.use_default_out_btn.grid(column=0, row=7, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_out_btn.grid(column=2, row=7, rowspan=2, sticky="w")
-        self.out_directory_entry.grid(column=2, row=9, columnspan=2)
+        self.out_directory_entry.grid(column=2, row=9, columnspan=2, sticky="ew")
         self.outBrowseBtn.grid(column=4, row=9, padx=(1, 10))
         self.separator2.grid(column=0, row=10, columnspan=5, sticky="ew", pady=(10, 10))
         self.relative_label.grid(column=0, row=11, columnspan=4, sticky="w", padx=(10, 0))
         self.use_default_btn.grid(column=0, row=12, rowspan=3, columnspan=3, sticky="w", padx=(10, 0))
         self.use_custom_btn.grid(column=2, row=12, rowspan=2, sticky="w")
-        self.custom_file.grid(column=2, row=14, columnspan=2)
+        self.custom_file.grid(column=2, row=14, columnspan=2, sticky="ew")
         self.custom_file_browse.grid(column=4, row=14, padx=(1, 10))
 
         self.separator3.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(10, 10))
-        self.overwrite_rad_button.grid(column=0, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
-        self.overwrite_ref_button.grid(column=2, row=16, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
-        self.calibrate_rad_button.grid(column=0, row=17, columnspan=2, sticky="ew", pady=(5, 0), padx=(20, 5))
-        self.calibrate_button.grid(column=2, row=17, columnspan=2, sticky="ew", pady=(5, 0), padx=(5, 10))
+        self.overwrite_rad_button.grid(column=0, row=16, columnspan=2, sticky="w", pady=(5, 0), padx=(20, 5))
+        self.overwrite_ref_button.grid(column=2, row=16, columnspan=2, sticky="w", pady=(5, 0), padx=(5, 10))
+        self.calibrate_rad_button.grid(column=0, row=17, columnspan=2, sticky="w", pady=(5, 0), padx=(20, 5))
+        self.calibrate_button.grid(column=2, row=17, columnspan=2, sticky="w", pady=(5, 0), padx=(5, 10))
         self.progress.grid(column=0, row=18, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
 
     def browse_clicked(self):
