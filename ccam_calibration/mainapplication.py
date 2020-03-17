@@ -256,12 +256,12 @@ class MainApplication():
         open the plotting window
         """
         self.window.withdraw()
-        newWin = tk.Toplevel(self.window)
-        PlotPanel(newWin)
+        new_win = tk.Toplevel(self.window)
+        PlotPanel(new_win)
 
 
 def main():
     root_window = tk.Tk()
-    root_window.title("ChemCham Calibration")
+    root_window.title("CCAM_PROSPECT")
     MainApplication(root_window)
     root_window.mainloop()
