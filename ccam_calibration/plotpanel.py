@@ -4,16 +4,15 @@ from matplotlib.backends.backend_tkagg import (
 # Implement the default Matplotlib key bindings.
 from matplotlib.figure import Figure
 import os
-from ccam_calibration.radianceCalibration import RadianceCalibration
-
 
 class PlotPanel(tk.Frame):
 
-    def __init__(self, window, *args, **kwargs):
+    def __init__(self, window, btn, *args, **kwargs):
         """
         Initialize the GUI and its components
         """
         self.window = window
+        self.close_button = btn
         tk.Frame.__init__(self, window, *args, **kwargs)
 
         # set row/column growth for grid layout
@@ -25,6 +24,7 @@ class PlotPanel(tk.Frame):
         self.file_box_frame = tk.Frame(self.window)
         self.axis_adjust_frame = tk.Frame(self.window)
 
+        self.back_to_main = tk.Button(self.window, text="<< Back to Calibration", command=self.back_button_pressed)
         self.file_list_label = tk.Label(self.window, text="Files: ")
         self.vscrollbar = tk.Scrollbar(self.file_box_frame, orient=tk.VERTICAL)
         self.hscrollbar = tk.Scrollbar(self.file_box_frame, orient=tk.HORIZONTAL)
@@ -63,6 +63,7 @@ class PlotPanel(tk.Frame):
         set up the GUI layout
         :return: None
         """
+        # self.back_to_main.grid(row=0, column=0, columnspan=2, padx=(10, 10))
         self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         self.file_list_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
@@ -70,19 +71,20 @@ class PlotPanel(tk.Frame):
         self.file_box_frame.grid(row=1, column=0, columnspan=2, padx=(10, 10), sticky="ewns")
         self.add_file_button.grid(row=2, column=0, padx=(10, 0), pady=(10, 10), sticky="ew")
         self.rm_file_button.grid(row=2, column=1, padx=(0, 10), pady=(10, 10), sticky="ew")
-        self.canvas.get_tk_widget().grid(row=0, column=2, rowspan=4)
-        self.export_button.grid(row=4, column=2, sticky="ew", pady=(10, 10))
+        self.close_button.grid(row=3, column=0, columnspan=2, padx=(0, 10), pady=(5, 10), sticky="ew")
+        self.canvas.get_tk_widget().grid(row=0, column=2, rowspan=2)
+        self.export_button.grid(row=3, column=2, sticky="ew", pady=(10, 10))
         self.y_axis_label.grid(row=0, column=0, columnspan=2)
         self.y_axis_min_label.grid(row=1, column=0)
-        self.y_axis_min_entry.grid(row=1, column=1, padx=(0, 10))
+        self.y_axis_min_entry.grid(row=1, column=1, padx=(0, 15))
         self.y_axis_max_label.grid(row=2, column=0)
-        self.y_axis_max_entry.grid(row=2, column=1, padx=(0, 10))
+        self.y_axis_max_entry.grid(row=2, column=1, padx=(0, 15))
         self.x_axis_label.grid(row=3, column=0, columnspan=2)
         self.x_axis_min_label.grid(row=4, column=0)
-        self.x_axis_min_entry.grid(row=4, column=1, padx=(0, 10))
+        self.x_axis_min_entry.grid(row=4, column=1, padx=(0, 15))
         self.x_axis_max_label.grid(row=5, column=0)
-        self.x_axis_max_entry.grid(row=5, column=1, padx=(0, 10))
-        self.axis_apply.grid(row=6, column=0, columnspan=2, sticky="ew")
+        self.x_axis_max_entry.grid(row=5, column=1, padx=(0, 15))
+        self.axis_apply.grid(row=6, column=0, columnspan=2, sticky="ew", padx=(0, 15))
         self.axis_adjust_frame.grid(row=1, column=3)
 
     @staticmethod
@@ -115,14 +117,17 @@ class PlotPanel(tk.Frame):
                 # Data for plotting
                 x, y = self.read_file(file)
                 self.axes.plot(x, y, label=filename)
-                self.axes.legend(bbox_to_anchor=(0.4, 0.5), loc='lower left', borderaxespad=0.)
+                self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.)
                 self.canvas.draw()
 
     def remove_file(self):
         """remove_file
         """
         # remove the highlighted files from list and graph
-        self.file_list_box.delete(tk.ACTIVE)
+        selection = self.file_list_box.curselection()
+        for i in reversed(selection):
+            self.file_list_box.delete(i)
+        # self.file_list_box.delete(tk.ACTIVE)
 
     def save_plot(self):
         # TODO save plot
@@ -137,6 +142,10 @@ class PlotPanel(tk.Frame):
         self.axes.set_xlim(xmin, xmax)
         self.axes.set_ylim(ymin, ymax)
         self.canvas.draw()
+
+    def back_button_pressed(self):
+        self.window.withdraw()
+
 
     def _quit(self):
         self.window.quit()     # stops mainloop

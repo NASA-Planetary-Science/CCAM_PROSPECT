@@ -7,7 +7,7 @@ from ccam_calibration.radianceCalibration import RadianceCalibration
 from ccam_calibration.plotpanel import PlotPanel
 
 
-class MainApplication():
+class MainApplication:
     input_type_switcher = {
         InputType.FILE.value: InputType.FILE,
         InputType.FILE_LIST.value: InputType.FILE_LIST,
@@ -257,11 +257,22 @@ class MainApplication():
         """
         self.window.withdraw()
         new_win = tk.Toplevel(self.window)
-        PlotPanel(new_win)
+        handler = lambda: self.onCloseOtherFrame(new_win)
+        btn = tk.Button(new_win, text="<< Back to Calibration", command=handler)
+        PlotPanel(new_win, btn)
 
+    def onCloseOtherFrame(self, otherFrame):
+        """"""
+        otherFrame.destroy()
+        self.show()
+
+    def show(self):
+        """"""
+        self.window.update()
+        self.window.deiconify()
 
 def main():
     root_window = tk.Tk()
     root_window.title("CCAM_PROSPECT")
-    MainApplication(root_window)
+    app = MainApplication(root_window)
     root_window.mainloop()
