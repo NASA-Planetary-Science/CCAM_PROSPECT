@@ -20,6 +20,7 @@ class PlotPanel(tk.Frame):
         tk.Grid.columnconfigure(window, 2, weight=3)
 
         self.filename_dict = {}
+        self.lines_dict = {}
 
         self.file_box_frame = tk.Frame(self.window)
         self.axis_adjust_frame = tk.Frame(self.window)
@@ -55,6 +56,7 @@ class PlotPanel(tk.Frame):
         self.y_axis_max_entry.insert(tk.END, "1")
         self.x_axis_min_entry.insert(tk.END, "400")
         self.x_axis_max_entry.insert(tk.END, "840")
+        self.axes.set_xlim(400, 840)
 
         self.set_up_layout()
 
@@ -116,7 +118,8 @@ class PlotPanel(tk.Frame):
                 # add file to graph
                 # Data for plotting
                 x, y = self.read_file(file)
-                self.axes.plot(x, y, label=filename)
+                this_line = self.axes.plot(x, y, label=filename)
+                self.lines_dict[filename] = this_line
                 self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.)
                 self.canvas.draw()
 
@@ -126,7 +129,13 @@ class PlotPanel(tk.Frame):
         # remove the highlighted files from list and graph
         selection = self.file_list_box.curselection()
         for i in reversed(selection):
+            filename = self.file_list_box.get(i)
             self.file_list_box.delete(i)
+            line = self.lines_dict[filename]
+            self.axes.lines.remove(line[0])
+            self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.)
+            self.canvas.draw()
+
         # self.file_list_box.delete(tk.ACTIVE)
 
     def save_plot(self):
@@ -145,7 +154,6 @@ class PlotPanel(tk.Frame):
 
     def back_button_pressed(self):
         self.window.withdraw()
-
 
     def _quit(self):
         self.window.quit()     # stops mainloop

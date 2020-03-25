@@ -92,7 +92,7 @@ class MainApplication:
 
         # plotting
         self.separator4 = ttk.Separator(root_window, orient="horizontal")
-        self.plot_button = tk.Button(root_window, text="Open Plotting", width=40, command=self.open_plots)
+        self.plot_button = tk.Button(root_window, text="Relative Reflectance Plotting", width=40, command=self.open_plots)
 
         self.set_up_layout()
 
