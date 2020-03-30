@@ -3,11 +3,11 @@ import os
 import argparse
 import sys
 from datetime import datetime
-from ccam_calibration.utils.InputType import InputType
-from ccam_calibration.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
-from ccam_calibration.utils.NonStandardHeaderException import NonStandardHeaderException
-from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label
-from ccam_calibration.radianceCalibration import RadianceCalibration
+from ccam_prospect.utils.InputType import InputType
+from ccam_prospect.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
+from ccam_prospect.utils.NonStandardHeaderException import NonStandardHeaderException
+from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label
+from ccam_prospect.radianceCalibration import RadianceCalibration
 
 
 class RelativeReflectanceCalibration:
@@ -148,10 +148,10 @@ class RelativeReflectanceCalibration:
         if fn is not None:
             # if using a custom file, check that the custom exposure time and input exposure times match.
             # If they don't - throw an error or just log as a warning?
-            if custom_target_file is not None:
+            if custom_target_file:
                 t_int_custom = get_integration_time(custom_target_file)
                 t_int_custom = round(t_int_custom * 1000)
-                if t_int_custom != t_int:  # TODO throw error or just print warning?
+                if t_int_custom != t_int: # TODO throw error
                     print('****************************/n '
                           'WARNING: integration times between input file ' + self.rad_file + ' (' + t_int + ')'
                           ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ' )'

@@ -4,10 +4,10 @@ import math as math
 import numpy as np
 import sys
 from datetime import datetime
-from ccam_calibration.utils.InputType import InputType
-import ccam_calibration.utils.constant as constants
-from ccam_calibration.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
-from ccam_calibration.utils.NonStandardHeaderException import NonStandardHeaderException
+from ccam_prospect.utils.InputType import InputType
+import ccam_prospect.utils.constant as constants
+from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
+from ccam_prospect.utils.NonStandardHeaderException import NonStandardHeaderException
 
 
 class RadianceCalibration:

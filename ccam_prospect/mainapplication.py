@@ -1,25 +1,26 @@
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox, Grid, N, S, E, W
 from datetime import datetime
-from ccam_calibration.utils.InputType import InputType
-from ccam_calibration.relativeReflectanceCalibration import RelativeReflectanceCalibration
-from ccam_calibration.radianceCalibration import RadianceCalibration
+from ccam_prospect.utils.InputType import InputType
+from ccam_prospect.relativeReflectanceCalibration import RelativeReflectanceCalibration
+from ccam_prospect.radianceCalibration import RadianceCalibration
+from ccam_prospect.plotpanel import PlotPanel
 
 
-class MainApplication(tk.Frame):
+class MainApplication:
     input_type_switcher = {
         InputType.FILE.value: InputType.FILE,
         InputType.FILE_LIST.value: InputType.FILE_LIST,
         InputType.DIRECTORY.value: InputType.DIRECTORY
     }
 
-    def __init__(self, window, *args, **kwargs):
+    def __init__(self, root_window):
         """
         Initialize the GUI and its components
         """
-        tk.Frame.__init__(self, window, *args, **kwargs)
+        # tk.Frame.__init__(self, window, *args, **kwargs)
 
-        Grid.columnconfigure(window, 2, weight=3)
+        Grid.columnconfigure(root_window, 2, weight=3)
 
         # create a log file to keep track of bad input
         now = datetime.now()
@@ -29,7 +30,7 @@ class MainApplication(tk.Frame):
         # set up the calibration environments and the progress monitor
         self.radiance_cal = RadianceCalibration(self.logfile, self)
         self.relative_cal = RelativeReflectanceCalibration(self.logfile, self)
-        self.window = window
+        self.window = root_window
         self.progress_var = tk.IntVar()
         self.overwrite_rad = tk.IntVar()
         self.overwrite_ref = tk.IntVar()
@@ -51,43 +52,47 @@ class MainApplication(tk.Frame):
         self.in_filename_entry = tk.Entry(self.window, width=30)
 
         # output stuff
-        self.separator1 = ttk.Separator(window, orient="horizontal")
-        self.out_label = tk.Label(window, text="Output Directory: ")
+        self.separator1 = ttk.Separator(root_window, orient="horizontal")
+        self.out_label = tk.Label(root_window, text="Output Directory: ")
         self.out_directory_type = tk.IntVar()
-        self.use_default_out_btn = tk.Radiobutton(window, text="Use default\n (same as input dir)", value=1,
+        self.use_default_out_btn = tk.Radiobutton(root_window, text="Use default\n (same as input dir)", value=1,
                                                   variable=self.out_directory_type,
                                                   command=self.select_output_directory)
         self.use_default_out_btn.select()
-        self.use_custom_out_btn = tk.Radiobutton(window, text="Use custom", value=2, variable=self.out_directory_type,
+        self.use_custom_out_btn = tk.Radiobutton(root_window, text="Use custom", value=2, variable=self.out_directory_type,
                                                  command=self.select_output_directory)
-        self.out_directory_entry = tk.Entry(window, width=15, state="disabled")
-        self.outBrowseBtn = tk.Button(window, text='Browse', command=self.out_clicked, state="disabled")
+        self.out_directory_entry = tk.Entry(root_window, width=15, state="disabled")
+        self.outBrowseBtn = tk.Button(root_window, text='Browse', command=self.out_clicked, state="disabled")
 
         # config stuff for relative reflectance
-        self.separator2 = ttk.Separator(window, orient="horizontal")
+        self.separator2 = ttk.Separator(root_window, orient="horizontal")
         self.relative_config = tk.IntVar()
-        self.relative_label = tk.Label(window, text="Relative Reflectance Calibration:")
-        self.custom_file = tk.Entry(window, text="custom file", width=15, state="disabled")
-        self.custom_file_browse = tk.Button(window, text="Browse", state="disabled", command=self.custom_browse_clicked)
-        self.browseBtn = tk.Button(window, text='Browse', command=self.browse_clicked)
-        self.use_default_btn = tk.Radiobutton(window, text="Use default\n (target 11 sol 76)", value=1,
+        self.relative_label = tk.Label(root_window, text="Relative Reflectance Calibration:")
+        self.custom_file = tk.Entry(root_window, text="custom file", width=15, state="disabled")
+        self.custom_file_browse = tk.Button(root_window, text="Browse", state="disabled", command=self.custom_browse_clicked)
+        self.browseBtn = tk.Button(root_window, text='Browse', command=self.browse_clicked)
+        self.use_default_btn = tk.Radiobutton(root_window, text="Use default\n (target 11 sol 76)", value=1,
                                               variable=self.relative_config, command=self.select_custom)
         self.use_default_btn.select()
-        self.use_custom_btn = tk.Radiobutton(window, text="Use custom", value=2, variable=self.relative_config,
+        self.use_custom_btn = tk.Radiobutton(root_window, text="Use custom", value=2, variable=self.relative_config,
                                              command=self.select_custom)
 
         # overwite file option buttons
-        self.overwrite_rad_button = tk.Checkbutton(window, text="Overwrite existing RAD", variable=self.overwrite_rad)
-        self.overwrite_ref_button = tk.Checkbutton(window, text="Overwrite existing REF", variable=self.overwrite_ref)
+        self.overwrite_rad_button = tk.Checkbutton(root_window, text="Overwrite existing RAD", variable=self.overwrite_rad)
+        self.overwrite_ref_button = tk.Checkbutton(root_window, text="Overwrite existing REF", variable=self.overwrite_ref)
 
         # 'GO' buttons
-        self.separator3 = ttk.Separator(window, orient="horizontal")
-        self.calibrate_rad_button = tk.Button(window, text="Calibrate to RAD", width=20, command=self.start_rad)
-        self.calibrate_button = tk.Button(window, text="Calibrate to REF", width=20, command=self.start_calibration)
+        self.separator3 = ttk.Separator(root_window, orient="horizontal")
+        self.calibrate_rad_button = tk.Button(root_window, text="Calibrate to RAD", width=20, command=self.start_rad)
+        self.calibrate_button = tk.Button(root_window, text="Calibrate to REF", width=20, command=self.start_calibration)
 
         # progress bar
-        self.progress = ttk.Progressbar(window, orient=tk.HORIZONTAL, length=100, mode='determinate',
+        self.progress = ttk.Progressbar(root_window, orient=tk.HORIZONTAL, length=100, mode='determinate',
                                         var=self.progress_var, maximum=100)
+
+        # plotting
+        self.separator4 = ttk.Separator(root_window, orient="horizontal")
+        self.plot_button = tk.Button(root_window, text="Relative Reflectance Plotting", width=40, command=self.open_plots)
 
         self.set_up_layout()
 
@@ -122,6 +127,9 @@ class MainApplication(tk.Frame):
         self.calibrate_rad_button.grid(column=0, row=17, columnspan=2, sticky="w", pady=(5, 0), padx=(20, 5))
         self.calibrate_button.grid(column=2, row=17, columnspan=2, sticky="w", pady=(5, 0), padx=(5, 10))
         self.progress.grid(column=0, row=18, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
+
+        self.separator4.grid(column=0, row=19, columnspan=5, sticky="ew", pady=(10,10))
+        self.plot_button.grid(column=0, row=20, columnspan=5, sticky="ew", pady=(10,10))
 
     def browse_clicked(self):
         """browse_clicked
@@ -243,9 +251,28 @@ class MainApplication(tk.Frame):
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
         print('******** finished calibration ********')
 
+    def open_plots(self):
+        """open_plots
+        open the plotting window
+        """
+        self.window.withdraw()
+        new_win = tk.Toplevel(self.window)
+        handler = lambda: self.onCloseOtherFrame(new_win)
+        btn = tk.Button(new_win, text="<< Back to Calibration", command=handler)
+        PlotPanel(new_win, btn)
+
+    def onCloseOtherFrame(self, otherFrame):
+        """"""
+        otherFrame.destroy()
+        self.show()
+
+    def show(self):
+        """"""
+        self.window.update()
+        self.window.deiconify()
 
 def main():
-    window = tk.Tk()
-    window.title("ChemCham Calibration")
-    MainApplication(window)
-    window.mainloop()
+    root_window = tk.Tk()
+    root_window.title("CCAM_PROSPECT")
+    app = MainApplication(root_window)
+    root_window.mainloop()
