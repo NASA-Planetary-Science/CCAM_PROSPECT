@@ -1,7 +1,7 @@
 from jinja2 import Environment, FileSystemLoader
 import os
 from datetime import date
-from ccam_prospect.utils.NonStandardHeaderException import NonStandardHeaderException
+from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException
 
 
 def get_integration_time(filename):

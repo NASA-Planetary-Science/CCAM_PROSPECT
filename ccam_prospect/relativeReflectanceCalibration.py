@@ -4,8 +4,8 @@ import argparse
 import sys
 from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
-from ccam_prospect.utils.NonStandardExposureTimeException import NonStandardExposureTimeException
-from ccam_prospect.utils.NonStandardHeaderException import NonStandardHeaderException
+from ccam_prospect.utils.CustomExceptions import NonStandardExposureTimeException, NonStandardHeaderException, \
+    MismatchedExposureTimeException
 from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label
 from ccam_prospect.radianceCalibration import RadianceCalibration
 
@@ -151,11 +151,14 @@ class RelativeReflectanceCalibration:
             if custom_target_file:
                 t_int_custom = get_integration_time(custom_target_file)
                 t_int_custom = round(t_int_custom * 1000)
-                if t_int_custom != t_int: # TODO throw error
-                    print('****************************/n '
-                          'WARNING: integration times between input file ' + self.rad_file + ' (' + t_int + ')'
-                          ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ' )'
-                          + ' do not match. \n ****************************/n ')
+                if t_int_custom != t_int:
+                    print('****************************\n '
+                          'WARNING: integration times between input file ' + self.rad_file + ' (' + str(t_int) + ')'
+                          ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ')'
+                          + ' do not match. \n ****************************\n ')
+                    raise MismatchedExposureTimeException
+
+            # valid file with correct integration time. -
             # get the values, but skip the header
             values = [float(x.split()[1].strip()) for x in open(fn).readlines() if '"' not in x]
             # get the wavelengths

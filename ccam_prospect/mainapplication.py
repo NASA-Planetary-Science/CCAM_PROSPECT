@@ -5,6 +5,7 @@ from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from ccam_prospect.radianceCalibration import RadianceCalibration
 from ccam_prospect.plotpanel import PlotPanel
+from ccam_prospect.utils.CustomExceptions import MismatchedExposureTimeException
 
 
 class MainApplication:
@@ -226,6 +227,10 @@ class MainApplication:
             if file_type.value is InputType.DIRECTORY.value:
                 input_type = 'Directory'
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        except MismatchedExposureTimeException:
+            messagebox.showinfo('Error', 'The exposure time in {} does not match the exposure time'
+                                         ' in the custom calibration file.'
+                                         ' The calibration will not continue.'.format(file))
         print('******** finished calibration ********')
 
     def start_rad(self):

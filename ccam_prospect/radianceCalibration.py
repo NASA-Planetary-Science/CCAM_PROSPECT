@@ -7,7 +7,7 @@ from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 import ccam_prospect.utils.constant as constants
 from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
-from ccam_prospect.utils.NonStandardHeaderException import NonStandardHeaderException
+from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException
 
 
 class RadianceCalibration:

@@ -1,4 +1,4 @@
-# ccam-calibration
+# ccam-prospect
 
 This software was developed as part of the NASA PDART An archive of Mars Science Laboratory ChemCam passive visible/near-infrared surface spectra. It is written in Python and can be run on any platform that has an installation of Python 3. There is both a Graphical User Interface (GUI) option and a command line option for running the tool.
 
