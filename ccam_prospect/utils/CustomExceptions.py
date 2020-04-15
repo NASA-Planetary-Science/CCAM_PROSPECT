@@ -8,3 +8,7 @@ class MismatchedExposureTimeException(Exception):
 
 class NonStandardHeaderException(Exception):
     pass
+
+
+class CancelExecutionException(Exception):
+    pass

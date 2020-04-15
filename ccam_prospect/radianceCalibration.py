@@ -7,7 +7,7 @@ from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 import ccam_prospect.utils.constant as constants
 from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
-from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException
+from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException, CancelExecutionException
 
 
 class RadianceCalibration:
@@ -24,6 +24,7 @@ class RadianceCalibration:
         self.header_string = ""
         self.original_label = ""
         self.logfile = log_file
+        self.show_header_warning = True
 
     def get_headers(self, filename):
         """get_headers
@@ -237,8 +238,17 @@ class RadianceCalibration:
                     sa_steradian = self.get_solid_angle()
                     fov_tgt = self.get_area_on_target()
                 except NonStandardHeaderException:
+                    warning = ccam_file + ': not a valid PSV file header. Skipping this file.'
+                    # write to log file
                     with open(self.logfile, 'a') as log:
-                        log.write(ccam_file + ': radiance calibration - not a valid PSV file header \n')
+                        log.write(self.rad_file + ': radiance calibration - ' + warning + '\n')
+                    if self.show_header_warning:
+                        # show warning
+                        self.show_header_warning = self.main_app.show_warning_dialog(warning)
+                    if self.show_header_warning is None:
+                        # cancel
+                        raise CancelExecutionException
+                    # exit because file was invalid
                     return False
 
                 if self.total_files == 1:

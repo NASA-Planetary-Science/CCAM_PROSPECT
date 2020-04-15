@@ -5,7 +5,7 @@ from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from ccam_prospect.radianceCalibration import RadianceCalibration
 from ccam_prospect.plotpanel import PlotPanel
-from ccam_prospect.utils.CustomExceptions import MismatchedExposureTimeException
+from ccam_prospect.utils.CustomExceptions import CancelExecutionException
 
 
 class MainApplication:
@@ -227,7 +227,7 @@ class MainApplication:
             if file_type.value is InputType.DIRECTORY.value:
                 input_type = 'Directory'
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
-        except MismatchedExposureTimeException:
+        except CancelExecutionException:
             messagebox.showinfo('Cancel', 'You have chosen to cancel. The calibration will not continue.')
         print('******** finished calibration ********')
 
@@ -260,11 +260,11 @@ class MainApplication:
         """
         self.window.withdraw()
         new_win = tk.Toplevel(self.window)
-        handler = lambda: self.onCloseOtherFrame(new_win)
+        handler = lambda: self.on_close_other_frame(new_win)
         btn = tk.Button(new_win, text="<< Back to Calibration", command=handler)
         PlotPanel(new_win, btn)
 
-    def onCloseOtherFrame(self, otherFrame):
+    def on_close_other_frame(self, otherFrame):
         """"""
         otherFrame.destroy()
         self.show()

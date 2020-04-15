@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.utils.CustomExceptions import NonStandardExposureTimeException, NonStandardHeaderException, \
-    MismatchedExposureTimeException
+    CancelExecutionException
 from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label
 from ccam_prospect.radianceCalibration import RadianceCalibration
 
@@ -19,7 +19,9 @@ class RelativeReflectanceCalibration:
         self.current_file = 1
         self.original_label = ""
         self.logfile = log_file
-        self.show_warning = True
+        self.show_mismatched_warning = True  # show dialog for mismatched exposure time
+        self.show_exposure_warning = True     # show dialog for nonstandard exposure time
+        self.show_header_warning = True       # show dialog for nonstandard header
 
     def do_division(self, values):
         """
@@ -124,9 +126,18 @@ class RelativeReflectanceCalibration:
         try:
             t_int = get_integration_time(self.rad_file)
         except NonStandardHeaderException:
+            warning = self.rad_file + ': not a valid RAD file header. Skipping this file.'
+            # write to log file
             with open(self.logfile, 'a') as log:
-                log.write(self.rad_file + ': relative reflectance calibration - not a valid RAD file header \n')
-                raise NonStandardHeaderException
+                log.write(self.rad_file + ': relative reflectance calibration - ' + warning + '\n')
+            if self.show_header_warning:
+                # show warning
+                self.show_header_warning = self.main_app.show_warning_dialog(warning)
+            if self.show_header_warning is None:
+                # cancel
+                raise CancelExecutionException
+            # exit because file was invalid
+            return None
 
         if t_int is not None:
             t_int = round(t_int * 1000)
@@ -140,32 +151,44 @@ class RelativeReflectanceCalibration:
         elif t_int == 5004:
             fn = ms5004
         else:
-            fn = None
-            print('error - integration time in input file is not 7, 34, 404, or 5004. File tracked in log')
+            warning = self.rad_file + ': Exposure time is not one of 7, 34, 404, or 5004. Skipping this file.'
+            print('error - ' + warning + ' File tracked in log')
+            # track in log file
             with open(self.logfile, 'a') as log:
-                log.write(self.rad_file + ':  non standard exposure time \n')
-                raise NonStandardExposureTimeException('Exposure time is not one of 7, 34, 404, or 5004')
+                log.write(self.rad_file + ':  ' + warning + ' \n')
+            if self.show_exposure_warning:
+                # show warning
+                self.show_exposure_warning = self.main_app.show_warning_dialog(warning)
+            if self.show_exposure_warning is None:
+                # cancel
+                raise CancelExecutionException
+            # return from this function
+            return None
 
         if fn is not None:
             # if using a custom file, check that the custom exposure time and input exposure times match.
-            # If they don't - throw an error or just log as a warning?
+            # If they don't - throw an error, log in file, and
             if custom_target_file:
                 t_int_custom = get_integration_time(custom_target_file)
                 t_int_custom = round(t_int_custom * 1000)
                 if t_int_custom != t_int:
                     warning = 'integration times between input file ' + self.rad_file + ' (' + str(t_int) + ')'\
                         ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ') ' \
-                        ' do not match.'
+                        ' do not match. Skipping this file.'
+                    # write to log file
                     with open(self.logfile, 'a') as log:
                         log.write(self.rad_file + ': relative reflectance calibration - custom target file'
-                                                  ' integration time does not match\n')
+                                                  ' integration time does not match.\n')
                     print('****************************\n '
-                          'WARNING: ' + warning + ' \n ****************************\n ')
-                    if self.show_warning:
-                        self.show_warning = self.main_app.show_warning_dialog(warning)
-                    if self.show_warning is None:
-                        raise MismatchedExposureTimeException
-
+                          'WARNING: ' + warning + ' \n****************************\n ')
+                    if self.show_mismatched_warning:
+                        # show warning dialog
+                        self.show_mismatched_warning = self.main_app.show_warning_dialog(warning)
+                    if self.show_mismatched_warning is None:
+                        # cancel
+                        raise CancelExecutionException
+                    # return from this function
+                    return None
 
             # valid file with correct integration time. -
             # get the values, but skip the header
@@ -230,40 +253,38 @@ class RelativeReflectanceCalibration:
             self.original_label = self.original_label.replace('.TXT', '.lbl')
             self.original_label = self.original_label.replace('rad', 'psv')
             self.original_label = self.original_label.replace('RAD', 'PSV')
-            try:
-                # now choose values based on exp time
-                values = self.choose_values(custom_file)
-                if self.total_files == 1:
-                    self.update_progress(25)
-                # then calibrate by dividing by values
-                new_values = self.do_division(values)
-                if self.total_files == 1:
-                    self.update_progress(75)
-                # convolve
-                final_values = self.do_multiplication(new_values)
 
-                # rename rad to ref to get outfile name and then write to file
-                write_final(out_filename, self.wavelength, final_values)
+            # now choose values based on exp time
+            values = self.choose_values(custom_file)
+            if values is None:
+                return
+            if self.total_files == 1:
+                self.update_progress(25)
+            # then calibrate by dividing by values
+            new_values = self.do_division(values)
+            if self.total_files == 1:
+                self.update_progress(75)
+            # convolve
+            final_values = self.do_multiplication(new_values)
 
-                if os.path.exists(self.original_label):
-                    # write new label based on original
-                    (path, filename) = os.path.split(self.original_label)
-                    new_label_filename = filename.replace('PSV', 'REF')
-                    new_label_filename = new_label_filename.replace('psv', 'ref')
-                    new_label_filename = new_label_filename.replace('lbl', 'xml')
-                    (out_path, filename) = os.path.split(out_filename)
-                    new_label = os.path.join(out_path, new_label_filename)
-                    write_label(new_label, self.original_label, False)
+            # rename rad to ref to get outfile name and then write to file
+            write_final(out_filename, self.wavelength, final_values)
 
-                if self.total_files == 1:
-                    self.update_progress(100)
+            if os.path.exists(self.original_label):
+                # write new label based on original
+                (path, filename) = os.path.split(self.original_label)
+                new_label_filename = filename.replace('PSV', 'REF')
+                new_label_filename = new_label_filename.replace('psv', 'ref')
+                new_label_filename = new_label_filename.replace('lbl', 'xml')
+                (out_path, filename) = os.path.split(out_filename)
+                new_label = os.path.join(out_path, new_label_filename)
+                write_label(new_label, self.original_label, False)
 
-                print(filename + ' calibrated and written to ' + out_filename)
-            except NonStandardExposureTimeException:
-                # this file has been logged, but keep going
-                pass
-            except NonStandardHeaderException:
-                pass
+            if self.total_files == 1:
+                self.update_progress(100)
+
+            print(filename + ' calibrated and written to ' + out_filename)
+
         else:
             ext = os.path.splitext(filename)[1]
             if ext != '.lbl' and ext != '.LBL' and ext != '.xml':
