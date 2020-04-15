@@ -78,7 +78,7 @@ class MainApplication:
         self.use_custom_btn = tk.Radiobutton(root_window, text="Use custom", value=2, variable=self.relative_config,
                                              command=self.select_custom)
 
-        # overwite file option buttons
+        # overwrite file option buttons
         self.overwrite_rad_button = tk.Checkbutton(root_window, text="Overwrite existing RAD", variable=self.overwrite_rad)
         self.overwrite_ref_button = tk.Checkbutton(root_window, text="Overwrite existing REF", variable=self.overwrite_ref)
 
@@ -228,9 +228,7 @@ class MainApplication:
                 input_type = 'Directory'
             messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
         except MismatchedExposureTimeException:
-            messagebox.showinfo('Error', 'The exposure time in {} does not match the exposure time'
-                                         ' in the custom calibration file.'
-                                         ' The calibration will not continue.'.format(file))
+            messagebox.showinfo('Cancel', 'You have chosen to cancel. The calibration will not continue.')
         print('******** finished calibration ********')
 
     def start_rad(self):
@@ -275,6 +273,12 @@ class MainApplication:
         """"""
         self.window.update()
         self.window.deiconify()
+
+    @staticmethod
+    def show_warning_dialog(warning):
+        question = "Do you want to continue to show these warnings?"
+        return messagebox.askyesnocancel('warning', warning + "\n" + question)
+
 
 def main():
     root_window = tk.Tk()

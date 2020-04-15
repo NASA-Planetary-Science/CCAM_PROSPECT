@@ -1,10 +1,10 @@
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Implement the default Matplotlib key bindings.
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import os
+
 
 class PlotPanel(tk.Frame):
 

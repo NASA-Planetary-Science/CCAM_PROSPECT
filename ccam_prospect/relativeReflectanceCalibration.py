@@ -19,6 +19,7 @@ class RelativeReflectanceCalibration:
         self.current_file = 1
         self.original_label = ""
         self.logfile = log_file
+        self.show_warning = True
 
     def do_division(self, values):
         """
@@ -152,11 +153,19 @@ class RelativeReflectanceCalibration:
                 t_int_custom = get_integration_time(custom_target_file)
                 t_int_custom = round(t_int_custom * 1000)
                 if t_int_custom != t_int:
+                    warning = 'integration times between input file ' + self.rad_file + ' (' + str(t_int) + ')'\
+                        ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ') ' \
+                        ' do not match.'
+                    with open(self.logfile, 'a') as log:
+                        log.write(self.rad_file + ': relative reflectance calibration - custom target file'
+                                                  ' integration time does not match\n')
                     print('****************************\n '
-                          'WARNING: integration times between input file ' + self.rad_file + ' (' + str(t_int) + ')'
-                          ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ')'
-                          + ' do not match. \n ****************************\n ')
-                    raise MismatchedExposureTimeException
+                          'WARNING: ' + warning + ' \n ****************************\n ')
+                    if self.show_warning:
+                        self.show_warning = self.main_app.show_warning_dialog(warning)
+                    if self.show_warning is None:
+                        raise MismatchedExposureTimeException
+
 
             # valid file with correct integration time. -
             # get the values, but skip the header
