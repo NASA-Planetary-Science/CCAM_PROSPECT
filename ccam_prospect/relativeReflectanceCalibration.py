@@ -315,7 +315,7 @@ class RelativeReflectanceCalibration:
                     self.current_file += 1
                     self.update_progress()
         except FileNotFoundError:
-            raise InputFileNotFoundException
+            raise InputFileNotFoundException(directory)
 
         self.update_progress(100)
 
@@ -331,8 +331,8 @@ class RelativeReflectanceCalibration:
         """
         try:
             files = open(list_file).read().splitlines()
-        except:
-            raise InputFileNotFoundException
+        except FileNotFoundError:
+            raise InputFileNotFoundException(list_file)
 
         self.total_files = len(files)
         self.current_file = 1

@@ -222,11 +222,8 @@ class MainApplication:
         try:
             self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
                                                              self.overwrite_rad.get(), self.overwrite_ref.get())
-        except InputFileNotFoundException:
-            input_type = 'File'
-            if file_type.value is InputType.DIRECTORY.value:
-                input_type = 'Directory'
-            messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        except InputFileNotFoundException as ife:
+            messagebox.showinfo('Error', 'The input file ({}) does not exist'.format(ife.file))
         except CancelExecutionException:
             messagebox.showinfo('Cancel', 'You have chosen to cancel. The calibration will not continue.')
         print('******** finished calibration ********')
@@ -247,11 +244,8 @@ class MainApplication:
                 out_dir = out_dir + '/'
         try:
             self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir, self.overwrite_rad.get())
-        except InputFileNotFoundException:
-            input_type = 'File'
-            if file_type.value is InputType.DIRECTORY.value:
-                input_type = 'Directory'
-            messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        except InputFileNotFoundException as ife:
+            messagebox.showinfo('Error', 'The input file ({}) does not exist'.format(ife.file))
         print('******** finished calibration ********')
 
     def open_plots(self):

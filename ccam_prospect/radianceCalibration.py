@@ -299,7 +299,7 @@ class RadianceCalibration:
                         log.write(ccam_file + ': radiance input - not a valid PSV file \n')
                 return False
         else:
-            raise InputFileNotFoundException
+            raise InputFileNotFoundException(ccam_file)
 
     def calibrate_directory(self, directory, out_dir, overwrite):
         """calibrate_directory
@@ -323,7 +323,7 @@ class RadianceCalibration:
                     self.update_progress()
             self.update_progress(100)
         except FileNotFoundError:
-            raise InputFileNotFoundException
+            raise InputFileNotFoundException(directory)
 
     def calibrate_list(self, list_file, out_dir, overwrite):
         """calibrate_list
@@ -336,7 +336,7 @@ class RadianceCalibration:
         try:
             files = open(list_file).read().splitlines()
         except FileNotFoundError:
-            raise InputFileNotFoundException
+            raise InputFileNotFoundException(list_file)
         self.total_files = len(files)
         self.current_file = 1
         for file in files:

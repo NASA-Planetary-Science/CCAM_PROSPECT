@@ -15,4 +15,7 @@ class CancelExecutionException(Exception):
 
 
 class InputFileNotFoundException(Exception):
-    pass
+    def __init__(self, file):
+        self.file = file
+
+
