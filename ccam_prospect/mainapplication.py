@@ -1,10 +1,11 @@
 import tkinter as tk
-from tkinter import filedialog, ttk, messagebox, Grid, N, S, E, W
+from tkinter import filedialog, ttk, messagebox, Grid
 from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from ccam_prospect.radianceCalibration import RadianceCalibration
 from ccam_prospect.plotpanel import PlotPanel
+from ccam_prospect.utils.CustomExceptions import CancelExecutionException, InputFileNotFoundException
 
 
 class MainApplication:
@@ -77,7 +78,7 @@ class MainApplication:
         self.use_custom_btn = tk.Radiobutton(root_window, text="Use custom", value=2, variable=self.relative_config,
                                              command=self.select_custom)
 
-        # overwite file option buttons
+        # overwrite file option buttons
         self.overwrite_rad_button = tk.Checkbutton(root_window, text="Overwrite existing RAD", variable=self.overwrite_rad)
         self.overwrite_ref_button = tk.Checkbutton(root_window, text="Overwrite existing REF", variable=self.overwrite_ref)
 
@@ -221,11 +222,10 @@ class MainApplication:
         try:
             self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
                                                              self.overwrite_rad.get(), self.overwrite_ref.get())
-        except FileNotFoundError:
-            input_type = 'File'
-            if file_type.value is InputType.DIRECTORY.value:
-                input_type = 'Directory'
-            messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        except InputFileNotFoundException as ife:
+            messagebox.showinfo('Error', 'The input file ({}) does not exist'.format(ife.file))
+        except CancelExecutionException:
+            messagebox.showinfo('Cancel', 'You have chosen to cancel. The calibration will not continue.')
         print('******** finished calibration ********')
 
     def start_rad(self):
@@ -244,11 +244,8 @@ class MainApplication:
                 out_dir = out_dir + '/'
         try:
             self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir, self.overwrite_rad.get())
-        except FileNotFoundError:
-            input_type = 'File'
-            if file_type.value is InputType.DIRECTORY.value:
-                input_type = 'Directory'
-            messagebox.showinfo('Error', 'The input {} ({}) does not exist'.format(input_type, file))
+        except InputFileNotFoundException as ife:
+            messagebox.showinfo('Error', 'The input file ({}) does not exist'.format(ife.file))
         print('******** finished calibration ********')
 
     def open_plots(self):
@@ -257,19 +254,25 @@ class MainApplication:
         """
         self.window.withdraw()
         new_win = tk.Toplevel(self.window)
-        handler = lambda: self.onCloseOtherFrame(new_win)
+        def handler(): self.on_close_other_frame(new_win)
         btn = tk.Button(new_win, text="<< Back to Calibration", command=handler)
         PlotPanel(new_win, btn)
 
-    def onCloseOtherFrame(self, otherFrame):
+    def on_close_other_frame(self, other_frame):
         """"""
-        otherFrame.destroy()
+        other_frame.destroy()
         self.show()
 
     def show(self):
         """"""
         self.window.update()
         self.window.deiconify()
+
+    @staticmethod
+    def show_warning_dialog(warning):
+        question = "Do you want to continue to show these warnings?"
+        return messagebox.askyesnocancel('WARNING', warning + "\n" + question)
+
 
 def main():
     root_window = tk.Tk()

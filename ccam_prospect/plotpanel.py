@@ -1,10 +1,10 @@
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Implement the default Matplotlib key bindings.
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import os
+
 
 class PlotPanel(tk.Frame):
 
@@ -144,7 +144,7 @@ class PlotPanel(tk.Frame):
                       ('Portable Document Format (PDF)', '*.pdf'), ('Progressive Graphics File (PGF)', '*.pgf'),
                       ('PostScript (PS)', '*.ps'), ('Raw File', '*.raw'), ('RGBA file', '*.rgba'),
                       ('Scalable Vector Graphics (SVG)', '*.svg'), ('Compressed SVG (SVGZ)', '*.svgz')]
-        save_file = tk.filedialog.asksaveasfilename(defaultextension=".png", filetypes=file_types,
+        save_file = tk.filedialog.asksaveasfilename(filetypes=file_types,
                                                     initialfile="relativeReflectance")
         self.fig.savefig(save_file)
 

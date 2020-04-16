@@ -7,7 +7,8 @@ from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 import ccam_prospect.utils.constant as constants
 from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label, get_header_values
-from ccam_prospect.utils.NonStandardHeaderException import NonStandardHeaderException
+from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException, CancelExecutionException, \
+    InputFileNotFoundException
 
 
 class RadianceCalibration:
@@ -24,6 +25,7 @@ class RadianceCalibration:
         self.header_string = ""
         self.original_label = ""
         self.logfile = log_file
+        self.show_header_warning = True
 
     def get_headers(self, filename):
         """get_headers
@@ -226,6 +228,7 @@ class RadianceCalibration:
                     self.read_spectra(ccam_file)
                 except ValueError:
                     with open(self.logfile, 'a') as log:
+                        print(ccam_file + ': not formatted correctly. skipping')
                         log.write(ccam_file + ': radiance calibration - file not formatted correctly \n')
                     return False
 
@@ -237,8 +240,17 @@ class RadianceCalibration:
                     sa_steradian = self.get_solid_angle()
                     fov_tgt = self.get_area_on_target()
                 except NonStandardHeaderException:
+                    warning = ccam_file + ': not a valid PSV file header. Skipping this file.'
+                    # write to log file
                     with open(self.logfile, 'a') as log:
-                        log.write(ccam_file + ': radiance calibration - not a valid PSV file header \n')
+                        log.write(self.rad_file + ': radiance calibration - ' + warning + '\n')
+                    if self.show_header_warning:
+                        # show warning
+                        self.show_header_warning = self.main_app.show_warning_dialog(warning)
+                    if self.show_header_warning is None:
+                        # cancel
+                        raise CancelExecutionException
+                    # exit because file was invalid
                     return False
 
                 if self.total_files == 1:
@@ -287,7 +299,7 @@ class RadianceCalibration:
                         log.write(ccam_file + ': radiance input - not a valid PSV file \n')
                 return False
         else:
-            raise FileNotFoundError
+            raise InputFileNotFoundException(ccam_file)
 
     def calibrate_directory(self, directory, out_dir, overwrite):
         """calibrate_directory
@@ -300,16 +312,18 @@ class RadianceCalibration:
         # total number of files to potentially calibrate
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
-
-        for file in os.listdir(directory):
-            full_path = os.path.join(directory, file)
-            if os.path.isdir(full_path) and full_path is not out_dir:
-                self.calibrate_directory(os.path.join(directory, file), out_dir, overwrite)
-            else:
-                self.calibrate_file(full_path, out_dir, overwrite)
-                self.current_file += 1
-                self.update_progress()
-        self.update_progress(100)
+        try:
+            for file in os.listdir(directory):
+                full_path = os.path.join(directory, file)
+                if os.path.isdir(full_path) and full_path is not out_dir:
+                    self.calibrate_directory(os.path.join(directory, file), out_dir, overwrite)
+                else:
+                    self.calibrate_file(full_path, out_dir, overwrite)
+                    self.current_file += 1
+                    self.update_progress()
+            self.update_progress(100)
+        except FileNotFoundError:
+            raise InputFileNotFoundException(directory)
 
     def calibrate_list(self, list_file, out_dir, overwrite):
         """calibrate_list
@@ -319,7 +333,10 @@ class RadianceCalibration:
         :param: out_dir the destination directory for output
         :param: overwrite a boolean representing if files should be overwritten or not
         """
-        files = open(list_file).read().splitlines()
+        try:
+            files = open(list_file).read().splitlines()
+        except FileNotFoundError:
+            raise InputFileNotFoundException(list_file)
         self.total_files = len(files)
         self.current_file = 1
         for file in files:
