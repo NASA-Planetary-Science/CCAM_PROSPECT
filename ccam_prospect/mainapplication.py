@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import filedialog, ttk, messagebox, Grid, N, S, E, W
+from tkinter import filedialog, ttk, messagebox, Grid
 from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from ccam_prospect.radianceCalibration import RadianceCalibration
 from ccam_prospect.plotpanel import PlotPanel
-from ccam_prospect.utils.CustomExceptions import CancelExecutionException
+from ccam_prospect.utils.CustomExceptions import CancelExecutionException, InputFileNotFoundException
 
 
 class MainApplication:
@@ -222,7 +222,7 @@ class MainApplication:
         try:
             self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
                                                              self.overwrite_rad.get(), self.overwrite_ref.get())
-        except FileNotFoundError:
+        except InputFileNotFoundException:
             input_type = 'File'
             if file_type.value is InputType.DIRECTORY.value:
                 input_type = 'Directory'
@@ -247,7 +247,7 @@ class MainApplication:
                 out_dir = out_dir + '/'
         try:
             self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir, self.overwrite_rad.get())
-        except FileNotFoundError:
+        except InputFileNotFoundException:
             input_type = 'File'
             if file_type.value is InputType.DIRECTORY.value:
                 input_type = 'Directory'
@@ -260,13 +260,13 @@ class MainApplication:
         """
         self.window.withdraw()
         new_win = tk.Toplevel(self.window)
-        handler = lambda: self.on_close_other_frame(new_win)
+        def handler(): self.on_close_other_frame(new_win)
         btn = tk.Button(new_win, text="<< Back to Calibration", command=handler)
         PlotPanel(new_win, btn)
 
-    def on_close_other_frame(self, otherFrame):
+    def on_close_other_frame(self, other_frame):
         """"""
-        otherFrame.destroy()
+        other_frame.destroy()
         self.show()
 
     def show(self):
@@ -277,7 +277,7 @@ class MainApplication:
     @staticmethod
     def show_warning_dialog(warning):
         question = "Do you want to continue to show these warnings?"
-        return messagebox.askyesnocancel('warning', warning + "\n" + question)
+        return messagebox.askyesnocancel('WARNING', warning + "\n" + question)
 
 
 def main():

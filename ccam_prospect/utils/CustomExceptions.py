@@ -12,3 +12,7 @@ class NonStandardHeaderException(Exception):
 
 class CancelExecutionException(Exception):
     pass
+
+
+class InputFileNotFoundException(Exception):
+    pass

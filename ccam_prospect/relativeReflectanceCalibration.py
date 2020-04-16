@@ -4,7 +4,7 @@ import argparse
 import sys
 from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
-from ccam_prospect.utils.CustomExceptions import NonStandardExposureTimeException, NonStandardHeaderException, \
+from ccam_prospect.utils.CustomExceptions import InputFileNotFoundException, NonStandardHeaderException, \
     CancelExecutionException
 from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label
 from ccam_prospect.radianceCalibration import RadianceCalibration
@@ -304,15 +304,18 @@ class RelativeReflectanceCalibration:
         """
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
-        for file_name in os.listdir(directory):
-            full_path = os.path.join(directory, file_name)
-            if os.path.isdir(full_path) and full_path is not out_dir:
-                self.calibrate_directory(os.path.join(directory, file_name), custom_file, out_dir,
-                                         overwrite_rad, overwrite_ref)
-            else:
-                self.calibrate_file(full_path, custom_file, out_dir, overwrite_rad, overwrite_ref)
-                self.current_file += 1
-                self.update_progress()
+        try:
+            for file_name in os.listdir(directory):
+                full_path = os.path.join(directory, file_name)
+                if os.path.isdir(full_path) and full_path is not out_dir:
+                    self.calibrate_directory(os.path.join(directory, file_name), custom_file, out_dir,
+                                             overwrite_rad, overwrite_ref)
+                else:
+                    self.calibrate_file(full_path, custom_file, out_dir, overwrite_rad, overwrite_ref)
+                    self.current_file += 1
+                    self.update_progress()
+        except FileNotFoundError:
+            raise InputFileNotFoundException
 
         self.update_progress(100)
 
@@ -326,7 +329,11 @@ class RelativeReflectanceCalibration:
         :param overwrite_rad: boolean to overwrite radiance files
         :param overwrite_ref: boolean to overwrite relative reflectance files
         """
-        files = open(list_file).read().splitlines()
+        try:
+            files = open(list_file).read().splitlines()
+        except:
+            raise InputFileNotFoundException
+
         self.total_files = len(files)
         self.current_file = 1
         for file_name in files:
