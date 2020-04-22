@@ -123,6 +123,27 @@ class PlotPanel(tk.Frame):
                 self.lines_dict[filename] = this_line
                 self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.)
                 self.canvas.draw()
+                
+                # get current axes limits and update the text box
+                self.update_axes_text()
+
+    def update_axes_text(self):
+        """
+        update the entries with min/max values of the axes
+        :return:
+        """
+        bottom, top = self.axes.get_ylim()
+        left, right = self.axes.get_xlim()
+
+        self.x_axis_min_entry.delete(0, "end")
+        self.x_axis_min_entry.insert(0, left)
+        self.x_axis_max_entry.delete(0, "end")
+        self.x_axis_max_entry.insert(0, right)
+
+        self.y_axis_min_entry.delete(0, "end")
+        self.y_axis_min_entry.insert(0, bottom)
+        self.y_axis_max_entry.delete(0, "end")
+        self.y_axis_max_entry.insert(0, top)
 
     def remove_file(self):
         """remove_file
