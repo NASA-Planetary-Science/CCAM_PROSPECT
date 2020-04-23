@@ -121,7 +121,7 @@ class PlotPanel(tk.Frame):
                 x, y = self.read_file(file)
                 this_line = self.axes.plot(x, y, label=filename)
                 self.lines_dict[filename] = this_line
-                self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.)
+                self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.).set_draggable(True)
                 self.canvas.draw()
                 
                 # get current axes limits and update the text box
@@ -155,7 +155,7 @@ class PlotPanel(tk.Frame):
             self.file_list_box.delete(i)
             line = self.lines_dict[filename]
             self.axes.lines.remove(line[0])
-            self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.)
+            self.axes.legend(bbox_to_anchor=(.4, .2), loc='lower left', borderaxespad=0.).set_draggable(True)
             self.canvas.draw()
 
         # self.file_list_box.delete(tk.ACTIVE)
