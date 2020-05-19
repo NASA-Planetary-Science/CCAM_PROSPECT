@@ -206,7 +206,7 @@ class RelativeReflectanceCalibration:
             if value is not None:
                 self.main_app.update_progress(value)
             else:
-                if self.total_files is not 0:
+                if self.total_files != 0:
                     self.main_app.update_progress((self.current_file / self.total_files) * 100)
 
     def rad_to_ref(self, out_dir):
