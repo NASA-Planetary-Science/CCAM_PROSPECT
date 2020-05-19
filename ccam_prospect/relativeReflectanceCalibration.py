@@ -287,8 +287,8 @@ class RelativeReflectanceCalibration:
 
         else:
             ext = os.path.splitext(filename)[1]
-            if ext != '.lbl' and ext != '.LBL' and ext != '.xml':
-                # log file as long as its not a label to a psv file
+            if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log':
+                # log file as long as its not a label to a psv file or a log file.
                 with open(self.logfile, 'a') as log:
                     log.write(filename + ': relative reflectance input - not a valid PSV or RAD file \n')
 
