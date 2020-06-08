@@ -128,7 +128,7 @@ class RelativeReflectanceCalibration:
         except NonStandardHeaderException:
             warning = self.rad_file + ': not a valid RAD file header. Skipping this file.'
             # write to log file
-            with open(self.logfile, 'a') as log:
+            with open(self.logfile, 'a+') as log:
                 log.write(self.rad_file + ': relative reflectance calibration - ' + warning + '\n')
             if self.show_header_warning:
                 # show warning
@@ -154,7 +154,7 @@ class RelativeReflectanceCalibration:
             warning = self.rad_file + ': Exposure time is not one of 7, 34, 404, or 5004. Skipping this file.'
             print('error - ' + warning + ' File tracked in log')
             # track in log file
-            with open(self.logfile, 'a') as log:
+            with open(self.logfile, 'a+') as log:
                 log.write(self.rad_file + ':  ' + warning + ' \n')
             if self.show_exposure_warning:
                 # show warning
@@ -176,7 +176,7 @@ class RelativeReflectanceCalibration:
                         ' and custom target file ' + str(custom_target_file) + ' (' + str(t_int_custom) + ') ' \
                         ' do not match. Skipping this file.'
                     # write to log file
-                    with open(self.logfile, 'a') as log:
+                    with open(self.logfile, 'a+') as log:
                         log.write(self.rad_file + ': relative reflectance calibration - custom target file'
                                                   ' integration time does not match.\n')
                     print('****************************\n '
@@ -289,7 +289,7 @@ class RelativeReflectanceCalibration:
             ext = os.path.splitext(filename)[1]
             if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log':
                 # log file as long as its not a label to a psv file or a log file.
-                with open(self.logfile, 'a') as log:
+                with open(self.logfile, 'a+') as log:
                     log.write(filename + ': relative reflectance input - not a valid PSV or RAD file \n')
 
     def calibrate_directory(self, directory, custom_file, out_dir, overwrite_rad, overwrite_ref):
@@ -391,7 +391,6 @@ if __name__ == "__main__":
 
     now = datetime.now()
     logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
-    open(logfile, 'a').close()  # open file so it exists
 
     calibrate_ref = RelativeReflectanceCalibration(logfile)
     calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, args.out_dir, overwrite, overwrite)

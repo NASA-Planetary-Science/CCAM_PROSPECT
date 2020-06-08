@@ -26,7 +26,6 @@ class MainApplication:
         # create a log file to keep track of bad input
         now = datetime.now()
         self.logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
-        open(self.logfile, 'a').close()  # open file so it exists
 
         # set up the calibration environments and the progress monitor
         self.radiance_cal = RadianceCalibration(self.logfile, self)

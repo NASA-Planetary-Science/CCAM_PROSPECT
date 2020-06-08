@@ -227,7 +227,7 @@ class RadianceCalibration:
                 try:
                     self.read_spectra(ccam_file)
                 except ValueError:
-                    with open(self.logfile, 'a') as log:
+                    with open(self.logfile, 'a+') as log:
                         print(ccam_file + ': not formatted correctly. skipping')
                         log.write(ccam_file + ': radiance calibration - file not formatted correctly \n')
                     return False
@@ -242,7 +242,7 @@ class RadianceCalibration:
                 except NonStandardHeaderException:
                     warning = ccam_file + ': not a valid PSV file header. Skipping this file.'
                     # write to log file
-                    with open(self.logfile, 'a') as log:
+                    with open(self.logfile, 'a+') as log:
                         log.write(self.rad_file + ': radiance calibration - ' + warning + '\n')
                     if self.show_header_warning:
                         # show warning
@@ -295,7 +295,7 @@ class RadianceCalibration:
                 ext = os.path.splitext(ccam_file)[1]
                 if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log':
                     # log file as long as its not a label to a psv file, and as long as its not a log file itself
-                    with open(self.logfile, 'a') as log:
+                    with open(self.logfile, 'a+') as log:
                         log.write(ccam_file + ': radiance input - not a valid PSV file \n')
                 return False
         else:
@@ -388,7 +388,6 @@ if __name__ == "__main__":
 
     now = datetime.now()
     logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
-    open(logfile, 'a').close()  # open file so it exists
 
     radianceCal = RadianceCalibration(logfile)
     radianceCal.calibrate_to_radiance(in_file_type, in_file, args.out_dir, args.overwrite)
