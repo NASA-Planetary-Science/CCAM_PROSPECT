@@ -23,7 +23,6 @@ class RadianceCalibration:
         self.total_files = 1
         self.current_file = 1
         self.header_string = ""
-        self.original_label = ""
         self.logfile = log_file
         self.show_header_warning = True
 
@@ -195,13 +194,23 @@ class RadianceCalibration:
             else:
                 self.main_app.update_progress((self.current_file / self.total_files) * 100)
 
+    @staticmethod
+    def get_original_label(filename):
+        """get_original_label
+        the filename of the label for the input psv file.  should be a.lbl file """
+        original_label = filename.replace('.tab', '.lbl')
+        original_label = original_label.replace('.txt', '.lbl')
+        original_label = original_label.replace('.TAB', '.lbl')
+        original_label = original_label.replace('.TXT', '.lbl')
+        return original_label
+
     def calibrate_file(self, ccam_file, out_dir, overwrite):
         """calibrate_file
         step through each necessary step to calibrate the file
 
         :param ccam_file: file to calibrate
         :param out_dir: output directory
-        :param: overwrite a boolean representing if files should be overwritten or not
+        :param: overwrite: a boolean representing if files should be overwritten or not
         """
         # check that file exists, is a file, and is a psv *.tab or .txt file
         if os.path.exists(ccam_file) and os.path.isfile(ccam_file):
@@ -212,14 +221,11 @@ class RadianceCalibration:
                 if not overwrite:
                     # if we don't want to overwrite existing files, we can skip this file if it already exists
                     if os.path.exists(out_filename) and os.path.isfile(out_filename):
-                        print(out_filename + "already exists, skipping")
+                        print(out_filename + " already exists, skipping")
                         return True
 
                 # check for original label
-                self.original_label = ccam_file.replace('.tab', '.lbl')
-                self.original_label = self.original_label.replace('.txt', '.lbl')
-                self.original_label = self.original_label.replace('.TAB', '.lbl')
-                self.original_label = self.original_label.replace('.TXT', '.lbl')
+                original_label = self.get_original_label(ccam_file)
 
                 self.headers = get_header_values(ccam_file)
                 self.get_headers(ccam_file)
@@ -278,15 +284,15 @@ class RadianceCalibration:
                 # rename the PSV file to RAD
                 write_final(out_filename, wavelength, radiance_final, header=self.header_string)
 
-                if os.path.exists(self.original_label):
+                if os.path.exists(original_label):
                     # write new label based on original, if it exists
-                    (path, filename) = os.path.split(self.original_label)
+                    (path, filename) = os.path.split(original_label)
                     new_label_filename = filename.replace('PSV', 'RAD')
                     new_label_filename = new_label_filename.replace('psv', 'rad')
                     new_label_filename = new_label_filename.replace('lbl', 'xml')
                     (out_path, filename) = os.path.split(out_filename)
                     new_label = os.path.join(out_path, new_label_filename)
-                    write_label(new_label, self.original_label, True)
+                    write_label(new_label, original_label, True)
                 print(ccam_file + ' calibrated and written to ' + out_filename)
                 if self.total_files == 1:
                     self.update_progress(100)
@@ -316,6 +322,7 @@ class RadianceCalibration:
             for file in os.listdir(directory):
                 full_path = os.path.join(directory, file)
                 if os.path.isdir(full_path) and full_path is not out_dir:
+                    # recursive call for each subdirectory
                     self.calibrate_directory(os.path.join(directory, file), out_dir, overwrite)
                 else:
                     self.calibrate_file(full_path, out_dir, overwrite)
@@ -334,12 +341,14 @@ class RadianceCalibration:
         :param: overwrite a boolean representing if files should be overwritten or not
         """
         try:
+            # read each line into a list of files
             files = open(list_file).read().splitlines()
         except FileNotFoundError:
             raise InputFileNotFoundException(list_file)
         self.total_files = len(files)
         self.current_file = 1
         for file in files:
+            # calibrate each file in the list
             self.calibrate_file(file, out_dir, overwrite)
             self.current_file += 1
             self.update_progress()

@@ -149,8 +149,8 @@ class MainApplication:
 
     def custom_browse_clicked(self):
         """custom_browse_clicked
-        the action handler for the browse button to choose a custom set of
-         files for the relative reflectance calculation
+        the action handler for the browse button to choose a custom
+         file for the relative reflectance calculation
         """
         file = filedialog.askopenfilename()
         self.custom_file.delete(0, "end")
@@ -206,6 +206,7 @@ class MainApplication:
         """start_calibration
         gather variables and start the relative reflectance calibration
         """
+        # gather user choices such as type of file, input, and custom options
         file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
         custom_directory = self.custom_file.get()
@@ -219,6 +220,7 @@ class MainApplication:
                 out_dir = out_dir + '/'
 
         try:
+            # the call to calibrate to relative reflectance
             self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
                                                              self.overwrite_rad.get(), self.overwrite_ref.get())
         except InputFileNotFoundException as ife:
