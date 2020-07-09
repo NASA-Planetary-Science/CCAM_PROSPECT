@@ -246,7 +246,8 @@ class RadianceCalibration:
                         log.write(self.rad_file + ': radiance calibration - ' + warning + '\n')
                     if self.show_header_warning:
                         # show warning
-                        self.show_header_warning = self.main_app.show_warning_dialog(warning)
+                        if self.main_app is not None:
+                            self.show_header_warning = self.main_app.show_warning_dialog(warning)
                     if self.show_header_warning is None:
                         # cancel
                         raise CancelExecutionException
