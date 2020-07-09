@@ -243,7 +243,7 @@ class RadianceCalibration:
                     warning = ccam_file + ': not a valid PSV file header. Skipping this file.'
                     # write to log file
                     with open(self.logfile, 'a') as log:
-                        log.write(self.rad_file + ': radiance calibration - ' + warning + '\n')
+                        log.write(ccam_file + ': radiance calibration - ' + warning + '\n')
                     if self.show_header_warning:
                         # show warning
                         if self.main_app is not None:

@@ -154,10 +154,10 @@ class RelativeReflectanceCalibration:
             fn = ms5004
         else:
             warning = self.rad_file + ': Exposure time is not one of 7, 34, 404, or 5004. Skipping this file.'
-            print('error - ' + warning + ' File tracked in log')
+            print('Warning: ' + warning + ' File tracked in log')
             # track in log file
             with open(self.logfile, 'a') as log:
-                log.write(self.rad_file + ':  ' + warning + ' \n')
+                log.write(self.rad_file + ': relative reflectance calibration - ' + warning + ' \n')
             if self.show_exposure_warning:
                 # show warning
                 if self.main_app is not None:
