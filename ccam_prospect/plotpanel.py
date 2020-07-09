@@ -170,11 +170,13 @@ class PlotPanel(tk.Frame):
         self.fig.savefig(save_file)
 
     def apply_axis(self):
+        # gather min/max from input
         xmin = float(self.x_axis_min_entry.get())
         xmax = float(self.x_axis_max_entry.get())
         ymin = float(self.y_axis_min_entry.get())
         ymax = float(self.y_axis_max_entry.get())
 
+        # set axes limits
         self.axes.set_xlim(xmin, xmax)
         self.axes.set_ylim(ymin, ymax)
         self.canvas.draw()
