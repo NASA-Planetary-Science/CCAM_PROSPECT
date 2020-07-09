@@ -143,8 +143,10 @@ class RelativeReflectanceCalibration:
             with open(self.logfile, 'a+') as log:
                 log.write(self.rad_file + ': relative reflectance calibration - ' + warning + '\n')
             if self.show_header_warning:
+                print('error - ' + warning + ' File tracked in log')
                 # show warning
-                self.show_header_warning = self.main_app.show_warning_dialog(warning)
+                if self.main_app is not None:
+                    self.show_header_warning = self.main_app.show_warning_dialog(warning)
             if self.show_header_warning is None:
                 # cancel
                 raise CancelExecutionException
@@ -164,13 +166,14 @@ class RelativeReflectanceCalibration:
             fn = ms5004
         else:
             warning = self.rad_file + ': Exposure time is not one of 7, 34, 404, or 5004. Skipping this file.'
-            print('error - ' + warning + ' File tracked in log')
+            print('Warning: ' + warning + ' File tracked in log')
             # track in log file
             with open(self.logfile, 'a+') as log:
-                log.write(self.rad_file + ':  ' + warning + ' \n')
+                log.write(self.rad_file + ': relative reflectance calibration - ' + warning + ' \n')
             if self.show_exposure_warning:
                 # show warning
-                self.show_exposure_warning = self.main_app.show_warning_dialog(warning)
+                if self.main_app is not None:
+                    self.show_exposure_warning = self.main_app.show_warning_dialog(warning)
             if self.show_exposure_warning is None:
                 # cancel
                 raise CancelExecutionException
@@ -195,7 +198,8 @@ class RelativeReflectanceCalibration:
                           'WARNING: ' + warning + ' \n****************************\n ')
                     if self.show_mismatched_warning:
                         # show warning dialog
-                        self.show_mismatched_warning = self.main_app.show_warning_dialog(warning)
+                        if self.main_app is not None:
+                            self.show_mismatched_warning = self.main_app.show_warning_dialog(warning)
                     if self.show_mismatched_warning is None:
                         # cancel
                         raise CancelExecutionException
