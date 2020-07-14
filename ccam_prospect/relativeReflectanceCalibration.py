@@ -103,8 +103,6 @@ class RelativeReflectanceCalibration:
             self.rad_file = os.path.join(out_dir, filename)
         else:
             (out_dir, filename) = os.path.split(input_file)
-        if not out_dir.endswith('/'):
-            out_dir = out_dir + '/'
         radiance_cal = RadianceCalibration(self.logfile)
         return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir, overwrite_rad)
 
@@ -414,10 +412,15 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         file = args.list
 
+    out_dir = args.out_dir
+    if out_dir is not None:
+        if not out_dir.endswith('/'):
+            out_dir = out_dir + '/'
+
     overwrite = args.overwrite
 
     now = datetime.now()
     logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
     calibrate_ref = RelativeReflectanceCalibration(logfile)
-    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, args.out_dir, overwrite, overwrite)
+    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_dir, overwrite, overwrite)

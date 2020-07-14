@@ -396,8 +396,13 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         in_file = args.list
 
+    out_dir = args.out_dir
+    if out_dir is not None:
+        if not out_dir.endswith('/'):
+            out_dir = out_dir + '/'
+
     now = datetime.now()
     logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
     radianceCal = RadianceCalibration(logfile)
-    radianceCal.calibrate_to_radiance(in_file_type, in_file, args.out_dir, args.overwrite)
+    radianceCal.calibrate_to_radiance(in_file_type, in_file, out_dir, args.overwrite)
