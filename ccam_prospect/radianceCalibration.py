@@ -180,7 +180,7 @@ class RadianceCalibration:
         if out_dir is not None:
             # the user specified an out_dir, so replace path with out_dir
             (path, filename) = os.path.split(out_filename)
-            out_filename = os.path.join(out_dir + filename)
+            out_filename = os.path.join(out_dir, filename)
 
         return out_filename
 
