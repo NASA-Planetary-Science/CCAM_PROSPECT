@@ -103,7 +103,7 @@ class RelativeReflectanceCalibration:
             self.rad_file = os.path.join(out_dir, filename)
         else:
             (out_dir, filename) = os.path.split(input_file)
-        radiance_cal = RadianceCalibration(self.logfile)
+        radiance_cal = RadianceCalibration(self.logfile, self.main_app)
         return radiance_cal.calibrate_to_radiance(InputType.FILE, input_file, out_dir, overwrite_rad)
 
     def choose_values(self, custom_target_file=None):
@@ -338,8 +338,11 @@ class RelativeReflectanceCalibration:
                     self.current_file += 1
                     self.update_progress()
         except FileNotFoundError:
-            raise InputFileNotFoundException(directory)
-
+            print(directory + ": directory does not exist.")
+            with open(self.logfile, 'a+') as log:
+                log.write(directory + ': relative reflectance input - directory does not exist \n')
+            if self.main_app is not None:
+                raise InputFileNotFoundException(directory)
         self.update_progress(100)
 
     def calibrate_list(self, list_file, custom_file, out_dir, overwrite_rad, overwrite_ref):
@@ -356,8 +359,12 @@ class RelativeReflectanceCalibration:
             # read each line into a list of files
             files = open(list_file).read().splitlines()
         except FileNotFoundError:
-            raise InputFileNotFoundException(list_file)
-
+            print(list_file + ": file does not exist")
+            with open(self.logfile, 'a+') as log:
+                log.write(list_file + ':   relative reflectance input: file does not exist \n')
+            if self.main_app is not None:
+                raise InputFileNotFoundException(list_file)
+            return
         self.total_files = len(files)
         self.current_file = 1
         for file_name in files:
