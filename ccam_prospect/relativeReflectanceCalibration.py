@@ -377,7 +377,6 @@ class RelativeReflectanceCalibration:
             except InputFileNotFoundException:
                 warning = file_name + ": file not found. Skipping this file."
                 if self.show_list_warning:
-                    print(warning)
                     if self.main_app is not None:
                         self.show_list_warning = self.main_app.show_warning_dialog(warning)
                 if self.show_list_warning is None:
@@ -434,11 +433,15 @@ if __name__ == "__main__":
     if out_dir is not None:
         if not out_dir.endswith('/'):
             out_dir = out_dir + '/'
+            if not os.path.isdir(out_dir):
+                print('output directory: ' + out_dir + ' does not exist. Please enter an existing directory.')
+                start_calibration = False
 
-    overwrite = args.overwrite
+    if start_calibration:
+        overwrite = args.overwrite
 
-    now = datetime.now()
-    logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
+        now = datetime.now()
+        logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
-    calibrate_ref = RelativeReflectanceCalibration(logfile)
-    calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_dir, overwrite, overwrite)
+        calibrate_ref = RelativeReflectanceCalibration(logfile)
+        calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_dir, overwrite, overwrite)

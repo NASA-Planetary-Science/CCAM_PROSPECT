@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 from tkinter import filedialog, ttk, messagebox, Grid
 from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
@@ -218,7 +219,10 @@ class MainApplication:
             out_dir = self.out_directory_entry.get()
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
-
+                if not os.path.isdir(out_dir):
+                    messagebox.showinfo('Error', 'The output directory file ({}) does not exist. '
+                                                 'Please choose a different output directory'.format(out_dir))
+                    return
         try:
             # the call to calibrate to relative reflectance
             self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
@@ -243,6 +247,10 @@ class MainApplication:
             out_dir = self.out_directory_entry.get()
             if not out_dir.endswith('/'):
                 out_dir = out_dir + '/'
+                if not os.path.isdir(out_dir):
+                    messagebox.showinfo('Error', 'The output directory file ({}) does not exist. '
+                                                 'Please choose a different output directory'.format(out_dir))
+                    return
         try:
             self.radiance_cal.calibrate_to_radiance(file_type, file, out_dir, self.overwrite_rad.get())
         except InputFileNotFoundException as ife:
