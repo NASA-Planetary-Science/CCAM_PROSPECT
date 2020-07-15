@@ -25,6 +25,7 @@ class RadianceCalibration:
         self.header_string = ""
         self.logfile = log_file
         self.show_header_warning = True
+        self.show_list_warning = True
 
     def get_headers(self, filename):
         """get_headers
@@ -208,8 +209,8 @@ class RadianceCalibration:
         """calibrate_file
         step through each necessary step to calibrate the file
 
-        :param ccam_file: file to calibrate
-        :param out_dir: output directory
+        :param: ccam_file: file to calibrate
+        :param: out_dir: output directory
         :param: overwrite: a boolean representing if files should be overwritten or not
         """
         # check that file exists, is a file, and is a psv *.tab or .txt file
@@ -363,9 +364,19 @@ class RadianceCalibration:
         self.current_file = 1
         for file in files:
             # calibrate each file in the list
-            self.calibrate_file(file, out_dir, overwrite)
-            self.current_file += 1
-            self.update_progress()
+            try:
+                self.calibrate_file(file, out_dir, overwrite)
+                self.current_file += 1
+                self.update_progress()
+            except InputFileNotFoundException:
+                warning = file + ": file not found. Skipping this file."
+                if self.show_list_warning:
+                    print(warning)
+                    if self.main_app is not None:
+                        self.show_list_warning = self.main_app.show_warning_dialog(warning)
+                if self.show_list_warning is None:
+                    # cancel
+                    raise CancelExecutionException
         self.update_progress(100)
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir, overwrite):

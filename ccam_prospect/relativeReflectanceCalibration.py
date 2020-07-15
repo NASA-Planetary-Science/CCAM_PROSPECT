@@ -21,6 +21,7 @@ class RelativeReflectanceCalibration:
         self.show_mismatched_warning = True   # show dialog for mismatched exposure time
         self.show_exposure_warning = True     # show dialog for nonstandard exposure time
         self.show_header_warning = True       # show dialog for nonstandard header
+        self.show_list_warning = True         # show dialog for file in list doesn't exist
 
     def do_division(self, values):
         """
@@ -368,10 +369,20 @@ class RelativeReflectanceCalibration:
         self.total_files = len(files)
         self.current_file = 1
         for file_name in files:
-            # calibrate each file in the list
-            self.calibrate_file(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref)
-            self.current_file += 1
-            self.update_progress()
+            try:
+                # calibrate each file in the list
+                self.calibrate_file(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref)
+                self.current_file += 1
+                self.update_progress()
+            except InputFileNotFoundException:
+                warning = file_name + ": file not found. Skipping this file."
+                if self.show_list_warning:
+                    print(warning)
+                    if self.main_app is not None:
+                        self.show_list_warning = self.main_app.show_warning_dialog(warning)
+                if self.show_list_warning is None:
+                    # cancel
+                    raise CancelExecutionException
         self.update_progress(100)
 
     def calibrate_relative_reflectance(self, file_type, file_name, custom_file, out_dir, overwrite_rad, overwrite_ref):
