@@ -429,6 +429,8 @@ if __name__ == "__main__":
         in_file_type = InputType.FILE_LIST
         file = args.list
 
+    start_calibration = True
+
     out_dir = args.out_dir
     if out_dir is not None:
         if not out_dir.endswith('/'):
