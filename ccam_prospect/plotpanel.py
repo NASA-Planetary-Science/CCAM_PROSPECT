@@ -105,13 +105,14 @@ class PlotPanel(tk.Frame):
         """add_file
         """
         # open file chooser, select file
-        files = tk.filedialog.askopenfilenames()
+        ftypes = [('REF files', ('*.tab', '*.TAB'))]
+        files = tk.filedialog.askopenfilenames(filetypes=ftypes)
 
         # add file to list
         list_of_files = self.window.tk.splitlist(files)
-
         for file in list_of_files:
-            if "tab" in file and "ref" in file:
+
+            if "ref" in file or "REF" in file:
                 (path, filename) = os.path.split(file)
                 self.filename_dict[filename] = path
                 self.file_list_box.insert(tk.END, filename)
