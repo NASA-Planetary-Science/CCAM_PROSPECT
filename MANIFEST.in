@@ -1,0 +1,4 @@
+include *.rst
+include *.md
+include runApp.py
+recursive-include ccam_calibration *
