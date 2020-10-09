@@ -32,7 +32,7 @@ def write_final(file_to_write, wavelengths, values, header=None):
     """
     with open(file_to_write, 'w') as f:
         if header is not None:
-            [f.write(header[ii]) for ii in range(0, len(header))]
+            [f.write(header[ii].replace("\n", "\r\n")) for ii in range(0, len(header))]
         n = len(wavelengths)
         [f.write("   {:3.3f}     {:>15f}            \r\n".format(wavelengths[ii], values[ii])) for ii in range(0, n)]
 
