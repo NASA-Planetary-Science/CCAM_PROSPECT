@@ -20,7 +20,7 @@
 	</Identification_Area>
 	<Observation_Area>
 		<Time_Coordinates>
-			<start_date_time>{{ observation_start }}</start_date_time>
+			<start_date_time>{{ observation_start }}Z</start_date_time>
 			<stop_date_time xsi:nil="true" nilReason="unknown"/>
 		</Time_Coordinates>
 		<Primary_Result_Summary>
