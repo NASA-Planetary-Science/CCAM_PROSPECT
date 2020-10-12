@@ -33,7 +33,8 @@ class PlotPanel(tk.Frame):
         self.file_list_box = tk.Listbox(self.file_box_frame, selectmode="extended", width=40, yscrollcommand=self.vscrollbar.set, xscrollcommand=self.hscrollbar.set)
         self.vscrollbar.config(command=self.file_list_box.yview)
         self.hscrollbar.config(command=self.file_list_box.xview)
-        self.add_file_button = tk.Button(self.window, text="Add", command=self.add_file)
+        self.add_file_button = tk.Button(self.window, text="Add REF File", command=self.add_file)
+        self.add_directory_button = tk.Button(self.window, text="Add All From Directory", command=self.add_directory)
         self.rm_file_button = tk.Button(self.window, text="Remove", command=self.remove_file)
         self.fig = Figure(figsize=(7, 4), dpi=100)
         self.axes = self.fig.add_subplot(111)
@@ -69,14 +70,15 @@ class PlotPanel(tk.Frame):
         # self.back_to_main.grid(row=0, column=0, columnspan=2, padx=(10, 10))
         self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-        self.file_list_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
-        self.file_list_label.grid(row=0, column=0, columnspan=2, padx=(10, 10))
-        self.file_box_frame.grid(row=1, column=0, columnspan=2, padx=(10, 10), sticky="ewns")
-        self.add_file_button.grid(row=2, column=0, padx=(10, 0), pady=(10, 10), sticky="ew")
-        self.rm_file_button.grid(row=2, column=1, padx=(0, 10), pady=(10, 10), sticky="ew")
-        self.close_button.grid(row=3, column=0, columnspan=2, padx=(0, 10), pady=(5, 10), sticky="ew")
-        self.canvas.get_tk_widget().grid(row=0, column=2, rowspan=2)
-        self.export_button.grid(row=3, column=2, sticky="ew", pady=(10, 10))
+        self.file_list_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=2)
+        self.file_list_label.grid(row=0, column=0, columnspan=3, padx=(10, 10))
+        self.file_box_frame.grid(row=1, column=0, columnspan=3, padx=(10, 10), sticky="ewns")
+        self.add_file_button.grid(row=2, column=0, padx=(10, 5), pady=(10, 10), sticky="ew")
+        self.add_directory_button.grid(row=2, column=1, padx=(5,5), pady=(10,10), sticky="ew")
+        self.rm_file_button.grid(row=2, column=2, padx=(5, 10), pady=(10, 10), sticky="ew")
+        self.close_button.grid(row=3, column=0, columnspan=3, padx=(0, 10), pady=(5, 10), sticky="ew")
+        self.canvas.get_tk_widget().grid(row=0, column=3, rowspan=2)
+        self.export_button.grid(row=3, column=3, sticky="ew", pady=(10, 10))
         self.y_axis_label.grid(row=0, column=0, columnspan=2)
         self.y_axis_min_label.grid(row=1, column=0)
         self.y_axis_min_entry.grid(row=1, column=1, padx=(0, 15))
@@ -88,7 +90,7 @@ class PlotPanel(tk.Frame):
         self.x_axis_max_label.grid(row=5, column=0)
         self.x_axis_max_entry.grid(row=5, column=1, padx=(0, 15))
         self.axis_apply.grid(row=6, column=0, columnspan=2, sticky="ew", padx=(0, 15))
-        self.axis_adjust_frame.grid(row=1, column=3)
+        self.axis_adjust_frame.grid(row=1, column=4)
 
     @staticmethod
     def read_file(file):
@@ -127,6 +129,13 @@ class PlotPanel(tk.Frame):
                 
                 # get current axes limits and update the text box
                 self.update_axes_text()
+
+    def add_directory(self):
+        """add_directory
+        """
+        # open file chooser, select file
+        directory = tk.filedialog.askdirectory()
+        print(directory)
 
     def update_axes_text(self):
         """
