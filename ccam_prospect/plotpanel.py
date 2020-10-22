@@ -47,7 +47,7 @@ class PlotPanel(tk.Frame):
         self.rm_file_button = tk.Button(self.add_remove_frame, text="  Remove Selected  ", command=self.remove_file)
 
         self.fig = Figure(figsize=(10, 4), dpi=100)
-        self.gridspec = GridSpec(1, 2, width_ratios=[4, 1])
+        self.gridspec = GridSpec(1, 2, width_ratios=[3.5, 1])
         self.axes = self.fig.add_subplot(self.gridspec[0,0])
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.axes.set_ylabel('Relative Reflectance')
@@ -168,7 +168,7 @@ class PlotPanel(tk.Frame):
             # add file to graph
             # Data for plotting
             x, y = self.read_file(file)
-            short_name = filename[0:13]
+            short_name = "{}_{}".format(filename[0:13], filename[29:34])
             this_line = self.axes.plot(x, y, label=short_name)
             self.lines_dict[short_name] = this_line
             self.show_legend_selected()
@@ -204,7 +204,7 @@ class PlotPanel(tk.Frame):
         for i in reversed(selection):
             filename = self.file_list_box.get(i)
             self.file_list_box.delete(i)
-            short_name = filename[0:13]
+            short_name = "{}_{}".format(filename[0:13], filename[29:34])
             line = self.lines_dict[short_name]
             self.axes.lines.remove(line[0])
 
@@ -243,12 +243,13 @@ class PlotPanel(tk.Frame):
         turn legend on or off depending on selected button
         """
         cols = 1
-        if self.file_list_box.size() > 18:
+        if self.file_list_box.size() > 20:
             cols = 2
         show = self.show_legend.get()
         if show:
             if len(self.axes.lines) > 0:
-                self.axes.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., ncol=cols).set_draggable(True)
+                self.axes.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., ncol=cols,
+                                 fontsize=8).set_draggable(True)
         else:
             if self.axes.get_legend() is not None:
                 self.axes.get_legend().remove()
