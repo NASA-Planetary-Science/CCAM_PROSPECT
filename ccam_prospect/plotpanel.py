@@ -248,8 +248,8 @@ class PlotPanel(tk.Frame):
         show = self.show_legend.get()
         if show:
             if len(self.axes.lines) > 0:
-                self.axes.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., ncol=cols,
-                                 fontsize=8).set_draggable(True)
+                self.axes.legend(bbox_to_anchor=(1.01, 1), loc='upper left', borderaxespad=0., ncol=cols,
+                                 fontsize=7).set_draggable(True)
         else:
             if self.axes.get_legend() is not None:
                 self.axes.get_legend().remove()
