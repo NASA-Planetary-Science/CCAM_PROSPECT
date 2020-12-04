@@ -2,19 +2,13 @@ import tkinter as tk
 import os
 from tkinter import filedialog, ttk, messagebox, Grid
 from datetime import datetime
-from ccam_prospect.utils.InputType import InputType
+from ccam_prospect.utils.InputType import InputType, input_type_switcher
 from ccam_prospect.relativeReflectanceCalibration import RelativeReflectanceCalibration
 from ccam_prospect.radianceCalibration import RadianceCalibration
 from ccam_prospect.plotpanel import PlotPanel
 from ccam_prospect.utils.CustomExceptions import CancelExecutionException, InputFileNotFoundException
 
-
 class MainApplication:
-    input_type_switcher = {
-        InputType.FILE.value: InputType.FILE,
-        InputType.FILE_LIST.value: InputType.FILE_LIST,
-        InputType.DIRECTORY.value: InputType.DIRECTORY
-    }
 
     def __init__(self, root_window):
         """
@@ -208,7 +202,7 @@ class MainApplication:
         gather variables and start the relative reflectance calibration
         """
         # gather user choices such as type of file, input, and custom options
-        file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
+        file_type = input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
         custom_directory = self.custom_file.get()
         output_type = self.out_directory_type.get()
@@ -237,7 +231,7 @@ class MainApplication:
         """start_rad
         gather variables and start the radiance calibration
         """
-        file_type = self.input_type_switcher.get(self.inputType.get(), "Not a valid input type")
+        file_type = input_type_switcher.get(self.inputType.get(), "Not a valid input type")
         file = self.in_filename_entry.get()
         output_type = self.out_directory_type.get()
         if output_type == 1:

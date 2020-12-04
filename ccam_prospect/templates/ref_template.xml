@@ -7,7 +7,7 @@
 	<Identification_Area>
 		<logical_identifier>urn:nasa:pds:msl_chemcam_calibrated:data_ref:{{ filename }}</logical_identifier>
 		<version_id>1.0</version_id>
-		<title>MSL ChemCham Relative Reflectance Calibration Table</title>
+		<title>MSL ChemCam Relative Reflectance Calibration Table</title>
 		<information_model_version>1.13.0.0</information_model_version>
 		<product_class>Product_Observational</product_class>
 		<Modification_History>
@@ -20,13 +20,13 @@
 	</Identification_Area>
 	<Observation_Area>
 		<Time_Coordinates>
-			<start_date_time>{{ observation_start }}</start_date_time>
+			<start_date_time>{{ observation_start }}Z</start_date_time>
 			<stop_date_time xsi:nil="true" nilReason="unknown"/>
 		</Time_Coordinates>
 		<Primary_Result_Summary>
 			<purpose>Science</purpose>
 			<processing_level>Calibrated</processing_level>
-			<description>Data from the MSL ChemCham calibrated to units of relative reflectance.</description>
+			<description>Data from the MSL ChemCam calibrated to units of relative reflectance.</description>
 		</Primary_Result_Summary>
 		<Investigation_Area>
 			<name>MARS SCIENCE LABORATORY</name>
@@ -81,7 +81,7 @@
 		</File>
 		<Table_Character>
 			<name>Relative Reflectance Calibration</name>
-			<offset unit="byte">1</offset>
+			<offset unit="byte">0</offset>
 			<records>6144</records>
 			<record_delimiter>Carriage-Return Line-Feed</record_delimiter>
 			<Record_Character>
