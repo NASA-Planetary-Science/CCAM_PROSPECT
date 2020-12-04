@@ -92,8 +92,8 @@ class RelativeReflectanceCalibration:
         # name of the rad file - replace psv with rad (or PSV with RAD)
         self.rad_file = self.get_rad_filename(input_file)
 
-        if os.path.isfile(self.rad_file) and os.path.isfile(self.rad_file):
-            # rad file already exists, return
+        if os.path.isfile(self.rad_file) and not overwrite_rad:
+            # rad file already exists and we don't want to overwrite, return
             if "rad" in self.rad_file.lower() and self.rad_file.lower().endswith(".tab"):
                 return True
 
@@ -412,8 +412,11 @@ if __name__ == "__main__":
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files to calibrate")
     parser.add_argument('-c', action="store", dest='customFile', help="custom calibration file")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
-    parser.add_argument('--no-overwrite', action="store_false", dest='overwrite', help="do not overwrite existing files")
-    parser.set_defaults(overwrite=True)
+    parser.add_argument('--no-overwrite-rad', action="store_false", dest='overwrite_rad',
+                        help="do not overwrite existing RAD files")
+    parser.add_argument('--no-overwrite-ref', action="store_false", dest='overwrite_ref',
+                        help="do not overwrite existing REF files")
+    parser.set_defaults(overwrite_rad=True, overwrite_ref=True)
 
     args = parser.parse_args()
     if len(sys.argv) == 1:
@@ -431,19 +434,20 @@ if __name__ == "__main__":
 
     start_calibration = True
 
-    out_dir = args.out_dir
-    if out_dir is not None:
-        if not out_dir.endswith('/'):
-            out_dir = out_dir + '/'
-            if not os.path.isdir(out_dir):
-                print('output directory: ' + out_dir + ' does not exist. Please enter an existing directory.')
+    out_directory = args.out_dir
+    if out_directory is not None:
+        if not out_directory.endswith('/'):
+            out_directory = out_directory + '/'
+            if not os.path.isdir(out_directory):
+                print('output directory: ' + out_directory + ' does not exist. Please enter an existing directory.')
                 start_calibration = False
 
     if start_calibration:
-        overwrite = args.overwrite
+        ow_rad = args.overwrite_rad
+        ow_ref = args.overwrite_ref
 
         now = datetime.now()
         logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
         calibrate_ref = RelativeReflectanceCalibration(logfile)
-        calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_dir, overwrite, overwrite)
+        calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_directory, ow_rad, ow_ref)
