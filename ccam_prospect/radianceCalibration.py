@@ -403,7 +403,8 @@ if __name__ == "__main__":
     parser.add_argument('-d', action="store", dest='directory', help="Directory containing .tab files")
     parser.add_argument('-l', action="store", dest='list', help="File with a list of .tab files")
     parser.add_argument('-o', action="store", dest='out_dir', help="directory to store the output files")
-    parser.add_argument('--no-overwrite', action="store_false", dest='overwrite', help="do not overwrite existing files")
+    parser.add_argument('--no-overwrite-rad', action="store_false", dest='overwrite',
+                        help="do not overwrite existing files")
     parser.set_defaults(overwrite=True)
 
     args = parser.parse_args()
