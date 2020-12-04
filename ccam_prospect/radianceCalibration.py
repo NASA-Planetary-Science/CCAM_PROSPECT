@@ -423,12 +423,12 @@ if __name__ == "__main__":
 
     start_calibration = True
 
-    out_dir = args.out_dir
-    if out_dir is not None:
-        if not out_dir.endswith('/'):
-            out_dir = out_dir + '/'
-            if not os.path.isdir(out_dir):
-                print('output directory: ' + out_dir + ' does not exist. Please enter an existing directory.')
+    out_directory = args.out_dir
+    if out_directory is not None:
+        if not out_directory.endswith('/'):
+            out_directory = out_directory + '/'
+            if not os.path.isdir(out_directory):
+                print('output directory: ' + out_directory + ' does not exist. Please enter an existing directory.')
                 start_calibration = False
 
     if start_calibration:
@@ -436,4 +436,4 @@ if __name__ == "__main__":
         logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
         radianceCal = RadianceCalibration(logfile)
-        radianceCal.calibrate_to_radiance(in_file_type, in_file, out_dir, args.overwrite)
+        radianceCal.calibrate_to_radiance(in_file_type, in_file, out_directory, args.overwrite)
