@@ -183,6 +183,11 @@ class PlotPanel(tk.Frame):
         :return:
         """
         bottom, top = self.axes.get_ylim()
+        # adjust to 0 to 1 if outside of that range
+        if bottom < 0:
+            bottom = 0
+        if top > 1:
+            top = 1
         left, right = self.axes.get_xlim()
 
         self.x_axis_min_entry.delete(0, "end")
@@ -194,6 +199,8 @@ class PlotPanel(tk.Frame):
         self.y_axis_min_entry.insert(0, bottom)
         self.y_axis_max_entry.delete(0, "end")
         self.y_axis_max_entry.insert(0, top)
+
+        self.apply_axis()
 
     def remove_file(self):
         """remove_file
