@@ -285,6 +285,8 @@ class RelativeReflectanceCalibration:
                 self.update_progress(75)
             # convolve
             final_values = self.do_multiplication(new_values)
+            # replace saturated channels that are too large for PDS fixed-width with 0s
+            final_values = np.where(abs(final_values) > 10E20, 0, final_values)
 
             # rename rad to ref to get outfile name and then write to file
             write_final(out_filename, self.wavelength, final_values)
