@@ -136,7 +136,7 @@ class PlotPanel(tk.Frame):
         """add_file
         """
         # open file chooser, select file
-        ftypes = [('REF files', ('*.tab', '*.TAB'))]
+        ftypes = [('TAB files', ('*.tab', '*.TAB'))]
         files = tk.filedialog.askopenfilenames(filetypes=ftypes)
 
         # add file to list
