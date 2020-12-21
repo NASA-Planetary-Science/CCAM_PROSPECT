@@ -92,10 +92,9 @@ class RelativeReflectanceCalibration:
         # name of the rad file - replace psv with rad (or PSV with RAD)
         self.rad_file = self.get_rad_filename(input_file)
 
-        if self.rad_file == input_file and "rad" in self.rad_file.lower():
-            # rad file input, don't need to recreate it regardless of overwrite options
-            return True
         if "rad" in self.rad_file.lower() and self.rad_file.lower().endswith(".tab"):
+            if self.rad_file == input_file:
+                return True
             if os.path.isfile(self.rad_file) and not overwrite_rad:
                 # valid rad file already exists, just return
                 return True
@@ -114,7 +113,7 @@ class RelativeReflectanceCalibration:
         """ choose_values
         Choose which values to use for calibration, based on integration time.  The integration
         time of the file chosen to calibrate must match that of the input file.  If the integration
-        times do not match, log filename to nonstandard exptime file and keep going.
+        times do not match, log filename to error log file and keep going.
 
         :param custom_target_file: a custom file to use for calibration (default=None)
         :return: the values to use for calibration
