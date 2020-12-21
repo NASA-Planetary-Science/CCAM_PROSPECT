@@ -300,12 +300,6 @@ class RadianceCalibration:
                     self.update_progress(100)
                 return True
             else:
-                ext = os.path.splitext(ccam_file)[1]
-                if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log' \
-                        and 'psv' not in ccam_file and 'rad' not in ccam_file and 'ref' not in ccam_file:
-                    # log file as long as its not a label to a psv file, and as long as its not a log file itself
-                    with open(self.logfile, 'a+') as log:
-                        log.write(ccam_file + ': radiance input - not a valid PSV file \n')
                 return False
         else:
             print(ccam_file + " does not exist.")
