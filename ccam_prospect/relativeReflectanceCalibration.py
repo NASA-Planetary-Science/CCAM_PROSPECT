@@ -92,9 +92,12 @@ class RelativeReflectanceCalibration:
         # name of the rad file - replace psv with rad (or PSV with RAD)
         self.rad_file = self.get_rad_filename(input_file)
 
+        if self.rad_file == input_file and "rad" in self.rad_file.lower():
+            # rad file input, don't need to recreate it regardless of overwrite options
+            return True
         if "rad" in self.rad_file.lower() and self.rad_file.lower().endswith(".tab"):
-            if os.path.isfile(self.rad_file):
-                # valid rad file already exists
+            if os.path.isfile(self.rad_file) and not overwrite_rad:
+                # valid rad file already exists, just return
                 return True
 
         # input is psv and rad file does not yet exist - let's create it first.
