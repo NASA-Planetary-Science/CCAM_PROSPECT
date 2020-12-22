@@ -310,13 +310,6 @@ class RelativeReflectanceCalibration:
 
             print(filename + ' calibrated and written to ' + out_filename)
 
-        else:
-            ext = os.path.splitext(filename)[1]
-            if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log' \
-                    and 'psv' not in filename and 'rad' not in filename and 'ref' not in filename:
-                # log file as long as its not a psv, rad, or ref file, label to a pds file, or a log file.
-                with open(self.logfile, 'a+') as log:
-                    log.write(filename + ': relative reflectance input - not a valid PSV or RAD file \n')
 
     def calibrate_directory(self, directory, custom_file, out_dir, overwrite_rad, overwrite_ref):
         """calibrate_directory
@@ -365,7 +358,6 @@ class RelativeReflectanceCalibration:
             # read each line into a list of files
             files = open(list_file).read().splitlines()
         except FileNotFoundError:
-            print(list_file + ": file does not exist")
             with open(self.logfile, 'a+') as log:
                 log.write(list_file + ':   relative reflectance input: file does not exist \n')
             if self.main_app is not None:
