@@ -302,11 +302,13 @@ class RadianceCalibration:
             else:
                 return False
         else:
-            print(ccam_file + " does not exist.")
-            with open(self.logfile, 'a+') as log:
-                log.write(ccam_file + ': radiance input - file does not exist \n')
             if self.main_app is not None:
                 raise InputFileNotFoundException(ccam_file)
+            if "psv" in ccam_file or "rad" in ccam_file or "ref" in ccam_file:
+                # only log if a PDS file
+                print(ccam_file + " does not exist.")
+                with open(self.logfile, 'a+') as log:
+                    log.write(ccam_file + ': radiance input - file does not exist \n')
 
     def calibrate_directory(self, directory, out_dir, overwrite):
         """calibrate_directory

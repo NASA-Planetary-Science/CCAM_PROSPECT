@@ -358,7 +358,6 @@ class RelativeReflectanceCalibration:
             # read each line into a list of files
             files = open(list_file).read().splitlines()
         except FileNotFoundError:
-            print(list_file + ": file does not exist")
             with open(self.logfile, 'a+') as log:
                 log.write(list_file + ':   relative reflectance input: file does not exist \n')
             if self.main_app is not None:
