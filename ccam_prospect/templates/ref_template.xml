@@ -95,6 +95,7 @@
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">10</field_length>
 					<description>Wavelengths from CCAM_DEFAULT_WAVE.TAB</description>
+					<unit>nanometer</unit>
 				</Field_Character>
 				<Field_Character>
 					<name>CHANNEL INTENSITY</name>
@@ -103,6 +104,7 @@
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">20</field_length>
 					<description>Calibrated to Relative Reflectance</description>
+					<unit>relative reflectance</unit>
 				</Field_Character>
 			</Record_Character>
 		</Table_Character>
