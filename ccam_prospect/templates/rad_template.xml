@@ -100,8 +100,8 @@
 					<field_location unit="byte">1</field_location>
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">10</field_length>
+					<unit>nm</unit>
 					<description>Wavelengths from CCAM_DEFAULT_WAVE.TAB</description>
-					<unit>nanometer</unit>
 				</Field_Character>
 				<Field_Character>
 					<name>CHANNEL INTENSITY</name>
@@ -109,8 +109,8 @@
 					<field_location unit="byte">11</field_location>
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">20</field_length>
+					<unit>W/m**2/sr/micrometer</unit>
 					<description>Calibrated Radiance</description>
-					<unit>W/m^2/sr/micrometer</unit>
 				</Field_Character>
 			</Record_Character>
 		</Table_Character>
