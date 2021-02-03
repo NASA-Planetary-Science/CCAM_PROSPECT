@@ -94,6 +94,7 @@
 					<field_location unit="byte">1</field_location>
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">10</field_length>
+					<unit>nm</unit>
 					<description>Wavelengths from CCAM_DEFAULT_WAVE.TAB</description>
 				</Field_Character>
 				<Field_Character>

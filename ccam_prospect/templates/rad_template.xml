@@ -26,7 +26,7 @@
 		<Primary_Result_Summary>
 			<purpose>Science</purpose>
 			<processing_level>Calibrated</processing_level>
-			<description>Data from the MSL ChemCam calibrated to units of radiance (W/m^2/sr/micron).</description>
+			<description>Data from the MSL ChemCam calibrated to units of radiance (W/m^2/sr/micrometer).</description>
 		</Primary_Result_Summary>
 		<Investigation_Area>
 			<name>MARS SCIENCE LABORATORY</name>
@@ -100,6 +100,7 @@
 					<field_location unit="byte">1</field_location>
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">10</field_length>
+					<unit>nm</unit>
 					<description>Wavelengths from CCAM_DEFAULT_WAVE.TAB</description>
 				</Field_Character>
 				<Field_Character>
@@ -108,6 +109,7 @@
 					<field_location unit="byte">11</field_location>
 					<data_type>ASCII_Real</data_type>
 					<field_length unit="byte">20</field_length>
+					<unit>W/m**2/sr/micrometer</unit>
 					<description>Calibrated Radiance</description>
 				</Field_Character>
 			</Record_Character>
