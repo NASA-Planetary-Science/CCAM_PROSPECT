@@ -54,12 +54,13 @@ def get_context(label_path, psv_label):
     creation_date = today.strftime("%Y-%m-%d")
 
     # get PSV filename and observation start time
+    start_time = "UNK" # just in case
     with open(psv_label) as psv:
         for i, line in enumerate(psv):
-            if i == 53:
-                line_parts = line.split("=")
+            line_parts = line.split("=")
+            if line_parts[0].strip() == "START_TIME":
                 start_time = line_parts[1].strip()
-            elif i > 54:
+            if i > 56:
                 break
 
     path, psv_label_name = os.path.split(psv_label)
