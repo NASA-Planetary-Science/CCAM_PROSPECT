@@ -48,6 +48,7 @@ def get_context(label_path, psv_label):
     # get filename with and without extension
     path, filename = os.path.split(label_path)
     filename_no_ext = os.path.splitext(filename)[0]
+    filename_no_ext = filename_no_ext.lower()
 
     # get today's date as creation date
     today = date.today()
