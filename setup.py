@@ -7,7 +7,7 @@ with open("README.rst", 'r') as f:
 
 setup(
    name='ccam_prospect',
-   version='1.3.1',
+   version='1.3.2',
    description='calibrate raw ccam files to rad and ref files',
    long_description=long_description,
    author='Colleen O\'Shea',
