@@ -8,12 +8,12 @@ CCAM_PROSPECT calibrates raw Mars Science Laboratory (MSL) Chemistry and Camera 
 This document outlines how to install the tool, how to run it as a GUI application or as a command line application, and addresses some common issues and troubleshooting.
 
 ## Installation
-# Prerequisites:
+### Prerequisites:
 To install CCAM_PROSPECT, users must have an installation of Python 3.6 or higher, and the capability to install packages and set up a virtual environment.
 - Python 3.6 or higher(https://www.python.org/downloads/)
 - pip (https://pip.pypa.io/en/latest/installing/)
 
-# Install
+### Install
 1. clone the repository
 2. create a virtual environment and activate the virtual environment (see https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html or https://virtualenv.pypa.io/en/latest/)
 3. install the source code in this environment
@@ -27,7 +27,7 @@ this will install the ccam_prospect package and all required dependencies into t
 ## Execution
 Once installed, the program can be run through a GUI or command line interface.  Simply activate the virtual environment and all required libraries and modules will be ready to use.  This is the first step for either method of running the application.
 
-# Graphical User Interface (GUI)
+#### Graphical User Interface (GUI)
 ```
     $ python runApp.py
 ```
@@ -59,7 +59,7 @@ Once all desired options and configuration are set, run the program by selecting
 5. Plotting Options
 Clicking this button will open a separate window to plot relative reflectance spectra. Plotting is discussed in the Plotting Capabilities section on page 6.
 
-# Command Line
+### Command Line
 There is also an option to run the tool via command line.  To run the radiance calibration from the command line, users will run the same initial setup steps,
 Then run 
 
@@ -128,4 +128,7 @@ A label that follows PDS4 standards will be created for each output file.  This 
 
 ## Plotting Capabilities
 CCAM_PROSPECT also has a plotting functionality, which can be used to plot relative reflectance spectra.  This capability is accessed by clicking the *“Relative Reflectance Plotting”* button on the main GUI. When selected, the GUI will switch to the plotting view. On the left side, there is initially an empty list which will hold the REF files that are shown in the plot. The *“Add”* and *“Remove”* buttons can be used to populate and edit that list.  Once files are added, they will be shown in the list on the left and plotted on the right. Files can be added individually or from a directory. Under the *“Add REF Files”* button there is a radio button option for adding from File or Directory. When *"File"* is selected, the file chooser will allow the user to add an individual REF file. When *“Directory”* is selected, the file chooser will allow the user to select a directory and will add each REF file from the chosen directory. The user can adjust the y- and x-axes with the controls under the plotting area. Lines can be removed from the plot by choosing the file in the list and selecting *“Remove”*. The user can save the plot to a file by selecting *“Save Plot”* and choosing a location and file format. Once created (by adding lines to the plot), the legend can be moved around by clicking and dragging, and can be hidden by deselected *“Show Legend”*.
+
+## Acknowledgements
+CCAM_PROSPECT is supported by NASA PDART Contract 80NSSC19K0415.
 
