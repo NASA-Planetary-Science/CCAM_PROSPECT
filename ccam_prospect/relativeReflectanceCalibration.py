@@ -92,12 +92,14 @@ class RelativeReflectanceCalibration:
         # name of the rad file - replace psv with rad (or PSV with RAD)
         self.rad_file = self.get_rad_filename(input_file)
 
-        if os.path.isfile(self.rad_file) and not overwrite_rad:
-            # rad file already exists and we don't want to overwrite, return
-            if "rad" in self.rad_file.lower() and self.rad_file.lower().endswith(".tab"):
+        if "rad" in self.rad_file.lower() and self.rad_file.lower().endswith(".tab"):
+            if self.rad_file == input_file:
+                return True
+            if os.path.isfile(self.rad_file) and not overwrite_rad:
+                # valid rad file already exists, just return
                 return True
 
-        # rad file does not yet exist - let's create it first.
+        # input is psv and rad file does not yet exist - let's create it first.
         # create rad file and change path to where it will end up in out_dir
         if out_dir is not None:
             (path, filename) = os.path.split(self.rad_file)
@@ -111,7 +113,7 @@ class RelativeReflectanceCalibration:
         """ choose_values
         Choose which values to use for calibration, based on integration time.  The integration
         time of the file chosen to calibrate must match that of the input file.  If the integration
-        times do not match, log filename to nonstandard exptime file and keep going.
+        times do not match, log filename to error log file and keep going.
 
         :param custom_target_file: a custom file to use for calibration (default=None)
         :return: the values to use for calibration
@@ -285,6 +287,8 @@ class RelativeReflectanceCalibration:
                 self.update_progress(75)
             # convolve
             final_values = self.do_multiplication(new_values)
+            # replace saturated channels that are too large for PDS fixed-width with 0s
+            final_values = np.where(abs(final_values) > 10E20, 0, final_values)
 
             # rename rad to ref to get outfile name and then write to file
             write_final(out_filename, self.wavelength, final_values)
@@ -306,12 +310,6 @@ class RelativeReflectanceCalibration:
 
             print(filename + ' calibrated and written to ' + out_filename)
 
-        else:
-            ext = os.path.splitext(filename)[1]
-            if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log':
-                # log file as long as its not a label to a psv file or a log file.
-                with open(self.logfile, 'a+') as log:
-                    log.write(filename + ': relative reflectance input - not a valid PSV or RAD file \n')
 
     def calibrate_directory(self, directory, custom_file, out_dir, overwrite_rad, overwrite_ref):
         """calibrate_directory
@@ -360,7 +358,6 @@ class RelativeReflectanceCalibration:
             # read each line into a list of files
             files = open(list_file).read().splitlines()
         except FileNotFoundError:
-            print(list_file + ": file does not exist")
             with open(self.logfile, 'a+') as log:
                 log.write(list_file + ':   relative reflectance input: file does not exist \n')
             if self.main_app is not None:

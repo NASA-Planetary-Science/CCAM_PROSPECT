@@ -247,14 +247,14 @@ class RadianceCalibration:
                     sa_steradian = self.get_solid_angle()
                     fov_tgt = self.get_area_on_target()
                 except NonStandardHeaderException:
-                    warning = ccam_file + ': not a valid PSV file header. Skipping this file.'
+                    warning = 'not a valid PSV file header. Skipping this file.'
                     # write to log file
                     with open(self.logfile, 'a+') as log:
                         log.write(ccam_file + ': radiance calibration - ' + warning + '\n')
                     if self.show_header_warning:
                         # show warning
                         if self.main_app is not None:
-                            self.show_header_warning = self.main_app.show_warning_dialog(warning)
+                            self.show_header_warning = self.main_app.show_warning_dialog(ccam_file + ": " + warning)
                     if self.show_header_warning is None:
                         # cancel
                         raise CancelExecutionException
@@ -300,18 +300,15 @@ class RadianceCalibration:
                     self.update_progress(100)
                 return True
             else:
-                ext = os.path.splitext(ccam_file)[1]
-                if ext != '.lbl' and ext != '.LBL' and ext != '.xml' and ext != '.log':
-                    # log file as long as its not a label to a psv file, and as long as its not a log file itself
-                    with open(self.logfile, 'a+') as log:
-                        log.write(ccam_file + ': radiance input - not a valid PSV file \n')
                 return False
         else:
-            print(ccam_file + " does not exist.")
-            with open(self.logfile, 'a+') as log:
-                log.write(ccam_file + ': radiance input - file does not exist \n')
             if self.main_app is not None:
                 raise InputFileNotFoundException(ccam_file)
+            if "psv" in ccam_file or "rad" in ccam_file or "ref" in ccam_file:
+                # only log if a PDS file
+                print(ccam_file + " does not exist.")
+                with open(self.logfile, 'a+') as log:
+                    log.write(ccam_file + ': radiance input - file does not exist \n')
 
     def calibrate_directory(self, directory, out_dir, overwrite):
         """calibrate_directory
@@ -335,12 +332,14 @@ class RadianceCalibration:
                     self.current_file += 1
                     self.update_progress()
             self.update_progress(100)
+            return True
         except FileNotFoundError:
             print(directory + " does not exist.")
             with open(self.logfile, 'a+') as log:
                 log.write(directory + ': radiance input - directory does not exist \n')
             if self.main_app is not None:
                 raise InputFileNotFoundException(directory)
+            return False
 
     def calibrate_list(self, list_file, out_dir, overwrite):
         """calibrate_list
@@ -359,7 +358,7 @@ class RadianceCalibration:
                 log.write(list_file + ':   radiance input: file does not exist \n')
             if self.main_app is not None:
                 raise InputFileNotFoundException(list_file)
-            return
+            return False
         self.total_files = len(files)
         self.current_file = 1
         for file in files:
@@ -372,12 +371,15 @@ class RadianceCalibration:
                 warning = file + ": file not found. Skipping this file."
                 if self.show_list_warning:
                     print(warning)
+                    with open(self.logfile, 'a+') as log:
+                        log.write(file + ': radiance calibration - file does not exist \n')
                     if self.main_app is not None:
                         self.show_list_warning = self.main_app.show_warning_dialog(warning)
                 if self.show_list_warning is None:
                     # cancel
                     raise CancelExecutionException
         self.update_progress(100)
+        return True
 
     def calibrate_to_radiance(self, file_type, file_name, out_dir, overwrite):
         """calibrate_to_radiance
@@ -391,9 +393,9 @@ class RadianceCalibration:
         if file_type.value is InputType.FILE.value:
             return self.calibrate_file(file_name, out_dir, overwrite)
         elif file_type.value is InputType.FILE_LIST.value:
-            self.calibrate_list(file_name, out_dir, overwrite)
+            return self.calibrate_list(file_name, out_dir, overwrite)
         else:
-            self.calibrate_directory(file_name, out_dir, overwrite)
+            return self.calibrate_directory(file_name, out_dir, overwrite)
 
 
 if __name__ == "__main__":

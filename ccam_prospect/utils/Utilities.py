@@ -34,7 +34,6 @@ def write_final(file_to_write, wavelengths, values, header=None):
         if header is not None:
             [f.write(header[ii].replace("\n", "\r\n")) for ii in range(0, len(header))]
         n = len(wavelengths)
-        # TODO FIX THE FIXED WIDTH STUFF HERE. format this better. k
         [f.write("{:10.3f}{:20f}            \r\n".format(wavelengths[ii], values[ii])) for ii in range(0, n)]
 
 
@@ -49,18 +48,20 @@ def get_context(label_path, psv_label):
     # get filename with and without extension
     path, filename = os.path.split(label_path)
     filename_no_ext = os.path.splitext(filename)[0]
+    filename_no_ext = filename_no_ext.lower()
 
     # get today's date as creation date
     today = date.today()
     creation_date = today.strftime("%Y-%m-%d")
 
     # get PSV filename and observation start time
+    start_time = "UNK" # just in case
     with open(psv_label) as psv:
         for i, line in enumerate(psv):
-            if i == 53:
-                line_parts = line.split("=")
+            line_parts = line.split("=")
+            if line_parts[0].strip() == "START_TIME":
                 start_time = line_parts[1].strip()
-            elif i > 54:
+            if i > 56:
                 break
 
     path, psv_label_name = os.path.split(psv_label)
