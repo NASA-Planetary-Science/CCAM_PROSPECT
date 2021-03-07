@@ -119,6 +119,8 @@ For either type of calibration, progress will be printed to the command line.
 ## File Formats and PDS Archive
 The output files follow a specific naming convention for archive in the PDS, as shown in the table below.
 
+| file type | file name |
+|----------|----------|
 | Input File (from PDS) |  CL9_404236313PSV_F0050104CCAM01076P3.TAB |
 | Output Radiance File | CL9_404236313RAD_F0050104CCAM01076P3.TAB |
 | Output Relative Reflectance File  | CL9_404236313REF_F0050104CCAM01076P3.TAB |
