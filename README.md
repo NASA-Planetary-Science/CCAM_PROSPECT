@@ -121,9 +121,9 @@ The output files follow a specific naming convention for archive in the PDS, as 
 
 | file type | file name |
 |----------|----------|
-| Input File (from PDS) |  CL9_404236313PSV_F0050104CCAM01076P3.TAB |
-| Output Radiance File | CL9_404236313RAD_F0050104CCAM01076P3.TAB |
-| Output Relative Reflectance File  | CL9_404236313REF_F0050104CCAM01076P3.TAB |
+| Input File (from PDS) |  cl9_404236313psv_F0050104ccam01076p3.tab |
+| Output Radiance File | cl99_404236313rad_F0050104ccam01076p3.tab |
+| Output Relative Reflectance File  | cl9_404236313ref_F0050104ccam01076p3.tab |
 
 The format for each of the files will be two-column ASCII tables where the first column is the wavelength (in nanometers) and the second column is either the radiance value (in units of W/m2/sr/um) or relative reflectance (0.0 to 1.0 for valid values). RAD files (output radiance files) will have the same 29-line header as the raw PSV files, with the table starting on line 30. The data table starts on line 1 of REF files.
 A label that follows PDS4 standards will be created for each output file.  This is an XML file with information about the RAD or REF file and the source PSV file that it was derived from.
