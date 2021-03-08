@@ -14,6 +14,8 @@ To install CCAM_PROSPECT, users must have an installation of Python 3.6 or highe
 - pip (https://pip.pypa.io/en/latest/installing/)
 
 ### Install
+NOTE: For more detailed installation instructions, see docs/UserGuide.pdf
+
 1. clone the repository
 2. create a virtual environment and activate the virtual environment (see https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html or https://virtualenv.pypa.io/en/latest/)
 3. install the source code in this environment
