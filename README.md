@@ -31,7 +31,8 @@ Once installed, the program can be run through a GUI or command line interface. 
 ```
     $ python runApp.py
 ```
-This will open the GUI.
+This will open the GUI, as shown here:
+![image not found](docs/gui.png "the Main GUI")
 
 The GUI is divided into five sections that are explained below. Walking through these five sections in order provides a logical flow for how to set up and run the calibration.
 
@@ -121,15 +122,16 @@ The output files follow a specific naming convention for archive in the PDS, as 
 
 | file type | file name |
 |----------|----------|
-| Input File (from PDS) |  cl9_404236313psv_F0050104ccam01076p3.tab |
-| Output Radiance File | cl99_404236313rad_F0050104ccam01076p3.tab |
-| Output Relative Reflectance File  | cl9_404236313ref_F0050104ccam01076p3.tab |
+| Input File (from PDS) |  cl9_404236313psv_f0050104ccam01076p3.tab |
+| Output Radiance File | cl99_404236313rad_f0050104ccam01076p3.tab |
+| Output Relative Reflectance File  | cl9_404236313ref_f0050104ccam01076p3.tab |
 
 The format for each of the files will be two-column ASCII tables where the first column is the wavelength (in nanometers) and the second column is either the radiance value (in units of W/m2/sr/um) or relative reflectance (0.0 to 1.0 for valid values). RAD files (output radiance files) will have the same 29-line header as the raw PSV files, with the table starting on line 30. The data table starts on line 1 of REF files.
 A label that follows PDS4 standards will be created for each output file.  This is an XML file with information about the RAD or REF file and the source PSV file that it was derived from.
 
 ## Plotting Capabilities
 CCAM_PROSPECT also has a plotting functionality, which can be used to plot relative reflectance spectra.  This capability is accessed by clicking the *“Relative Reflectance Plotting”* button on the main GUI. When selected, the GUI will switch to the plotting view. On the left side, there is initially an empty list which will hold the REF files that are shown in the plot. The *“Add”* and *“Remove”* buttons can be used to populate and edit that list.  Once files are added, they will be shown in the list on the left and plotted on the right. Files can be added individually or from a directory. Under the *“Add REF Files”* button there is a radio button option for adding from File or Directory. When *"File"* is selected, the file chooser will allow the user to add an individual REF file. When *“Directory”* is selected, the file chooser will allow the user to select a directory and will add each REF file from the chosen directory. The user can adjust the y- and x-axes with the controls under the plotting area. Lines can be removed from the plot by choosing the file in the list and selecting *“Remove”*. The user can save the plot to a file by selecting *“Save Plot”* and choosing a location and file format. Once created (by adding lines to the plot), the legend can be moved around by clicking and dragging, and can be hidden by deselected *“Show Legend”*.
+![image not found](docs/plotting_blank.png "the Plotting Display")
 
 ## Acknowledgements
 CCAM_PROSPECT is supported by NASA PDART Contract 80NSSC19K0415.
