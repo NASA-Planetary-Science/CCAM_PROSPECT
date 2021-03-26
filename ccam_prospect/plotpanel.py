@@ -178,7 +178,6 @@ class PlotPanel(tk.Frame):
             self.show_legend_selected()
             self.canvas.draw()
 
-
             # get current axes limits and update the text box
             self.update_axes_text()
 
@@ -258,7 +257,6 @@ class PlotPanel(tk.Frame):
         self.axes.set_title(title)
 
         self.canvas.draw()
-
 
     def show_legend_selected(self):
         """show_legend_selected
