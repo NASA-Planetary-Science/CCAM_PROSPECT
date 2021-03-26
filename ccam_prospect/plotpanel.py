@@ -31,14 +31,17 @@ class PlotPanel(tk.Frame):
         self.file_list_label = tk.Label(self.window, text="Files: ")
         self.v_scrollbar = tk.Scrollbar(self.file_box_frame, orient=tk.VERTICAL)
         self.h_scrollbar = tk.Scrollbar(self.file_box_frame, orient=tk.HORIZONTAL)
-        self.file_list_box = tk.Listbox(self.file_box_frame, selectmode="extended", width=30, yscrollcommand=self.v_scrollbar.set, xscrollcommand=self.h_scrollbar.set)
+        self.file_list_box = tk.Listbox(self.file_box_frame, selectmode="extended",
+                                        width=30, yscrollcommand=self.v_scrollbar.set,
+                                        xscrollcommand=self.h_scrollbar.set)
         self.v_scrollbar.config(command=self.file_list_box.yview)
         self.h_scrollbar.config(command=self.file_list_box.xview)
 
         self.file_type_label = tk.Label(self.add_remove_frame, text="Add From: ")
         # radio button group and entries for input file or directory
         self.inputType = tk.IntVar()
-        self.fileBtn = tk.Radiobutton(self.add_remove_frame, text='File', value=InputType.FILE.value, variable=self.inputType)
+        self.fileBtn = tk.Radiobutton(self.add_remove_frame, text='File',
+                                      value=InputType.FILE.value, variable=self.inputType)
         self.fileBtn.select()  # select file by default
         self.directoryBtn = tk.Radiobutton(self.add_remove_frame, text='Directory', value=InputType.DIRECTORY.value,
                                            variable=self.inputType)
@@ -66,7 +69,8 @@ class PlotPanel(tk.Frame):
         self.title_label = tk.Label(self.axis_adjust_frame, text="Title: ")
         self.title_entry = tk.Entry(self.axis_adjust_frame)
         self.axis_apply = tk.Button(self.axis_adjust_frame, text="Apply", command=self.apply_axis)
-        self.show_legend_button = tk.Checkbutton(self.axis_adjust_frame, text="Show Legend", variable=self.show_legend, onvalue=1,
+        self.show_legend_button = tk.Checkbutton(self.axis_adjust_frame, text="Show Legend",
+                                                 variable=self.show_legend, onvalue=1,
                                                  offvalue=0, command=self.show_legend_selected)
         self.show_legend_button.select()
         self.export_button = tk.Button(self.axis_adjust_frame, text="Save Plot", command=self.save_plot)
