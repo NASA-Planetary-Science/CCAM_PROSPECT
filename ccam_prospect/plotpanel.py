@@ -31,14 +31,17 @@ class PlotPanel(tk.Frame):
         self.file_list_label = tk.Label(self.window, text="Files: ")
         self.v_scrollbar = tk.Scrollbar(self.file_box_frame, orient=tk.VERTICAL)
         self.h_scrollbar = tk.Scrollbar(self.file_box_frame, orient=tk.HORIZONTAL)
-        self.file_list_box = tk.Listbox(self.file_box_frame, selectmode="extended", width=30, yscrollcommand=self.v_scrollbar.set, xscrollcommand=self.h_scrollbar.set)
+        self.file_list_box = tk.Listbox(self.file_box_frame, selectmode="extended",
+                                        width=30, yscrollcommand=self.v_scrollbar.set,
+                                        xscrollcommand=self.h_scrollbar.set)
         self.v_scrollbar.config(command=self.file_list_box.yview)
         self.h_scrollbar.config(command=self.file_list_box.xview)
 
         self.file_type_label = tk.Label(self.add_remove_frame, text="Add From: ")
         # radio button group and entries for input file or directory
         self.inputType = tk.IntVar()
-        self.fileBtn = tk.Radiobutton(self.add_remove_frame, text='File', value=InputType.FILE.value, variable=self.inputType)
+        self.fileBtn = tk.Radiobutton(self.add_remove_frame, text='File',
+                                      value=InputType.FILE.value, variable=self.inputType)
         self.fileBtn.select()  # select file by default
         self.directoryBtn = tk.Radiobutton(self.add_remove_frame, text='Directory', value=InputType.DIRECTORY.value,
                                            variable=self.inputType)
@@ -63,8 +66,11 @@ class PlotPanel(tk.Frame):
         self.x_axis_min_entry = tk.Entry(self.axis_adjust_frame, width=10)
         self.x_axis_max_entry = tk.Entry(self.axis_adjust_frame, width=10)
         self.x_axis_label = tk.Label(self.axis_adjust_frame, text="X-Axis: ")
+        self.title_label = tk.Label(self.axis_adjust_frame, text="Title: ")
+        self.title_entry = tk.Entry(self.axis_adjust_frame)
         self.axis_apply = tk.Button(self.axis_adjust_frame, text="Apply", command=self.apply_axis)
-        self.show_legend_button = tk.Checkbutton(self.axis_adjust_frame, text="Show Legend", variable=self.show_legend, onvalue=1,
+        self.show_legend_button = tk.Checkbutton(self.axis_adjust_frame, text="Show Legend",
+                                                 variable=self.show_legend, onvalue=1,
                                                  offvalue=0, command=self.show_legend_selected)
         self.show_legend_button.select()
         self.export_button = tk.Button(self.axis_adjust_frame, text="Save Plot", command=self.save_plot)
@@ -107,7 +113,9 @@ class PlotPanel(tk.Frame):
         self.x_axis_min_entry.grid(row=1, column=2, padx=(0, 15))
         self.x_axis_max_label.grid(row=1, column=3)
         self.x_axis_max_entry.grid(row=1, column=4, padx=(0, 15))
-        self.axis_apply.grid(row=2, column=0, columnspan=5, sticky="ew", padx=(0, 15))
+        self.title_label.grid(row=2, column=0)
+        self.title_entry.grid(row=2, column=1, columnspan=4, sticky="ew")
+        self.axis_apply.grid(row=3, column=0, columnspan=5, sticky="ew", padx=(0, 15))
         self.show_legend_button.grid(row=1, column=5, padx=(0,10), sticky="w")
         self.export_button.grid(row=2, column=5, pady=(0, 10), sticky="ew")
         self.axis_adjust_frame.grid(row=3, column=4, pady=(20, 10), padx=(0, 0))
@@ -226,8 +234,12 @@ class PlotPanel(tk.Frame):
                       ('Portable Document Format (PDF)', '*.pdf'), ('Progressive Graphics File (PGF)', '*.pgf'),
                       ('PostScript (PS)', '*.ps'), ('Raw File', '*.raw'), ('RGBA file', '*.rgba'),
                       ('Scalable Vector Graphics (SVG)', '*.svg'), ('Compressed SVG (SVGZ)', '*.svgz')]
+        initial_file = "relativeReflectance"
+        if self.title_entry.get():
+            initial_file = self.title_entry.get()
+            initial_file = initial_file.replace(" ", "")
         save_file = tk.filedialog.asksaveasfilename(filetypes=file_types,
-                                                    initialfile="relativeReflectance")
+                                                    initialfile=initial_file)
         self.fig.savefig(save_file)
 
     def apply_axis(self):
@@ -243,6 +255,11 @@ class PlotPanel(tk.Frame):
         # set axes limits
         self.axes.set_xlim(xmin, xmax)
         self.axes.set_ylim(ymin, ymax)
+
+        # set title based on user input
+        title = str(self.title_entry.get())
+        self.axes.set_title(title)
+
         self.canvas.draw()
 
     def show_legend_selected(self):

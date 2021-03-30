@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 
-with open("README.rst", 'r') as f:
+with open("README.md", 'r') as f:
     long_description = f.read()
 
 
 setup(
    name='ccam_prospect',
-   version='1.3.2',
+   version='1.4.0',
    description='calibrate raw ccam files to rad and ref files',
    long_description=long_description,
    author='Colleen O\'Shea',
