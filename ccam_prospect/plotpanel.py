@@ -51,7 +51,7 @@ class PlotPanel(tk.Frame):
 
         self.fig = Figure(figsize=(8, 4), dpi=100)
         self.gridspec = GridSpec(1, 2, width_ratios=[3.5, 1])
-        self.axes = self.fig.add_subplot(self.gridspec[0,0])
+        self.axes = self.fig.add_subplot(self.gridspec[0, 0])
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.axes.set_ylabel('Relative Reflectance')
         self.axes.set_xlabel('Wavelength (nm)')
@@ -240,7 +240,15 @@ class PlotPanel(tk.Frame):
             initial_file = initial_file.replace(" ", "")
         save_file = tk.filedialog.asksaveasfilename(filetypes=file_types,
                                                     initialfile=initial_file)
-        self.fig.savefig(save_file)
+
+        # plt.gca().set_axis_off()
+        # plt.subplots_adjust(top=1, bottom=0, right=1, left=0,
+        #                     hspace=0, wspace=0)
+        # plt.margins(0, 0)
+        # plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        # plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        # plt.savefig("filename.pdf", )
+        self.fig.savefig(save_file, bbox_inches='tight')
 
     def apply_axis(self):
         """apply_axis
