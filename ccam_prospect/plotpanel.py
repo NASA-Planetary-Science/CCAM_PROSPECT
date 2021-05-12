@@ -46,7 +46,7 @@ class PlotPanel(tk.Frame):
         self.add_file_button = tk.Button(self.add_remove_frame, text="Add REF Files", command=self.add_files)
         self.rm_file_button = tk.Button(self.add_remove_frame, text="  Remove Selected  ", command=self.remove_file)
 
-        self.fig = Figure(figsize=(10, 4), dpi=100)
+        self.fig = Figure(figsize=(8, 4), dpi=100)
         self.gridspec = GridSpec(1, 2, width_ratios=[3.5, 1])
         self.axes = self.fig.add_subplot(self.gridspec[0,0])
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
