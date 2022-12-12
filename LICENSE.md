@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2022, NASA-Planetary-Science
+Copyright © 2020 The Johns Hopkins University Applied Physics Laboratory LLC
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
