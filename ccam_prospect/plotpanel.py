@@ -4,6 +4,41 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure, GridSpec
 import os
 from ccam_prospect.utils.InputType import InputType, input_type_switcher
+import numpy as np
+
+
+def moving_median_smoothing(data, kernel_size):
+    """
+    smooth the data using a median filter with the given kernel size. if kernel size is 50,
+    we will use the 25 values on either side.
+    :param data:
+    :param kernel_size:
+    :return:
+    """
+    length = len(data);
+    half_kernel = int(kernel_size / 2)
+    smoothed = np.zeros(length)
+    for t in range(length):
+        if t <= half_kernel:
+            half_kernel_old = half_kernel
+            half_kernel = t - 1
+        elif t > length - half_kernel:
+            half_kernel_old = half_kernel
+            half_kernel = t - 1
+        if t == 0 or t == length - 1:
+            # for first value and last value, just copy the data
+            smoothed[t] = data[t]
+        else:
+            smoothed[t] = np.median(data[t - half_kernel:t + half_kernel + 1])
+        half_kernel = half_kernel_old
+    return np.array(smoothed)
+
+
+def extract_floats(data, index):
+    """
+    extract the x or y data from each line, given 0 (x) or 1 (y)
+    """
+    return np.array([float(line.split()[index].strip()) for line in data])
 
 
 class PlotPanel(tk.Frame):
@@ -125,9 +160,17 @@ class PlotPanel(tk.Frame):
         x = []
         y = []
         with open(file_name) as f:
-            data = [x for index, x in enumerate(f) if 2428 < index < 4039 or 4112 < index < 5810]
-            x = [float(line.split()[0].strip()) for line in data]
-            y = [float(line.split()[1].strip()) for line in data]
+            # only plot data in the following ranges: 400 to 467nm, 477 to 840 nm
+            # for 400 to 467 nm, use a 51-channel filter
+            lines = f.readlines()
+            smooth_data = [x for index, x in enumerate(lines) if 2428 < index < 4039]
+            other_data = [x for index, x in enumerate(lines) if 4112 < index < 5810]
+            y_smoothed = moving_median_smoothing(extract_floats(smooth_data, 1), 50)
+            # get non-smoothed data and combine with smoothed data
+            y = np.concatenate((y_smoothed, extract_floats(other_data, 1)))
+
+            # get x data from each set and combine
+            x = np.concatenate((extract_floats(smooth_data, 0), extract_floats(other_data, 0)))
 
         return x, y
 

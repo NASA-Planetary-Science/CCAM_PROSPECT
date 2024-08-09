@@ -272,7 +272,7 @@ class RadianceCalibration:
                 gain_file = os.path.join(my_path, "constants/gain_mars.edit")
                 (wavelength, gain) = self.get_wl_and_gain(gain_file)
 
-                # multiply by the gain to get in photos
+                # multiply by the gain to get in photons
                 all_spectra_photons = np.multiply(all_spectra_dn, gain)
 
                 # calculate the radiance values

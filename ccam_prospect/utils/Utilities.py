@@ -2,7 +2,7 @@ from jinja2 import Environment, FileSystemLoader
 import os
 from datetime import date
 from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException
-
+from pds4_tools import pds4_read
 
 def get_integration_time(filename):
     """get_integration_time
@@ -54,19 +54,35 @@ def get_context(label_path, psv_label):
     today = date.today()
     creation_date = today.strftime("%Y-%m-%d")
 
-    # get PSV filename and observation start time
+    # get observation start time
     start_time = "UNK" # just in case
-    with open(psv_label) as psv:
-        for i, line in enumerate(psv):
-            line_parts = line.split("=")
-            if line_parts[0].strip() == "START_TIME":
-                start_time = line_parts[1].strip()
-            if i > 56:
-                break
 
+    # psv data file name = psv label name but with .tab
     path, psv_label_name = os.path.split(psv_label)
-    psv_filename = psv_label_name.replace("LBL", "TAB")
-    psv_filename = psv_filename.replace("lbl", "tab")
+    psv_label_type = os.path.splitext(psv_label_name)[1]
+    if psv_label_type.lower() == "lbl":
+        psv_filename = psv_label_name.replace("LBL", "TAB")
+        psv_filename = psv_filename.replace("lbl", "tab")
+
+        with open(psv_label) as psv:
+            for i, line in enumerate(psv):
+                line_parts = line.split("=")
+                if line_parts[0].strip() == "START_TIME":
+                    start_time = line_parts[1].strip()
+                if i > 56:
+                    break
+
+    elif psv_label_type.lower() == "xml":
+        psv_filename = psv_label_name.replace("XML", "TAB")
+        psv_filename = psv_filename.replace("xml", "tab")
+
+        structures = pds4_read(psv_label)
+        label = structures.label
+        obs_area = label.find("Observation_Area")
+        time = obs_area.find('Time_Coordinates')
+        start_time = time.findtext('start_date_time')
+    else:
+        psv_filename = "UNK" # TODO this should never happen?
 
     context = {
         "filename": filename_no_ext,
