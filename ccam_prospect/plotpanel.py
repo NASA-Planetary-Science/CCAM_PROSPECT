@@ -2,6 +2,7 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Implement the default Matplotlib key bindings.
 from matplotlib.figure import Figure, GridSpec
+from matplotlib import pyplot
 import os
 from ccam_prospect.utils.InputType import InputType, input_type_switcher
 import numpy as np
@@ -85,6 +86,7 @@ class PlotPanel(tk.Frame):
         self.rm_file_button = tk.Button(self.add_remove_frame, text="  Remove Selected  ", command=self.remove_file)
 
         self.fig = Figure(figsize=(10, 4), dpi=100)
+        self.fig.text(.14, 0.75, '(VIO region\nsmoothed)', fontsize=10)
         self.gridspec = GridSpec(1, 2, width_ratios=[3.5, 1])
         self.axes = self.fig.add_subplot(self.gridspec[0,0])
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
@@ -163,14 +165,18 @@ class PlotPanel(tk.Frame):
             # only plot data in the following ranges: 400 to 467nm, 477 to 840 nm
             # for 400 to 467 nm, use a 51-channel filter
             lines = f.readlines()
-            smooth_data = [x for index, x in enumerate(lines) if 2428 < index < 4039]
-            other_data = [x for index, x in enumerate(lines) if 4112 < index < 5810]
+            all_data = [line for index, line in enumerate(lines) if 2428 < index < 5810]
+            smooth_data = [line for index, line in enumerate(lines) if 2428 < index < 4039]
+            other_data = [line for index, line in enumerate(lines) if 4120 < index < 5810]
+
+            # smooth the data between 400 and 467
             y_smoothed = moving_median_smoothing(extract_floats(smooth_data, 1), 50)
+
             # get non-smoothed data and combine with smoothed data
-            y = np.concatenate((y_smoothed, extract_floats(other_data, 1)))
+            y = np.concatenate((y_smoothed, np.full(shape=82, fill_value=np.nan), extract_floats(other_data, 1)))
 
             # get x data from each set and combine
-            x = np.concatenate((extract_floats(smooth_data, 0), extract_floats(other_data, 0)))
+            x = extract_floats(all_data, 0)
 
         return x, y
 
