@@ -16,5 +16,5 @@ setup(
    packages=['ccam_prospect', 'ccam_prospect.utils', 'ccam_prospect.constants', 'ccam_prospect.sol76', 'ccam_prospect.templates'],
    package_data={'ccam_prospect': ['constants/*', 'sol76/*', 'templates/*']
    },
-   install_requires=['numpy==1.19', 'jinja2', 'matplotlib==3.3.3', 'pds4_tools'],
+   install_requires=['numpy==1.19', 'jinja2', 'matplotlib', 'pds4_tools'],
 )
