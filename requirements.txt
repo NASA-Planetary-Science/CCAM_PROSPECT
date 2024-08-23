@@ -1,0 +1,4 @@
+numpy
+jinja2
+matplotlib
+pds4_tools
