@@ -18,13 +18,13 @@ NOTE: For more detailed installation instructions, see docs/UserGuide.pdf
 
 1. clone the repository
 2. create a virtual environment and activate the virtual environment (see https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html or https://virtualenv.pypa.io/en/latest/)
-3. install the source code in this environment
+3. install the necessary modules
 
 ```
-    $ python setup.py install
+    $ pip install -r requirements.txt
 ```
 
-this will install the ccam_prospect package and all required dependencies into the env “site packages”, which will be located within the env folder: *env/lib/pythonx.x/site-packages/*
+this will install the ccam_prospect package and all required dependencies into the env “site packages”.
 
 ## Execution
 Once installed, the program can be run through a GUI or command line interface.  Simply activate the virtual environment and all required libraries and modules will be ready to use.  This is the first step for either method of running the application.
