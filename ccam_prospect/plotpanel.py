@@ -6,40 +6,7 @@ from matplotlib import pyplot
 import os
 from ccam_prospect.utils.InputType import InputType, input_type_switcher
 import numpy as np
-
-
-def moving_median_smoothing(data, kernel_size):
-    """
-    smooth the data using a median filter with the given kernel size. if kernel size is 50,
-    we will use the 25 values on either side.
-    :param data:
-    :param kernel_size:
-    :return:
-    """
-    length = len(data);
-    half_kernel = int(kernel_size / 2)
-    smoothed = np.zeros(length)
-    for t in range(length):
-        if t <= half_kernel:
-            half_kernel_old = half_kernel
-            half_kernel = t - 1
-        elif t > length - half_kernel:
-            half_kernel_old = half_kernel
-            half_kernel = t - 1
-        if t == 0 or t == length - 1:
-            # for first value and last value, just copy the data
-            smoothed[t] = data[t]
-        else:
-            smoothed[t] = np.median(data[t - half_kernel:t + half_kernel + 1])
-        half_kernel = half_kernel_old
-    return np.array(smoothed)
-
-
-def extract_floats(data, index):
-    """
-    extract the x or y data from each line, given 0 (x) or 1 (y)
-    """
-    return np.array([float(line.split()[index].strip()) for line in data])
+import ccam_prospect.utils.Utilities as utils
 
 
 class PlotPanel(tk.Frame):
@@ -108,7 +75,7 @@ class PlotPanel(tk.Frame):
         self.axis_apply = tk.Button(self.axis_adjust_frame, text="Apply", command=self.apply_axis)
         self.show_legend_button = tk.Checkbutton(self.axis_adjust_frame, text="Show Legend",
                                                  variable=self.show_legend, onvalue=1,
-                                                 offvalue=0, command=self.show_legend_selected)
+                                                 offvalue=0, command=self.show_legend_if_selected)
         self.show_legend_button.select()
         self.export_button = tk.Button(self.axis_adjust_frame, text="Save Plot", command=self.save_plot)
         self.y_axis_min_entry.insert(tk.END, "0")
@@ -159,8 +126,22 @@ class PlotPanel(tk.Frame):
 
     @staticmethod
     def read_file(file_name):
+        # TODO check if already smoothed; add label to plot if so
         x = []
         y = []
+        vis_smoothed = False
+
+        smooth_file = file_name + ".smooth"
+        try:
+            with open(smooth_file, 'r') as sf:
+                # Read the first line
+                vio_smoothed = sf.readline().split(':')[1].strip() == 'True'
+                # Read the second line
+                vis_smoothed = sf.readline().split(':')[1].strip() == 'True'
+        except FileNotFoundError:
+            vio_smoothed = False
+            vis_smoothed = False
+
         with open(file_name) as f:
             # only plot data in the following ranges: 400 to 467nm, 477 to 840 nm
             # for 400 to 467 nm, use a 51-channel filter
@@ -170,15 +151,20 @@ class PlotPanel(tk.Frame):
             other_data = [line for index, line in enumerate(lines) if 4120 < index < 5810]
 
             # smooth the data between 400 and 467
-            y_smoothed = moving_median_smoothing(extract_floats(smooth_data, 1), 50)
+            if vio_smoothed:
+                # already smoothed
+                y_smoothed = utils.extract_floats(smooth_data, 1)
+            else:
+                # need to smooth
+                y_smoothed = utils.moving_median_smoothing(utils.extract_floats(smooth_data, 1), 50)
 
             # get non-smoothed data and combine with smoothed data
-            y = np.concatenate((y_smoothed, np.full(shape=82, fill_value=np.nan), extract_floats(other_data, 1)))
+            y = np.concatenate((y_smoothed, np.full(shape=82, fill_value=np.nan), utils.extract_floats(other_data, 1)))
 
             # get x data from each set and combine
-            x = extract_floats(all_data, 0)
+            x = utils.extract_floats(all_data, 0)
 
-        return x, y
+        return x, y, vis_smoothed
 
     def add_files(self):
         # open file or directory?
@@ -224,17 +210,17 @@ class PlotPanel(tk.Frame):
 
             # add file to graph
             # Data for plotting
-            x, y = self.read_file(file)
+            x, y, smoothed = self.read_file(file)
             short_name = "{}_{}".format(filename[0:13], filename[29:34])
             this_line = self.axes.plot(x, y, label=short_name)
             self.lines_dict[short_name] = this_line
-            self.show_legend_selected()
+            self.show_legend_if_selected()
             self.canvas.draw()
 
             # get current axes limits and update the text box
-            self.update_axes_text()
+            self.update_axes_text(smoothed)
 
-    def update_axes_text(self):
+    def update_axes_text(self, smoothed):
         """
         update the entries with min/max values of the axes
         :return:
@@ -257,6 +243,10 @@ class PlotPanel(tk.Frame):
         self.y_axis_max_entry.delete(0, "end")
         self.y_axis_max_entry.insert(0, top)
 
+        if smoothed:
+            print('smoothed')
+            self.fig.text(.35, 0.75, '(VIS region\nsmoothed)', fontsize=10)
+
         self.apply_axis()
 
     def remove_file(self):
@@ -270,9 +260,9 @@ class PlotPanel(tk.Frame):
             self.file_list_box.delete(i)
             short_name = "{}_{}".format(filename[0:13], filename[29:34])
             line = self.lines_dict[short_name]
-            self.axes.lines.remove(line[0])
+            line[0].remove()
 
-        self.show_legend_selected()
+        self.show_legend_if_selected()
         self.canvas.draw()
 
     def save_plot(self):
@@ -311,7 +301,7 @@ class PlotPanel(tk.Frame):
 
         self.canvas.draw()
 
-    def show_legend_selected(self):
+    def show_legend_if_selected(self):
         """show_legend_selected
         turn legend on or off depending on selected button
         """

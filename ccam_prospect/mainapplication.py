@@ -29,6 +29,10 @@ class MainApplication:
         self.progress_var = tk.IntVar()
         self.overwrite_rad = tk.IntVar()
         self.overwrite_ref = tk.IntVar()
+        self.smooth_vis = tk.BooleanVar()
+        self.smooth_vio = tk.BooleanVar()
+        self.smooth_vis.set(False)
+        self.smooth_vio.set(False)
         self.overwrite_rad.set(1)
         self.overwrite_ref.set(1)
 
@@ -75,6 +79,8 @@ class MainApplication:
         # overwrite file option buttons
         self.overwrite_rad_button = tk.Checkbutton(root_window, text="Overwrite existing RAD", variable=self.overwrite_rad)
         self.overwrite_ref_button = tk.Checkbutton(root_window, text="Overwrite existing REF", variable=self.overwrite_ref)
+        self.smooth_vio_button = tk.Checkbutton(root_window, text="Smooth VIO", variable=self.smooth_vio)
+        self.smooth_vis_button = tk.Checkbutton(root_window, text="Smooth VIS", variable=self.smooth_vis)
 
         # 'GO' buttons
         self.separator3 = ttk.Separator(root_window, orient="horizontal")
@@ -119,12 +125,14 @@ class MainApplication:
         self.separator3.grid(column=0, row=15, columnspan=5, sticky="ew", pady=(10, 10))
         self.overwrite_rad_button.grid(column=0, row=16, columnspan=2, sticky="w", pady=(5, 0), padx=(20, 5))
         self.overwrite_ref_button.grid(column=2, row=16, columnspan=2, sticky="w", pady=(5, 0), padx=(5, 10))
-        self.calibrate_rad_button.grid(column=0, row=17, columnspan=2, sticky="w", pady=(5, 0), padx=(20, 5))
-        self.calibrate_button.grid(column=2, row=17, columnspan=2, sticky="w", pady=(5, 0), padx=(5, 10))
-        self.progress.grid(column=0, row=18, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
+        self.smooth_vio_button.grid(column=2, row=17, columnspan=1, sticky="w", pady=(5, 0), padx=(5, 10))
+        self.smooth_vis_button.grid(column=3, row=17, columnspan=1, sticky="w", pady=(5, 0), padx=(5, 10))
+        self.calibrate_rad_button.grid(column=0, row=18, columnspan=2, sticky="w", pady=(5, 0), padx=(20, 5))
+        self.calibrate_button.grid(column=2, row=18, columnspan=2, sticky="w", pady=(5, 0), padx=(5, 10))
+        self.progress.grid(column=0, row=19, columnspan=5, sticky="ew", pady=(10, 10), padx=(5, 5))
 
-        self.separator4.grid(column=0, row=19, columnspan=5, sticky="ew", pady=(10,10))
-        self.plot_button.grid(column=0, row=20, columnspan=5, sticky="ew", pady=(10,10))
+        self.separator4.grid(column=0, row=20, columnspan=5, sticky="ew", pady=(10,10))
+        self.plot_button.grid(column=0, row=21, columnspan=5, sticky="ew", pady=(10,10))
 
     def browse_clicked(self):
         """browse_clicked
@@ -220,7 +228,8 @@ class MainApplication:
         try:
             # the call to calibrate to relative reflectance
             self.relative_cal.calibrate_relative_reflectance(file_type, file, custom_directory, out_dir,
-                                                             self.overwrite_rad.get(), self.overwrite_ref.get())
+                                                             self.overwrite_rad.get(), self.overwrite_ref.get(),
+                                                             self.smooth_vio.get(), self.smooth_vis.get())
         except InputFileNotFoundException as ife:
             messagebox.showinfo('Error', 'The input file ({}) does not exist'.format(ife.file))
         except CancelExecutionException:
