@@ -21,7 +21,7 @@ def moving_median_smoothing(data, kernel_size):
     :param kernel_size:
     :return:
     """
-    length = len(data);
+    length = len(data)
     half_kernel = int(kernel_size / 2)
     smoothed = np.zeros(length)
     for t in range(length):

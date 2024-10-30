@@ -68,7 +68,8 @@ class MainApplication:
         self.relative_config = tk.IntVar()
         self.relative_label = tk.Label(root_window, text="Relative Reflectance Calibration:")
         self.custom_file = tk.Entry(root_window, text="custom file", width=15, state="disabled")
-        self.custom_file_browse = tk.Button(root_window, text="Browse", state="disabled", command=self.custom_browse_clicked)
+        self.custom_file_browse = tk.Button(root_window, text="Browse", state="disabled",
+                                            command=self.custom_browse_clicked)
         self.browseBtn = tk.Button(root_window, text='Browse', command=self.browse_clicked)
         self.use_default_btn = tk.Radiobutton(root_window, text="Use default\n (target 11 sol 76)", value=1,
                                               variable=self.relative_config, command=self.select_custom)
@@ -77,15 +78,19 @@ class MainApplication:
                                              command=self.select_custom)
 
         # overwrite file option buttons
-        self.overwrite_rad_button = tk.Checkbutton(root_window, text="Overwrite existing RAD", variable=self.overwrite_rad)
-        self.overwrite_ref_button = tk.Checkbutton(root_window, text="Overwrite existing REF", variable=self.overwrite_ref)
+        self.overwrite_rad_button = tk.Checkbutton(root_window, text="Overwrite existing RAD",
+                                                   variable=self.overwrite_rad)
+        self.overwrite_ref_button = tk.Checkbutton(root_window, text="Overwrite existing REF",
+                                                   variable=self.overwrite_ref)
         self.smooth_vio_button = tk.Checkbutton(root_window, text="Smooth VIO", variable=self.smooth_vio)
         self.smooth_vis_button = tk.Checkbutton(root_window, text="Smooth VIS", variable=self.smooth_vis)
 
         # 'GO' buttons
         self.separator3 = ttk.Separator(root_window, orient="horizontal")
-        self.calibrate_rad_button = tk.Button(root_window, text="Calibrate to RAD", width=20, command=self.start_rad)
-        self.calibrate_button = tk.Button(root_window, text="Calibrate to REF", width=20, command=self.start_calibration)
+        self.calibrate_rad_button = tk.Button(root_window, text="Calibrate to RAD", width=20,
+                                              command=self.start_rad)
+        self.calibrate_button = tk.Button(root_window, text="Calibrate to REF", width=20,
+                                          command=self.start_calibration)
 
         # progress bar
         self.progress = ttk.Progressbar(root_window, orient=tk.HORIZONTAL, length=100, mode='determinate',
@@ -93,7 +98,8 @@ class MainApplication:
 
         # plotting
         self.separator4 = ttk.Separator(root_window, orient="horizontal")
-        self.plot_button = tk.Button(root_window, text="Relative Reflectance Plotting", width=40, command=self.open_plots)
+        self.plot_button = tk.Button(root_window, text="Relative Reflectance Plotting", width=40,
+                                     command=self.open_plots)
 
         self.set_up_layout()
 
