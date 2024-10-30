@@ -3,6 +3,42 @@ import os
 from datetime import date
 from ccam_prospect.utils.CustomExceptions import NonStandardHeaderException
 from pds4_tools import pds4_read
+import numpy as np
+
+
+def extract_floats(data, index):
+    """
+    extract the x or y data from each line, given 0 (x) or 1 (y)
+    """
+    return np.array([float(line.split()[index].strip()) for line in data])
+
+
+def moving_median_smoothing(data, kernel_size):
+    """
+    smooth the data using a median filter with the given kernel size. if kernel size is 50,
+    we will use the 25 values on either side.
+    :param data:
+    :param kernel_size:
+    :return:
+    """
+    length = len(data);
+    half_kernel = int(kernel_size / 2)
+    smoothed = np.zeros(length)
+    for t in range(length):
+        if t <= half_kernel:
+            half_kernel_old = half_kernel
+            half_kernel = t - 1
+        elif t > length - half_kernel:
+            half_kernel_old = half_kernel
+            half_kernel = t - 1
+        if t == 0 or t == length - 1:
+            # for first value and last value, just copy the data
+            smoothed[t] = data[t]
+        else:
+            smoothed[t] = np.median(data[t - half_kernel:t + half_kernel + 1])
+        half_kernel = half_kernel_old
+    return np.array(smoothed)
+
 
 def get_integration_time(filename):
     """get_integration_time

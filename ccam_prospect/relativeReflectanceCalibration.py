@@ -6,7 +6,7 @@ from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.utils.CustomExceptions import InputFileNotFoundException, NonStandardHeaderException, \
     CancelExecutionException
-from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label
+from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label, moving_median_smoothing
 from ccam_prospect.radianceCalibration import RadianceCalibration
 
 
@@ -251,7 +251,7 @@ class RelativeReflectanceCalibration:
         original_label = original_label.replace('RAD', 'PSV')
         return original_label
 
-    def calibrate_file(self, filename, custom_file, out_dir, overwrite_rad, overwrite_ref):
+    def calibrate_file(self, filename, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis):
         """calibrate_file
         calibrate the file to relative reflectance
 
@@ -260,6 +260,8 @@ class RelativeReflectanceCalibration:
         :param out_dir: the output directory for calibrated files
         :param overwrite_rad: boolean to overwrite radiance files
         :param overwrite_ref: boolean to overwrite relative reflectance files
+        :param smooth_vio: use 51-channel filter to smooth VIO region
+        :param smooth_vis: use 51-channel filter to smooth VIS region
         """
         # check for valid rad file
         valid = self.get_rad_file(filename, out_dir, overwrite_rad)
@@ -269,6 +271,8 @@ class RelativeReflectanceCalibration:
             print('calibrating' + filename)
 
             out_filename = self.rad_to_ref(out_dir)
+            out_filename_smoothing = out_filename + ".smooth"
+
             if not overwrite_ref:
                 # if we don't want to overwrite existing files, we can skip this file if it already exists
                 if os.path.exists(out_filename) and os.path.isfile(out_filename):
@@ -290,8 +294,25 @@ class RelativeReflectanceCalibration:
             # replace saturated channels that are too large for PDS fixed-width with 0s
             final_values = np.where(abs(final_values) > 10E20, 0, final_values)
 
+            # vio data: 241 to 466 nm, index 0 to 4095
+            vio_data = final_values[0:4096]
+            # vis data: 473-905 nm, 4096 < index < 6144
+            vis_data = final_values[4096:6144]
+
+            # smooth values as desired
+            if smooth_vio:
+                smoothed_vio = moving_median_smoothing(vio_data, 50)
+                final_values[0:4096] = smoothed_vio
+            if smooth_vis:
+                smoothed_vis = moving_median_smoothing(vis_data, 50)
+                final_values[4096:6144] = smoothed_vis
+
             # rename rad to ref to get outfile name and then write to file
             write_final(out_filename, self.wavelength, final_values)
+            with open(out_filename_smoothing, 'w') as sf:
+                sf.write("VIO: " + str(smooth_vio))
+                sf.write('\n')
+                sf.write("VIS: " + str(smooth_vis))
 
             # check for original label
             original_label = self.get_original_label(filename)
@@ -310,8 +331,7 @@ class RelativeReflectanceCalibration:
 
             print(filename + ' calibrated and written to ' + out_filename)
 
-
-    def calibrate_directory(self, directory, custom_file, out_dir, overwrite_rad, overwrite_ref):
+    def calibrate_directory(self, directory, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis):
         """calibrate_directory
         calibrate everything in this directory, recursively.
 
@@ -320,6 +340,8 @@ class RelativeReflectanceCalibration:
         :param out_dir: the destination directory for output
         :param overwrite_rad: boolean to overwrite radiance files
         :param overwrite_ref: boolean to overwrite relative reflectance files
+        :param smooth_vio: use 51-channel filter to smooth VIO region
+        :param smooth_vis: use 51-channel filter to smooth VIS region
         """
         self.total_files = sum([len(files) for r, d, files in os.walk(directory)])
         self.current_file = 1
@@ -330,10 +352,10 @@ class RelativeReflectanceCalibration:
                 if os.path.isdir(full_path) and full_path is not out_dir:
                     # recursive call for each subdirectory
                     self.calibrate_directory(os.path.join(directory, file_name), custom_file, out_dir,
-                                             overwrite_rad, overwrite_ref)
+                                             overwrite_rad, overwrite_ref, smooth_vio, smooth_vis)
                 else:
                     # calibrate each file individually
-                    self.calibrate_file(full_path, custom_file, out_dir, overwrite_rad, overwrite_ref)
+                    self.calibrate_file(full_path, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis)
                     self.current_file += 1
                     self.update_progress()
         except FileNotFoundError:
@@ -344,7 +366,7 @@ class RelativeReflectanceCalibration:
                 raise InputFileNotFoundException(directory)
         self.update_progress(100)
 
-    def calibrate_list(self, list_file, custom_file, out_dir, overwrite_rad, overwrite_ref):
+    def calibrate_list(self, list_file, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis):
         """calibrate_list
         calibrate everything in this list
 
@@ -353,6 +375,8 @@ class RelativeReflectanceCalibration:
         :param out_dir: the destination directory for output
         :param overwrite_rad: boolean to overwrite radiance files
         :param overwrite_ref: boolean to overwrite relative reflectance files
+        :param smooth_vio: use 51-channel filter to smooth VIO region
+        :param smooth_vis: use 51-channel filter to smooth VIS region
         """
         try:
             # read each line into a list of files
@@ -368,7 +392,7 @@ class RelativeReflectanceCalibration:
         for file_name in files:
             try:
                 # calibrate each file in the list
-                self.calibrate_file(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref)
+                self.calibrate_file(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis)
                 self.current_file += 1
                 self.update_progress()
             except InputFileNotFoundException:
@@ -381,7 +405,8 @@ class RelativeReflectanceCalibration:
                     raise CancelExecutionException
         self.update_progress(100)
 
-    def calibrate_relative_reflectance(self, file_type, file_name, custom_file, out_dir, overwrite_rad, overwrite_ref):
+    def calibrate_relative_reflectance(self, file_type, file_name, custom_file, out_dir, overwrite_rad, overwrite_ref,
+                                       smooth_vio, smooth_vis):
         """calibrate_relative_reflectance
         start the calibration for file, list of files, or directory.
 
@@ -391,14 +416,16 @@ class RelativeReflectanceCalibration:
         :param out_dir: the output directory
         :param overwrite_rad: boolean to overwrite radiance files
         :param overwrite_ref: boolean to overwrite relative reflectance files
+        :param smooth_vio: use 51-channel filter to smooth VIO region
+        :param smooth_vis: use 51-channel filter to smooth VIS region
         :return:
         """
         if file_type.value is InputType.FILE.value:
-            self.calibrate_file(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref)
+            self.calibrate_file(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis)
         elif file_type.value is InputType.FILE_LIST.value:
-            self.calibrate_list(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref)
+            self.calibrate_list(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis)
         else:
-            self.calibrate_directory(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref)
+            self.calibrate_directory(file_name, custom_file, out_dir, overwrite_rad, overwrite_ref, smooth_vio, smooth_vis)
 
 
 if __name__ == "__main__":
@@ -413,7 +440,11 @@ if __name__ == "__main__":
                         help="do not overwrite existing RAD files")
     parser.add_argument('--no-overwrite-ref', action="store_false", dest='overwrite_ref',
                         help="do not overwrite existing REF files")
-    parser.set_defaults(overwrite_rad=True, overwrite_ref=True)
+    parser.add_argument('--smooth-vio', action="store_true", dest='smooth_vio',
+                        help="apply 51-channel filter to smooth VIO region")
+    parser.add_argument('--smooth-vis', action="store_true", dest='smooth_vis',
+                        help="apply 51-channel filter to smooth VIS region")
+    parser.set_defaults(overwrite_rad=True, overwrite_ref=True, smooth_vis=False, smooth_vio=False)
 
     args = parser.parse_args()
     if len(sys.argv) == 1:
@@ -443,8 +474,12 @@ if __name__ == "__main__":
         ow_rad = args.overwrite_rad
         ow_ref = args.overwrite_ref
 
+        smooth_vio = args.smooth_vio
+        smooth_vis = args.smooth_vis
+
         now = datetime.now()
         logfile = "badInput_{}.log".format(now.strftime("%Y%m%d.%H%M%S"))
 
         calibrate_ref = RelativeReflectanceCalibration(logfile)
-        calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_directory, ow_rad, ow_ref)
+        calibrate_ref.calibrate_relative_reflectance(in_file_type, file, args.customFile, out_directory, ow_rad, ow_ref,
+                                                     smooth_vio, smooth_vis)
