@@ -53,6 +53,8 @@ The default setting for the relative reflectance calibration algorithm is to use
 4. Running Options:
 Users can choose to overwrite any existing radiance (RAD) files by selecting “Overwrite existing RAD” and any existing relative reflectance (REF) files by selecting “Overwrite existing REF”.
 
+There are also options for smoothing the VIO and VIS regions of the REF data. A user can choose to smooth VIO, VIS, or both. If the "smooth VIO" option is selected, data between 241nm and 469nm will be smoothed with a 51-channel moving median filter. If "smooth VIS" is selected, data between 473 and 905nm will be smoothed.
+
 The two buttons at the bottom are used to run the calibration.  Selecting “Calibrate to RAD” will run the radiance calibration on input PSV file(s) and output to the appropriate directory, overwriting files as designated using the radio buttons described above.
 
 Running “Calibrate to REF” will run both the radiance calibration and the relative reflectance calibration. Input for relative reflectance calibration can be either a raw PSV file or a RAD file created with CCAM_PROSPECT. If it is a PSV file, the tool will first create a RAD file and then create a relative reflectance file from that file.
@@ -98,17 +100,19 @@ python full_path/ccam-prospect-x.x.x/ccam_prospect/relativeReflectanceCalibratio
 [-d DIRECTORY] [-l LIST] [-o OUT_DIR] [--no-overwrite-rad] [--no-overwrite-ref]
 
 optional arguments:
-  -h, --help      show this help message and exit
-  -f CCAMFILE     CCAM psv or rad *.tab file
-  -d DIRECTORY    Directory containing .tab files
-  -l LIST         File with a list of .tab files
-  -c CUSTOMFILE   custom calibration file 
-  -o OUT_DIR      directory to store the output files
-  --no-overwrite-rad do not overwrite existing RAD files 
-  --no-overwrite-ref do not overwrite existing REF files 
+  -h, --help          show this help message and exit
+  -f CCAMFILE         CCAM psv or rad *.tab file
+  -d DIRECTORY        Directory containing .tab files to calibrate
+  -l LIST             File with a list of .tab files to calibrate
+  -c CUSTOMFILE       custom calibration file
+  -o OUT_DIR          directory to store the output files
+  --no-overwrite-rad  do not overwrite existing RAD files
+  --no-overwrite-ref  do not overwrite existing REF files
+  --smooth-vio        apply 51-channel filter to smooth VIO region
+  --smooth-vis        apply 51-channel filter to smooth VIS region
 ```
 
-There are two additional optional arguments, *-c CUSTOMFILE*, and *–no-overwrite-ref*.  The custom file option is an input file to use as the denominator in the relative reflectance calibration.  An example of calibrating a whole directory to relative reflectance using a custom file is below: 
+There are four additional optional arguments, *-c CUSTOMFILE*, *–no-overwrite-ref*, *–smooth-vio*, and *-smooth-vis*.  The custom file option is an input file to use as the denominator in the relative reflectance calibration. The smooth options will smooth data in the vio and vis regions. An example of calibrating a whole directory to relative reflectance using a custom file is below: 
 
 ```
 $ python full_path/ccam-prospect-x.x.x/ccam_prospect/relativeReflectanceCalibration.py -d /Users/me/raw_files/ -c custom_rad.tab 
