@@ -245,7 +245,7 @@ class PlotPanel(tk.Frame):
 
         if smoothed:
             print('smoothed')
-            self.fig.text(.35, 0.75, '(VIS region\nsmoothed)', fontsize=10)
+            self.fig.text(.57, 0.15, '(VIS region\nsmoothed)', fontsize=10)
 
         self.apply_axis()
 

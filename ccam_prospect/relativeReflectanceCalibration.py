@@ -6,9 +6,8 @@ from datetime import datetime
 from ccam_prospect.utils.InputType import InputType
 from ccam_prospect.utils.CustomExceptions import InputFileNotFoundException, NonStandardHeaderException, \
     CancelExecutionException
-from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label
+from ccam_prospect.utils.Utilities import get_integration_time, write_final, write_label, moving_median_smoothing
 from ccam_prospect.radianceCalibration import RadianceCalibration
-import ccam_prospect.utils.Utilities as utils
 
 
 class RelativeReflectanceCalibration:
@@ -302,10 +301,10 @@ class RelativeReflectanceCalibration:
 
             # smooth values as desired
             if smooth_vio:
-                smoothed_vio = utils.moving_median_smoothing(vio_data, 50)
+                smoothed_vio = moving_median_smoothing(vio_data, 50)
                 final_values[0:4096] = smoothed_vio
             if smooth_vis:
-                smoothed_vis = utils.moving_median_smoothing(vis_data, 50)
+                smoothed_vis = moving_median_smoothing(vis_data, 50)
                 final_values[4096:6144] = smoothed_vis
 
             # rename rad to ref to get outfile name and then write to file
