@@ -8,7 +8,7 @@ with open("README.md", 'r', encoding='utf-8') as f:
 
 setup(
    name='ccam_prospect',
-   version='1.4.2',
+   version='1.4.3',
    description='calibrate raw ccam files to rad and ref files',
    long_description=long_description,
    author='Colleen O\'Shea',
